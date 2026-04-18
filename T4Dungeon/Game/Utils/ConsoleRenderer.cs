@@ -32,8 +32,10 @@ public static class ConsoleRenderer
         Console.WriteLine("\t\t\t\t---------------------");
     }
 
-    private static void DrawInventory(Player player)
+    private static void DrawInventory(Player player, bool showInventory)
     {
+        if(!showInventory) return;
+
         Console.WriteLine("- INVENTORY");
         Console.WriteLine("NAME\t|\tAMOUNT\t|\tDESCRIPTION");
 
