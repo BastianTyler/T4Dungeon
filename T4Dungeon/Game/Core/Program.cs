@@ -8,14 +8,14 @@ namespace T4Dungeon.Game.Core
     {
         private static void Main(string[] args)
         {
-            //var engine = new GameEngine();
-            //engine.Run();
+            var engine = new GameEngine();
+            engine.Run();
 
-            var map = new MapManager(10, 8);
+            //var map = new MapManager(10, 8);
 
-            MapDebugPrinter.Print(map);
+            //MapDebugPrinter.Print(map);
 
-            Console.ReadKey();
+            //Console.ReadKey();
         }
     }           
 }

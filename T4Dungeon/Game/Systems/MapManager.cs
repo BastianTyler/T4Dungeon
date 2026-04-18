@@ -13,7 +13,7 @@ namespace T4Dungeon.Game.Systems
         private readonly Random _rng = new();
 
         public Cell[,] Grid { get; private set; }
-        public Vector2Int PlayerPosition { get; private set; }
+        public Vector2Int PlayerPosition { get; set; }
         public Vector2Int ExitPosition { get; private set; }
         public int CurrentTier { get; private set; } = 1;
 

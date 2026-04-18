@@ -1,33 +1,35 @@
-﻿using T4Dungeon.Game.Systems;
+﻿using T4Dungeon.Game.Models;
+using T4Dungeon.Game.Systems;
 using T4Dungeon.Generated;
 
 namespace T4Dungeon.Game.Utils;
 
 public static class ConsoleRenderer
 {
-    public static void Render(MapManager map)
+    public static void Render(MapManager map, UIContext ui, string message)
     {
         Console.Clear();
 
-        DrawTopBar(map);
-        DrawLeftMenu();
+        DrawTopBar();
+        DrawLeftMenu(ui, map);
         DrawMap(map);
-        DrawBottomText();
+        DrawBottomText(message);
     }
 
-    private static void DrawTopBar(MapManager map)
+    private static void DrawTopBar()
     {
         Console.WriteLine("===============================================================================");
-        Console.WriteLine($"Tier: {map.CurrentTier} | Cell: {map.PlayerPosition.X}-{map.PlayerPosition.Y}");
     }
 
-    private static void DrawLeftMenu()
+    private static void DrawLeftMenu(UIContext ui, MapManager map)
     {
+        for (int i = 0; i < ui.Options.Count; i++)
+        {
+            Console.WriteLine($"{i + 1}. {ui.Options[i].Text}");
+        }
+
+        Console.WriteLine($"\t\t\t\tTier: {map.CurrentTier} | Cell: {map.PlayerPosition.X}-{map.PlayerPosition.Y}");
         Console.WriteLine("\t\t\t\t---------------------");
-        Console.WriteLine("~ Move\t\t\t\t\t|");
-        Console.WriteLine("~ Open Inventory\t\t\t|");
-        Console.WriteLine("~ Interact\t\t\t\t|");
-        Console.WriteLine("~ Quit\t\t\t\t\t|");
     }
 
     private static void DrawMap(MapManager map)
@@ -67,10 +69,10 @@ public static class ConsoleRenderer
         };
     }
 
-    private static void DrawBottomText()
+    private static void DrawBottomText(string message)
     {
         Console.WriteLine("_________________________________________________");
-        Console.WriteLine("- Dialogue and text stuff occurs here");
+        Console.WriteLine($"- {message}");
         Console.WriteLine("-");
         Console.WriteLine("-");
         Console.WriteLine("-");
