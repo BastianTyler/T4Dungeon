@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Items>
+
+  <Item Id="1001" Name="Iron Sword" Slot="Weapon">
+    <Stats Attack="5" />
+  </Item>
+
+  <Item Id="1002" Name="Wooden Shield" Slot="Offhand">
+    <Stats Defense="3" />
+  </Item>
+
+  <Item Id="1003" Name="Apprentice dasfasdfasdRing" Slot="Accessory">
+    <Stats Mana="10" />
+    <Skill Id="Fireball" />
+  </Item>
+
+</Items>
