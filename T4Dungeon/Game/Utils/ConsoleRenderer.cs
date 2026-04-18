@@ -6,7 +6,7 @@ namespace T4Dungeon.Game.Utils;
 
 public static class ConsoleRenderer
 {
-    public static void Render(MapManager map, UIContext ui, string message)
+    public static void Render(MapManager map, UIContext ui, string message, Player player)
     {
         Console.Clear();
 
@@ -30,6 +30,24 @@ public static class ConsoleRenderer
 
         Console.WriteLine($"\t\t\t\tTier: {map.CurrentTier} | Cell: {map.PlayerPosition.X}-{map.PlayerPosition.Y}");
         Console.WriteLine("\t\t\t\t---------------------");
+    }
+
+    private static void DrawInventory(Player player)
+    {
+        Console.WriteLine("- INVENTORY");
+        Console.WriteLine("NAME\t|\tAMOUNT\t|\tDESCRIPTION");
+
+        int index = 1;
+
+        foreach (var item in player.Inventory.Items)
+        {
+            var def = ItemDatabase.Items[item.ItemId];
+
+            Console.WriteLine($"{index}. {def.Name}\t|\t{item.Amount}\t|\t{def.Description}");
+            index++;
+        }
+
+        Console.WriteLine("______");
     }
 
     private static void DrawMap(MapManager map)

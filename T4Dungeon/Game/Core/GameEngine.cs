@@ -1,6 +1,7 @@
 ﻿using T4Dungeon.Game.Models;
 using T4Dungeon.Game.Systems;
 using T4Dungeon.Game.Utils;
+using T4Dungeon.Generated;
 
 namespace T4Dungeon.Game.Core
 {
@@ -28,7 +29,7 @@ namespace T4Dungeon.Game.Core
                         break;
 
                     case GameState.Running:
-                        ConsoleRenderer.Render(_mapManager, _ui, _message);
+                        ConsoleRenderer.Render(_mapManager, _ui, _message, _player);
                         _message = "";
                         HandleInput();
                         break;
@@ -66,7 +67,7 @@ namespace T4Dungeon.Game.Core
             _ui.Options = new List<MenuOption>
             {
                 new MenuOption { Text = "Move", Action = SetMoveMenu },
-                new MenuOption { Text = "Open Inventory", Action = null, IsImplemented = false },
+                new MenuOption { Text = "Open Inventory", Action = SetInventoryMenu },
                 new MenuOption { Text = "Interact", Action = null, IsImplemented = false },
                 new MenuOption { Text = "Exit Game", Action = () => _state = GameState.Exit }
             };
@@ -83,6 +84,33 @@ namespace T4Dungeon.Game.Core
                 new MenuOption { Text = "Back", Action = SetMainMenu }
             };
 
+        }
+
+        private void SetInventoryMenu()
+        {
+            _ui.Options = new List<MenuOption>();
+
+            int index = 1;
+
+            foreach (var item in _player.Inventory.Items)
+            {
+                var def = ItemDatabase.Items[item.ItemId];
+
+                _ui.Options.Add(new MenuOption
+                {
+                    Text = $"{def.Name} x{item.Amount} - {def.Description}",
+                    Action = () => _message = "Use not implemented",
+                    IsImplemented = false
+                });
+
+                index++;
+            }
+
+            _ui.Options.Add(new MenuOption
+            {
+                Text = "Back",
+                Action = SetMainMenu
+            });
         }
 
         private void MovePlayer(int dx, int dy)
@@ -120,7 +148,7 @@ namespace T4Dungeon.Game.Core
                 if (index < 0 || index >= _ui.Options.Count)
                 {
                     _message = "Invalid option.";
-                    break; // ← EXIT so screen can re-render
+                    break; 
                 }
 
                 var option = _ui.Options[index];
@@ -128,7 +156,7 @@ namespace T4Dungeon.Game.Core
                 if (!option.IsImplemented)
                 {
                     _message = "Option not implemented.";
-                    break; // ← EXIT
+                    break; 
                 }
 
                 option.Action?.Invoke();
