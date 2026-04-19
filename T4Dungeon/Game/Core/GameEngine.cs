@@ -14,6 +14,7 @@ namespace T4Dungeon.Game.Core
         private UIContext _ui;
 
         private string _message = "";
+        private bool _showInventory = false;
 
         public void Run()
         {
@@ -29,14 +30,12 @@ namespace T4Dungeon.Game.Core
                         break;
 
                     case GameState.Running:
-                        ConsoleRenderer.Render(_mapManager, _ui, _message, _player);
+                        ConsoleRenderer.Render(_mapManager, _ui, _message, _player, _showInventory);
                         _message = "";
                         HandleInput();
                         break;
                 }
             }
-
-            //ConsoleRenderer.Render(_mapManager);
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
@@ -53,12 +52,10 @@ namespace T4Dungeon.Game.Core
 
             //Change state
             _state = GameState.Running;
-        }
 
-        //private void RunMainGameLoop()
-        //{
-        //    ConsoleRenderer.Render(_mapManager, _ui);
-        //}
+            //Test items
+            _player.Inventory.Add(ItemId.IronSword, 1);
+        }
 
         private void SetMainMenu()
         {
@@ -88,6 +85,8 @@ namespace T4Dungeon.Game.Core
 
         private void SetInventoryMenu()
         {
+
+            _showInventory = true;
             _ui.Options = new List<MenuOption>();
 
             int index = 1;
@@ -98,7 +97,7 @@ namespace T4Dungeon.Game.Core
 
                 _ui.Options.Add(new MenuOption
                 {
-                    Text = $"{def.Name} x{item.Amount} - {def.Description}",
+                    Text = $" {def.Name} \tx{item.Amount} \t- {def.Description}",
                     Action = () => _message = "Use not implemented",
                     IsImplemented = false
                 });
@@ -109,7 +108,11 @@ namespace T4Dungeon.Game.Core
             _ui.Options.Add(new MenuOption
             {
                 Text = "Back",
-                Action = SetMainMenu
+                Action = () =>
+                {
+                    _showInventory = false;
+                    SetMainMenu();
+                }
             });
         }
 

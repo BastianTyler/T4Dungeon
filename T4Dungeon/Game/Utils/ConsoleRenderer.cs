@@ -6,11 +6,13 @@ namespace T4Dungeon.Game.Utils;
 
 public static class ConsoleRenderer
 {
-    public static void Render(MapManager map, UIContext ui, string message, Player player)
+    public static void Render(MapManager map, UIContext ui, string message, Player player, bool showInventory)
     {
         Console.Clear();
 
         DrawTopBar();
+        DrawPlayerStats(player);
+        DrawInventory(player, showInventory);
         DrawLeftMenu(ui, map);
         DrawMap(map);
         DrawBottomText(message);
@@ -19,6 +21,12 @@ public static class ConsoleRenderer
     private static void DrawTopBar()
     {
         Console.WriteLine("===============================================================================");
+    }
+
+    private static void DrawPlayerStats(Player player)
+    {
+        Console.WriteLine($"HP: {player.HP} | Attack: {player.Attack} | Defense: {player.Defense}");
+        Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     }
 
     private static void DrawLeftMenu(UIContext ui, MapManager map)
@@ -37,19 +45,19 @@ public static class ConsoleRenderer
         if(!showInventory) return;
 
         Console.WriteLine("- INVENTORY");
-        Console.WriteLine("NAME\t|\tAMOUNT\t|\tDESCRIPTION");
+        Console.WriteLine("\t NAME \t| AMOUNT | DESCRIPTION");
 
-        int index = 1;
+        //int index = 1;
 
-        foreach (var item in player.Inventory.Items)
-        {
-            var def = ItemDatabase.Items[item.ItemId];
+        //foreach (var item in player.Inventory.Items)
+        //{
+        //    var def = ItemDatabase.Items[item.ItemId];
 
-            Console.WriteLine($"{index}. {def.Name}\t|\t{item.Amount}\t|\t{def.Description}");
-            index++;
-        }
+        //    Console.WriteLine($"{index}. {def.Name}\t|\t{item.Amount}\t|\t{def.Description}");
+        //    index++;
+        //}
 
-        Console.WriteLine("______");
+        //Console.WriteLine("______");
     }
 
     private static void DrawMap(MapManager map)
