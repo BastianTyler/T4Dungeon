@@ -135,6 +135,7 @@ namespace T4Dungeon.Game.Core
                     Action = () =>
                     {
                         bool escaped = _combat.TryFlee();
+                        Console.WriteLine(escaped ? "You escaped!" : "Failed to escape!");
                         Log(escaped ? "You escaped!" : "Failed to escape!");
                         if (escaped)
                             _state = GameState.Running;
@@ -177,11 +178,13 @@ namespace T4Dungeon.Game.Core
             _mapManager.Grid[newPos.X, newPos.Y].Explored = true;
 
             var cell = _mapManager.Grid[newPos.X, newPos.Y];
+            Console.WriteLine(cell.Event.Execute(_player, cell));
             Log(cell.Event.Execute(_player, cell));
 
             if (cell.Type == CellType.Combat)
-            {
-                _combat = new CombatSystem(_player, new Enemy());
+            { 
+                var randomId = (EnemyId)new Random().Next(2001, 2004);
+                _combat = new CombatSystem(_player, new Enemy(randomId), Log);
                 _state = GameState.Combat;
                 SetCombatMenu();
             }
@@ -193,6 +196,7 @@ namespace T4Dungeon.Game.Core
 
             HandleInput();
 
+            Console.WriteLine(_combat.Message);
             Log(_combat.Message);
 
             if (_combat.IsOver)
@@ -209,6 +213,7 @@ namespace T4Dungeon.Game.Core
             if (newPos.X < 0 || newPos.X >= _mapManager.Grid.GetLength(0) ||
                 newPos.Y < 0 || newPos.Y >= _mapManager.Grid.GetLength(1))
             {
+                Console.WriteLine("You can't move outside the map.");
                 Log("You can't move outside the map.");
                 return false;
             }
@@ -225,6 +230,7 @@ namespace T4Dungeon.Game.Core
 
                 if (index < 0 || index >= _ui.Options.Count)
                 {
+                    Console.WriteLine("Invalid option.");
                     Log("Invalid Option");
                     break; 
                 }
@@ -233,6 +239,7 @@ namespace T4Dungeon.Game.Core
 
                 if (!option.IsImplemented)
                 {
+                    Console.WriteLine("Option not implemented.");
                     Log("Option not implemented.");
                     break; 
                 }
@@ -241,13 +248,24 @@ namespace T4Dungeon.Game.Core
             }
         }
 
-        private void Log(string msg) 
+        private void Log(string msg, bool waitForKey = true)
         {
             _messages.Add(msg);
+            if (_messages.Count > 10) _messages.RemoveAt(0);
 
-            
-            if (_messages.Count > 10)
-                _messages.RemoveAt(0);
+            ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, _showInventory);
+
+            if (waitForKey)
+            {
+                Console.WriteLine("\n -- Press any key to continue --");
+                Console.ReadKey(true);
+                while (Console.KeyAvailable) Console.ReadKey(true);
+            }
+        }
+
+        private void Log(string msg)
+        {
+            Log(msg, false); 
         }
     }
 }

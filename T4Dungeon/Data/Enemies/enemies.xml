@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Enemies>
+	<Enemy Id="2001" Name="Slime" HP="20" Attack="5" />
+	<Enemy Id="2002" Name="Goblin" HP="45" Attack="12" />
+	<Enemy Id="2003" Name="Orc" HP="100" Attack="25" />
+</Enemies>

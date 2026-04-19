@@ -9,7 +9,7 @@
     <Stats Defense="3" />
   </Item>
 
-  <Item Id="1003" Name="Apprentice dasfasdfasdRing" Slot="Accessory">
+  <Item Id="1003" Name="Apprentice Ring" Slot="Accessory">
     <Stats Mana="10" />
     <Skill Id="Fireball" />
   </Item>

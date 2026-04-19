@@ -1,9 +1,22 @@
 ﻿namespace T4Dungeon.Game.Models
 {
+    using T4Dungeon.Generated;
+
     public class Enemy
     {
-        public string Name { get; set; } = "Slime";
-        public int HP { get; set; } = 10;
-        public int Attack { get; set; } = 2;
+        public string Name { get; set; }
+        public int HP { get; set; }
+        public int Attack { get; set; }
+
+        public Enemy(EnemyId id)
+        {
+            var def = EnemyDatabase.Enemies[id];
+            Name = def.Name;
+            HP = def.HP;
+            Attack = def.Attack;
+        }
+
+        // Keep a default constructor for your current Slime logic if needed
+        public Enemy() : this(EnemyId.Slime) { }
     }
 }

@@ -117,7 +117,5 @@ public static class ConsoleRenderer
         // pad if needed (keeps layout stable)
         for (int i = messages.Count; i < 4; i++)
             Console.WriteLine("-");
-
-        Console.WriteLine("===============================================================================");
     }
 }

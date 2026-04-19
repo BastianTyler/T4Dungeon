@@ -16,13 +16,16 @@ namespace T4Dungeon.Game.Systems
         public bool IsOver => _combatOver;
         public string Message => _message;
         public Enemy Enemy => _enemy;
+        private Action<string, bool> _logger;
+        private void _log(string m, bool w = true) => _logger?.Invoke(m, w);
 
-        public CombatSystem(Player player, Enemy enemy)
+        public CombatSystem(Player player, Enemy enemy, Action<string, bool> logger)
         {
             _player = player;
             _enemy = enemy;
             _combatOver = false;
-            _message = $"You encountered a {_enemy.Name}!";
+            _logger = logger;
+            _log($"You encountered a {_enemy.Name}!");
         }
 
         public void RunTurn(Action playerAction)
@@ -43,14 +46,14 @@ namespace T4Dungeon.Game.Systems
             if(_player.HP <= 0)
             {
                 _combatOver = true;
-                _message = "You died.";
+                _log("You died.");
                 return true;
             }
 
             if(_enemy.HP <= 0)
             {
                 _combatOver = true;
-                _message = $"You defeated the {_enemy.Name}!";
+                _log($"You defeated the {_enemy.Name}!");
                 return true;
             }
             return false;
@@ -58,6 +61,11 @@ namespace T4Dungeon.Game.Systems
 
         private bool TimedInput(char expectedKey, int timeLimitSeconds = 2000)
         {
+            while (Console.KeyAvailable)
+            {
+                Console.ReadKey(intercept: true);
+            }
+
             var start = DateTime.Now;
 
             while ((DateTime.Now - start).TotalMilliseconds < timeLimitSeconds)
@@ -73,23 +81,24 @@ namespace T4Dungeon.Game.Systems
 
         private void EnemyTurn()
         {
-            _message = "Enemy is attacking! Press D to defend!";
+            _log("Enemy is attacking! Press D to defend!", false);
 
             bool defended = TimedInput('d');
 
             if (defended)
             {
-                _message = "You blocked the attack!";
+                _log("You blocked the attack!");
                 return;
             }
 
             _player.HP -= _enemy.Attack;
-            _message = "You took damage!";
+            _log("You took damage!");
         }
 
         public void Attack()
         {
             _enemy.HP -= _player.Attack;
+            _log($"You attacked the {_enemy.Name} for {_player.Attack} damage!");
         }
 
         public void Defend()
