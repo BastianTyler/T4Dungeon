@@ -8,6 +8,7 @@ namespace T4Dungeon.Game.Core
     {
         NewGame,
         Running,
+        Combat,
         GameOver,
         Exit
     }

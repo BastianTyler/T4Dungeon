@@ -37,6 +37,7 @@ namespace T4Dungeon.Game.Systems
             }
 
             PlayerPosition = new Vector2Int(0, 0);
+            Grid[0, 0].Explored = true;
 
             PlaceExit();
             FillCells();
@@ -65,6 +66,7 @@ namespace T4Dungeon.Game.Systems
                 }
 
                 cell.Type = RollCellType();
+                cell.Event = CellEventFactory.Create(cell.Type);
             }
         }
 
@@ -79,6 +81,19 @@ namespace T4Dungeon.Game.Systems
 
             return CellType.Empty; // fallback
 
+        }
+
+        private void RevealAdjacent(Vector2Int pos)
+        {
+            for (int dx = -1; dx <= 1; dx++)
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    int nx = pos.X + dx;
+                    int ny = pos.Y + dy;
+
+                    if (nx >= 0 && nx < _width && ny >= 0 && ny < _height)
+                        Grid[nx, ny].Explored = true;
+                }
         }
 
         private Cell GetCell(Vector2Int pos)

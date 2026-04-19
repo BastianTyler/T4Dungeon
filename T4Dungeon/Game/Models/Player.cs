@@ -5,6 +5,7 @@ public class Player
 {
     public int HP { get; set; } = 100;
     public bool IsDead => HP <= 0;
+    public bool IsDefending { get; set; }
     public Inventory Inventory { get; } = new Inventory();
 
     public int Attack { get; set; } = 10;

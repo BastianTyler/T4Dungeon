@@ -7,11 +7,14 @@ namespace T4Dungeon.Game.Models
     {
         public Vector2Int CellPosition { get; }
         public CellType Type { get; set;  }
+        public bool Explored { get; set; } = false;
+        public ICellEvent Event { get; set; }
 
         public Cell(int x, int y)
         {
             CellPosition = new Vector2Int(x, y);
             Type = CellType.Empty;
+            Explored = false;
         }
     }
 }

@@ -6,7 +6,7 @@ namespace T4Dungeon.Game.Utils;
 
 public static class ConsoleRenderer
 {
-    public static void Render(MapManager map, UIContext ui, string message, Player player, bool showInventory)
+    public static void Render(MapManager map, UIContext ui, List<string> messages, Player player, bool showInventory)
     {
         Console.Clear();
 
@@ -15,7 +15,7 @@ public static class ConsoleRenderer
         DrawInventory(player, showInventory);
         DrawLeftMenu(ui, map);
         DrawMap(map);
-        DrawBottomText(message);
+        DrawBottomText(messages);
     }
 
     private static void DrawTopBar()
@@ -75,7 +75,14 @@ public static class ConsoleRenderer
                 }
 
                 var cell = map.Grid[x, y];
-                Console.Write(GetChar(cell.Type) + " ");
+                if (!cell.Explored)
+                {
+                    Console.Write("# ");
+                }
+                else
+                {
+                    Console.Write(GetChar(cell.Type) + " ");
+                }
             }
 
             Console.WriteLine("|");
@@ -97,13 +104,20 @@ public static class ConsoleRenderer
         };
     }
 
-    private static void DrawBottomText(string message)
+    private static void DrawBottomText(List<string> messages)
     {
         Console.WriteLine("_________________________________________________");
-        Console.WriteLine($"- {message}");
-        Console.WriteLine("-");
-        Console.WriteLine("-");
-        Console.WriteLine("-");
+
+        // CHANGE: show last few messages instead of single string
+        foreach (var msg in messages.TakeLast(4))
+        {
+            Console.WriteLine($"- {msg}");
+        }
+
+        // pad if needed (keeps layout stable)
+        for (int i = messages.Count; i < 4; i++)
+            Console.WriteLine("-");
+
         Console.WriteLine("===============================================================================");
     }
 }

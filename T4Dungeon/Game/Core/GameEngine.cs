@@ -12,8 +12,9 @@ namespace T4Dungeon.Game.Core
         private Player _player;
         private MapManager _mapManager;
         private UIContext _ui;
+        private CombatSystem _combat;
 
-        private string _message = "";
+        private readonly List<string> _messages = new(); 
         private bool _showInventory = false;
 
         public void Run()
@@ -30,9 +31,13 @@ namespace T4Dungeon.Game.Core
                         break;
 
                     case GameState.Running:
-                        ConsoleRenderer.Render(_mapManager, _ui, _message, _player, _showInventory);
-                        _message = "";
+                        ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, _showInventory);
+                        _messages.Clear();
                         HandleInput();
+                        break;
+
+                    case GameState.Combat:
+                        RunCombatLoop();
                         break;
                 }
             }
@@ -98,7 +103,7 @@ namespace T4Dungeon.Game.Core
                 _ui.Options.Add(new MenuOption
                 {
                     Text = $" {def.Name} \tx{item.Amount} \t- {def.Description}",
-                    Action = () => _message = "Use not implemented",
+                    Action = () => Log("Use not implemented"),
                     IsImplemented = false
                 });
 
@@ -116,15 +121,85 @@ namespace T4Dungeon.Game.Core
             });
         }
 
+        private void SetCombatMenu()
+        {
+            _ui.Options = new List<MenuOption>
+            {
+                new MenuOption { Text = "Attack", Action = () => _combat.RunTurn(_combat.Attack) },
+
+                new MenuOption { Text = "Defend", Action = () => _combat.RunTurn(_combat.Defend) },
+
+                new MenuOption
+                {
+                    Text = "Attempt Flee",
+                    Action = () =>
+                    {
+                        bool escaped = _combat.TryFlee();
+                        Log(escaped ? "You escaped!" : "Failed to escape!");
+                        if (escaped)
+                            _state = GameState.Running;
+                    }
+                },
+
+                new MenuOption { Text = "Open Inventory", Action = SetInventoryMenu },
+            };
+        }
+
+
+        private void SetSkillMenu()
+        {
+            _ui.Options = new List<MenuOption>
+            {
+                new MenuOption { Text = "Back", Action = SetCombatMenu }
+            };
+        }
+
+        private void CheckCombatState()
+        {
+            if (_combat.IsOver)
+            {
+                Log(_combat.Message);
+                _state = GameState.Running;
+                SetMainMenu();
+            }
+        }
+
         private void MovePlayer(int dx, int dy)
         {
             var pos = _mapManager.PlayerPosition;
+
 
             var newPos = new Vector2Int(pos.X + dx, pos.Y + dy);
             if (!ValidateMove(dx, dy))
                 return;
 
             _mapManager.PlayerPosition = newPos;
+            _mapManager.Grid[newPos.X, newPos.Y].Explored = true;
+
+            var cell = _mapManager.Grid[newPos.X, newPos.Y];
+            Log(cell.Event.Execute(_player, cell));
+
+            if (cell.Type == CellType.Combat)
+            {
+                _combat = new CombatSystem(_player, new Enemy());
+                _state = GameState.Combat;
+                SetCombatMenu();
+            }
+        }
+
+        private void RunCombatLoop()
+        {
+            ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, false);
+
+            HandleInput();
+
+            Log(_combat.Message);
+
+            if (_combat.IsOver)
+            {
+                _state = GameState.Running;
+                SetMainMenu();
+            }
         }
 
         private bool ValidateMove(int dx, int dy)
@@ -134,7 +209,7 @@ namespace T4Dungeon.Game.Core
             if (newPos.X < 0 || newPos.X >= _mapManager.Grid.GetLength(0) ||
                 newPos.Y < 0 || newPos.Y >= _mapManager.Grid.GetLength(1))
             {
-                _message = "Cannot move outside map.";
+                Log("You can't move outside the map.");
                 return false;
             }
             return true;    
@@ -150,7 +225,7 @@ namespace T4Dungeon.Game.Core
 
                 if (index < 0 || index >= _ui.Options.Count)
                 {
-                    _message = "Invalid option.";
+                    Log("Invalid Option");
                     break; 
                 }
 
@@ -158,14 +233,21 @@ namespace T4Dungeon.Game.Core
 
                 if (!option.IsImplemented)
                 {
-                    _message = "Option not implemented.";
+                    Log("Option not implemented.");
                     break; 
                 }
-
                 option.Action?.Invoke();
                 break;
             }
         }
 
+        private void Log(string msg) 
+        {
+            _messages.Add(msg);
+
+            
+            if (_messages.Count > 10)
+                _messages.RemoveAt(0);
+        }
     }
 }
