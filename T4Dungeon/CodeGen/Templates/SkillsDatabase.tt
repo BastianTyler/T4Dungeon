@@ -1,0 +1,57 @@
+﻿<#@ template language="C#" debug="true" hostspecific="true" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Xml" #>
+<#@ import namespace="System.Xml" #>
+<#@ import namespace="System.IO" #>
+using System;
+using System.Collections.Generic;
+
+namespace T4Dungeon.Generated;
+
+public class SkillDef
+{
+    public SkillId Id { get; set; }
+    public string Name { get; set; }
+    public string SkillType { get; set; }
+    public int Value { get; set; }
+    public int Cost { get; set; }
+    public string Description { get; set; }
+}
+
+public static class SkillDatabase
+{
+    public static readonly Dictionary<SkillId, SkillDef> Skills = new()
+    {
+<#
+    var path = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Host.TemplateFile), @"..\..\Data\Skills\skills.xml"));
+    var doc = new XmlDocument();
+    doc.Load(path);
+
+    var nodes = doc.SelectNodes("//Skill");
+    for (int i = 0; i < nodes.Count; i++)
+    {
+        var node = nodes[i];
+        var name = node.Attributes["Name"].Value;
+        var cleanName = name.Replace(" ", "");
+        var type = node.Attributes["Type"].Value;
+        var val = node.Attributes["Value"].Value;
+        var cost = node.Attributes["Cost"].Value;
+        var desc = node.Attributes["Description"].Value;
+#>
+        {
+            SkillId.<#= cleanName #>,
+            new SkillDef
+            {
+                Id = SkillId.<#= cleanName #>,
+                Name = "<#= name #>",
+                SkillType = "<#= type #>",
+                Value = <#= val #>,
+                Cost = <#= cost #>,
+                Description = "<#= desc #>"
+            }
+        }<#= i < nodes.Count - 1 ? "," : "" #>
+<#
+    }
+#>
+    };
+}

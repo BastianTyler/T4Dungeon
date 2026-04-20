@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Enums>
+	<Enum Name="CellType">
+		<Value Name="Empty"/>
+		<Value Name="Combat"/>
+		<Value Name="Shop"/>
+		<Value Name="Treasure"/>
+		<Value Name="Exit"/>
+	</Enum>
+</Enums>

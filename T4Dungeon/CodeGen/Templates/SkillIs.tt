@@ -1,0 +1,27 @@
+﻿<#@ template language="C#" debug="true" hostspecific="true" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Xml" #>
+<#@ import namespace="System.Xml" #>
+<#@ import namespace="System.IO" #>
+
+namespace T4Dungeon.Generated
+{
+    public enum SkillId
+    {
+        None = 0,
+<#
+    var path = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Host.TemplateFile), @"..\..\Data\Skills\skills.xml"));
+    var doc = new XmlDocument();
+    doc.Load(path);
+
+    foreach (XmlNode node in doc.SelectNodes("//Skill"))
+    {
+        var name = node.Attributes["Name"].Value.Replace(" ", "");
+        var id = node.Attributes["Id"].Value;
+#>
+        <#= name #> = <#= id #>,
+<#
+    }
+#>
+    }
+}

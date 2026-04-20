@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Skills>
+	<Skill Id="3001" Name="Fireball" Type="Damage" Value="15" Cost="5" Description="A fiery projectile." />
+	<Skill Id="3002" Name="Heal" Type="Healing" Value="10" Cost="5" Description="Restores health." />
+	<Skill Id="3003" Name="Pommel Strike" Type="Damage" Value="8" Cost="3" Description="A quick melee attack." />
+</Skills>

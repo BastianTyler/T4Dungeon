@@ -1,0 +1,49 @@
+﻿<#@ template language="C#" debug="true" hostspecific="true" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Xml" #>
+<#@ import namespace="System.Xml" #>
+<#@ import namespace="System.IO" #>
+using System.Collections.Generic;
+
+namespace T4Dungeon.Generated;
+
+public class ItemDef
+{
+    public ItemId Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+}
+
+public static class ItemDatabase
+{
+    public static readonly Dictionary<ItemId, ItemDef> Items = new()
+    {
+<#
+    var templateDir = Path.GetDirectoryName(Host.TemplateFile);
+    // Matches the path logic in your ItemIds.tt
+    var path = Path.GetFullPath(Path.Combine(templateDir, @"..\..\Data\Items\items.xml"));
+    var doc = new XmlDocument();
+    doc.Load(path);
+
+    var nodes = doc.SelectNodes("//Item");
+    for (int i = 0; i < nodes.Count; i++)
+    {
+        var node = nodes[i];
+        var nameValue = node.Attributes["Name"].Value;
+        var cleanName = nameValue.Replace(" ", "");
+        var description = node.Attributes["Description"]?.Value ?? "No description available.";
+#>
+        {
+            ItemId.<#= cleanName #>,
+            new ItemDef
+            {
+                Id = ItemId.<#= cleanName #>,
+                Name = "<#= nameValue #>",
+                Description = "<#= description #>"
+            }
+        }<#= i < nodes.Count - 1 ? "," : "" #>
+<#
+    }
+#>
+    };
+}
