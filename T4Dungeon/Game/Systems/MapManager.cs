@@ -55,13 +55,16 @@ namespace T4Dungeon.Game.Systems
         {
             foreach(var cell in Grid)
             {
-                if(cell.CellPosition.X == PlayerPosition.X && cell.CellPosition.Y == PlayerPosition.Y)
+                if (cell.CellPosition.X == PlayerPosition.X && cell.CellPosition.Y == PlayerPosition.Y)
                 {
+                    cell.Type = CellType.Empty;
+                    cell.Event = CellEventFactory.Create(CellType.Empty);
                     continue;
                 }
 
-                if(cell.Type == CellType.Exit)
+                if (cell.Type == CellType.Exit)
                 {
+                    cell.Event = CellEventFactory.Create(CellType.Exit);
                     continue;
                 }
 

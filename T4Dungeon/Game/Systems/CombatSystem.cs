@@ -25,7 +25,7 @@ namespace T4Dungeon.Game.Systems
             _enemy = enemy;
             _combatOver = false;
             _logger = logger;
-            _log($"You encountered a {_enemy.Name}!");
+            _log($"You encountered a {_enemy.Name}!", false);
         }
 
         public void RunTurn(Action playerAction)

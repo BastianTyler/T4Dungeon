@@ -16,7 +16,6 @@
             Attack = def.Attack;
         }
 
-        // Keep a default constructor for your current Slime logic if needed
         public Enemy() : this(EnemyId.Slime) { }
     }
 }

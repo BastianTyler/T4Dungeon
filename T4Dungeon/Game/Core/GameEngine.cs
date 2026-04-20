@@ -167,36 +167,23 @@ namespace T4Dungeon.Game.Core
 
         private void MovePlayer(int dx, int dy)
         {
-            var pos = _mapManager.PlayerPosition;
+            if (!ValidateMove(dx, dy)) return;
 
+            // 1. Update Position
+            var currentPos = _mapManager.PlayerPosition;
+            _mapManager.PlayerPosition = new Vector2Int(currentPos.X + dx, currentPos.Y + dy);
+            var cell = _mapManager.Grid[_mapManager.PlayerPosition.X, _mapManager.PlayerPosition.Y];
+            cell.Explored = true;
 
-            var newPos = new Vector2Int(pos.X + dx, pos.Y + dy);
-            if (!ValidateMove(dx, dy))
-                return;
-
-            _mapManager.PlayerPosition = newPos;
-            _mapManager.Grid[newPos.X, newPos.Y].Explored = true;
-
-            var cell = _mapManager.Grid[newPos.X, newPos.Y];
-            Console.WriteLine(cell.Event.Execute(_player, cell));
-            Log(cell.Event.Execute(_player, cell));
-
-            if (cell.Type == CellType.Combat)
-            { 
-                var randomId = (EnemyId)new Random().Next(2001, 2004);
-                _combat = new CombatSystem(_player, new Enemy(randomId), Log);
-                _state = GameState.Combat;
-                SetCombatMenu();
-            }
+            // 2. Delegate interaction to a new method
+            InteractWithCell(cell);
         }
-
         private void RunCombatLoop()
         {
             ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, false);
 
             HandleInput();
 
-            Console.WriteLine(_combat.Message);
             Log(_combat.Message);
 
             if (_combat.IsOver)
@@ -204,6 +191,45 @@ namespace T4Dungeon.Game.Core
                 _state = GameState.Running;
                 SetMainMenu();
             }
+        }
+
+        private void InteractWithCell(Cell cell)
+        {
+            
+            string eventMsg = cell.Event.Execute(_player, cell);
+
+            
+            switch (cell.Type)
+            {
+                case CellType.Combat:
+                   
+                    Log(eventMsg, true);
+                    StartCombatTransition();
+                    break;
+
+                case CellType.Treasure:
+                    Log(eventMsg, true);
+                    ClearCell(cell); 
+                    break;
+
+                default:
+                    if (!string.IsNullOrEmpty(eventMsg)) Log(eventMsg, false);
+                    break;
+            }
+        }
+
+        private void StartCombatTransition()
+        {
+            var randomId = (EnemyId)new Random().Next(2001, 2004);
+            _combat = new CombatSystem(_player, new Enemy(randomId), Log);
+            _state = GameState.Combat;
+            SetCombatMenu();
+        }
+
+        private void ClearCell(Cell cell)
+        {
+            cell.Type = CellType.Empty;
+            cell.Event = CellEventFactory.Create(CellType.Empty);
         }
 
         private bool ValidateMove(int dx, int dy)
@@ -230,7 +256,7 @@ namespace T4Dungeon.Game.Core
 
                 if (index < 0 || index >= _ui.Options.Count)
                 {
-                    Console.WriteLine("Invalid option.");
+
                     Log("Invalid Option");
                     break; 
                 }
