@@ -1,6 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Enemies>
-	<Enemy Id="2001" Name="Slime" HP="20" Attack="5" />
-	<Enemy Id="2002" Name="Goblin" HP="45" Attack="12" />
-	<Enemy Id="2003" Name="Orc" HP="100" Attack="25" />
+	<Enemy Id="2001" Name="Slime" HP="20" Attack="5" MinGold="2" MaxGold="6">
+		<Moves>
+			<Move Name="Slime Ram" Type="Timed" Key="D" TimeLimit="2500" />
+		</Moves>
+		<LootTable>
+			<Item Id="3001" Chance="0.2" />
+		</LootTable>
+	</Enemy>
+
+	<Enemy Id="2002" Name="Goblin" HP="45" Attack="12" MinGold="10" MaxGold="20">
+		<Moves>
+			<Move Name="Quick Stab" Type="Timed" Key="D" TimeLimit="1200" />
+			<Move Name="Dagger Throw" Type="SweetSpot" Key="R" Target="0.5" Threshold="0.1" />
+		</Moves>
+		<LootTable>
+			<Item Id="1005" Chance="0.05" />
+		</LootTable>
+	</Enemy>
+
+	<Enemy Id="2003" Name="Orc" HP="100" Attack="25" MinGold="35" MaxGold="60">
+		<Moves>
+			<Move Name="Crushing Club" Type="Mash" Key="B" Goal="15" TimeLimit="3000" />
+			<Move Name="Double Swing" Type="Sequence" Key="B" Count="2" />
+		</Moves>
+		<LootTable>
+			<Item Id="1001" Chance="0.1" />
+			<Item Id="2001" Chance="0.15" />
+		</LootTable>
+	</Enemy>
 </Enemies>

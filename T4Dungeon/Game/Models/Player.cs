@@ -12,7 +12,7 @@ public class Player
     public int BaseAttack { get; set; } = 10;
     public int BaseDefense { get; set; } = 5;
     public int BaseMana { get; set; } = 20;
-
+    public int Gold { get; set; } = 0;
     public bool IsDead => HP <= 0;
     public bool IsDefending { get; set; }
     public Inventory Inventory { get; } = new Inventory();

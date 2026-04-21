@@ -31,7 +31,7 @@ namespace T4Dungeon.Game.Core
                         break;
 
                     case GameState.Running:
-                        ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, _showInventory);
+                        ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, _showInventory, false);
                         _messages.Clear();
                         HandleInput();
                         break;
@@ -245,7 +245,7 @@ namespace T4Dungeon.Game.Core
         }
         private void RunCombatLoop()
         {
-            ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, false);
+            ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, false, true, _combat.Enemy);
 
             HandleInput();
 
@@ -264,6 +264,12 @@ namespace T4Dungeon.Game.Core
             
             switch (cell.Type)
             {
+                case CellType.Exit:
+                    Log("You found the exit! The light of the outside world blinds you...", true);
+                    Log("YOU WIN!", true);
+                    _state = GameState.Exit; // This will break the while loop in Run()
+                    break;
+
                 case CellType.Combat:
                    
                     Log(eventMsg, true);
@@ -339,7 +345,10 @@ namespace T4Dungeon.Game.Core
             _messages.Add(msg);
             if (_messages.Count > 10) _messages.RemoveAt(0);
 
-            ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, _showInventory);
+            bool isCombat = (_state == GameState.Combat);
+            Enemy? currentEnemy = isCombat ? _combat?.Enemy : null;
+
+            ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, _showInventory, isCombat, currentEnemy);
 
             if (waitForKey)
             {

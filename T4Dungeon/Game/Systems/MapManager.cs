@@ -45,8 +45,13 @@ namespace T4Dungeon.Game.Systems
 
         public void PlaceExit()
         {
-            int x = _rng.Next(_width);
-            int y = _rng.Next(_height);
+            int x, y;
+            do
+            {
+                x = _rng.Next(_width);
+                y = _rng.Next(_height);
+            } while (x == 0 && y == 0); // Don't put the exit on the start tile!
+
             ExitPosition = new Vector2Int(x, y);
             Grid[x, y].Type = CellType.Exit;
         }
