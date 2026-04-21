@@ -69,6 +69,7 @@ namespace T4Dungeon.Game.Core
             _ui.Options = new List<MenuOption>
             {
                 new MenuOption { Text = "Move", Action = SetMoveMenu },
+                new MenuOption { Text = "Equipment", Action = SetEquiptMenu },
                 new MenuOption { Text = "Open Inventory", Action = SetInventoryMenu },
                 new MenuOption { Text = "Interact", Action = null, IsImplemented = false },
                 new MenuOption { Text = "Exit Game", Action = () => _state = GameState.Exit }
@@ -146,6 +147,70 @@ namespace T4Dungeon.Game.Core
             };
         }
 
+        private void SetEquiptMenu()
+        {
+            _ui.Options = new List<MenuOption>();
+
+            var slotsToShow = new[] { EquiptSlot.Weapon, EquiptSlot.Armor, EquiptSlot.Accessory };
+
+            foreach (var slot in slotsToShow)
+            {
+                _player.Equipment.TryGetValue(slot, out var currentId);
+                string currentItemName = currentId.HasValue
+                    ? ItemDatabase.Items[currentId.Value].Name
+                    : "Empty";
+
+                _ui.Options.Add(new MenuOption
+                {
+                    Text = $"{slot}: {currentItemName}",
+                    Action = () => SetItemSelectMenu(slot)
+                });
+            }
+
+            _ui.Options.Add(new MenuOption { Text = "Back", Action = SetMainMenu });
+        }
+
+        private void SetItemSelectMenu(EquiptSlot slot)
+        {
+            _ui.Options = new List<MenuOption>();
+
+            // Filter inventory for items matching the Slot tag
+            var validItems = _player.Inventory.Items
+                .Select(i => ItemDatabase.Items[i.ItemId])
+                .Where(def => def.Slot == slot)
+                .Take(9) // Limit to 9 items 
+                .ToList();
+
+            if (validItems.Count == 0)
+            {
+                Log($"No equippable {slot} items found!");
+                SetEquiptMenu(); // Go back immediately
+                return;
+            }
+
+            foreach (var item in validItems)
+            {
+                _ui.Options.Add(new MenuOption
+                {
+                    Text = item.Name,
+                    Action = () => {
+                        EquipItem(slot, item.Id);
+                        SetEquiptMenu();
+                    }
+                });
+            }
+
+            _ui.Options.Add(new MenuOption { Text = "Back", Action = SetEquiptMenu });
+        }
+
+        private void EquipItem(EquiptSlot slot, ItemId newItemId)
+        {
+            _player.Equipment[slot] = newItemId;
+
+            var newDef = ItemDatabase.Items[newItemId];
+            Log($"Equipped {newDef.Name}!");
+        }
+
 
         private void SetSkillMenu()
         {
@@ -169,13 +234,13 @@ namespace T4Dungeon.Game.Core
         {
             if (!ValidateMove(dx, dy)) return;
 
-            // 1. Update Position
+            
             var currentPos = _mapManager.PlayerPosition;
             _mapManager.PlayerPosition = new Vector2Int(currentPos.X + dx, currentPos.Y + dy);
             var cell = _mapManager.Grid[_mapManager.PlayerPosition.X, _mapManager.PlayerPosition.Y];
             cell.Explored = true;
 
-            // 2. Delegate interaction to a new method
+            
             InteractWithCell(cell);
         }
         private void RunCombatLoop()
@@ -183,8 +248,6 @@ namespace T4Dungeon.Game.Core
             ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, false);
 
             HandleInput();
-
-            Log(_combat.Message);
 
             if (_combat.IsOver)
             {
@@ -239,7 +302,6 @@ namespace T4Dungeon.Game.Core
             if (newPos.X < 0 || newPos.X >= _mapManager.Grid.GetLength(0) ||
                 newPos.Y < 0 || newPos.Y >= _mapManager.Grid.GetLength(1))
             {
-                Console.WriteLine("You can't move outside the map.");
                 Log("You can't move outside the map.");
                 return false;
             }
@@ -256,8 +318,7 @@ namespace T4Dungeon.Game.Core
 
                 if (index < 0 || index >= _ui.Options.Count)
                 {
-
-                    Log("Invalid Option");
+                    Log("Invalid Option", true);
                     break; 
                 }
 
@@ -265,7 +326,6 @@ namespace T4Dungeon.Game.Core
 
                 if (!option.IsImplemented)
                 {
-                    Console.WriteLine("Option not implemented.");
                     Log("Option not implemented.");
                     break; 
                 }

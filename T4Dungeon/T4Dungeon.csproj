@@ -15,6 +15,7 @@
     <Folder Include="Data\Schemas\" />
     <Folder Include="Generated\Enemies\" />
     <Folder Include="Generated\Events\" />
+    <Folder Include="Generated\Items\" />
     <Folder Include="Generated\Shares\" />
   </ItemGroup>
 
@@ -39,20 +40,15 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ItemDatabase.tt</DependentUpon>
     </None>
-    <None Include="CodeGen\Templates\SkillIs.cs">
+    <None Include="CodeGen\Templates\SkillIds.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>SkillIs.tt</DependentUpon>
+      <DependentUpon>SkillIds.tt</DependentUpon>
     </None>
     <None Include="CodeGen\Templates\SkillsDatabase.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>SkillsDatabase.tt</DependentUpon>
-    </None>
-    <None Include="Generated\Items\ItemIds.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ItemIds.tt</DependentUpon>
     </None>
   </ItemGroup>
 
@@ -77,9 +73,9 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>EnemyDatabase.cs</LastGenOutput>
     </None>
-    <None Update="CodeGen\Templates\SkillIs.tt">
+    <None Update="CodeGen\Templates\SkillIds.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>SkillIs.cs</LastGenOutput>
+      <LastGenOutput>SkillIds.cs</LastGenOutput>
     </None>
     <None Update="CodeGen\Templates\SkillsDatabase.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -112,6 +108,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ItemDatabase.tt</DependentUpon>
     </Compile>
+    <Compile Update="CodeGen\Templates\ItemIds.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ItemIds.tt</DependentUpon>
+    </Compile>
     <Compile Update="CodeGen\Templates\SkillIds.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -126,11 +127,6 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>SkillsDatabase.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Generated\Items\ItemIds.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ItemIds.tt</DependentUpon>
     </Compile>
     <Compile Update="CodeGen\Templates\TextTemplate1.cs">
       <DesignTime>True</DesignTime>

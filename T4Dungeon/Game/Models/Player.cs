@@ -1,19 +1,47 @@
-﻿
+﻿using T4Dungeon.Generated;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace T4Dungeon.Game.Models;
 
 public class Player
 {
+    public int MaxHP { get; set; } = 100;
     public int HP { get; set; } = 100;
+    public int BaseAttack { get; set; } = 10;
+    public int BaseDefense { get; set; } = 5;
+    public int BaseMana { get; set; } = 20;
+
     public bool IsDead => HP <= 0;
     public bool IsDefending { get; set; }
     public Inventory Inventory { get; } = new Inventory();
 
-    public int Attack { get; set; } = 10;
-    public int Defense { get; set; } = 5;
+    public Dictionary<EquiptSlot, ItemId?> Equipment { get; } = new()
+    {
+        { EquiptSlot.Weapon, null },
+        { EquiptSlot.Armor, null },
+        { EquiptSlot.Accessory, null }
+    };
+
+    // --- Calculated Stats ---
+    // These recalculate automatically whenever they are "read"
+    public int Attack => BaseAttack + GetGearBonus(item => item.AttackBonus);
+    public int Defense => BaseDefense + GetGearBonus(item => item.DefenseBonus);
+
+    // Helper to sum up bonuses from all equipped slots
+    private int GetGearBonus(Func<ItemDef, int> statSelector)
+    {
+        return Equipment.Values
+            .Where(id => id.HasValue)
+            .Select(id => ItemDatabase.Items[id.Value])
+            .Sum(statSelector);
+    }
 
     public void TakeDamage(int dmg)
     {
-        int final = Math.Max(0, dmg - Defense);
+        // Use the calculated 'Defense' (Base + Gear)
+        int final = Math.Max(1, dmg - Defense);
         HP -= final;
     }
 }
