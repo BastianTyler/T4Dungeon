@@ -46,18 +46,6 @@ public static class ConsoleRenderer
 
         Console.WriteLine("- INVENTORY");
         Console.WriteLine("\t NAME \t| AMOUNT | DESCRIPTION");
-
-        //int index = 1;
-
-        //foreach (var item in player.Inventory.Items)
-        //{
-        //    var def = ItemDatabase.Items[item.ItemId];
-
-        //    Console.WriteLine($"{index}. {def.Name}\t|\t{item.Amount}\t|\t{def.Description}");
-        //    index++;
-        //}
-
-        //Console.WriteLine("______");
     }
 
     private static void DrawMap(MapManager map)
@@ -108,13 +96,11 @@ public static class ConsoleRenderer
     {
         Console.WriteLine("_________________________________________________");
 
-        // CHANGE: show last few messages instead of single string
         foreach (var msg in messages.TakeLast(4))
         {
             Console.WriteLine($"- {msg}");
         }
 
-        // pad if needed (keeps layout stable)
         for (int i = messages.Count; i < 4; i++)
             Console.WriteLine("-");
     }

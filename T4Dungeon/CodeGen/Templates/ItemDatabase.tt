@@ -7,11 +7,19 @@ using System.Collections.Generic;
 
 namespace T4Dungeon.Generated;
 
+public enum EquiptSlot { None, Weapon, Armor, Accessory }
+
 public class ItemDef
 {
     public ItemId Id { get; set; }
     public string Name { get; set; }
+    public EquiptSlot Slot { get; set; }
     public string Description { get; set; }
+    public int AttackBonus { get; set; }
+    public int DefenseBonus { get; set; }
+    public List<SkillId> GrantedSkills { get; set; } = new();
+    public bool IsStackable { get; set; }
+    public bool IsConsumable { get; set; }
 }
 
 public static class ItemDatabase
@@ -20,7 +28,6 @@ public static class ItemDatabase
     {
 <#
     var templateDir = Path.GetDirectoryName(Host.TemplateFile);
-    // Matches the path logic in your ItemIds.tt
     var path = Path.GetFullPath(Path.Combine(templateDir, @"..\..\Data\Items\items.xml"));
     var doc = new XmlDocument();
     doc.Load(path);
@@ -31,7 +38,18 @@ public static class ItemDatabase
         var node = nodes[i];
         var nameValue = node.Attributes["Name"].Value;
         var cleanName = nameValue.Replace(" ", "");
-        var description = node.Attributes["Description"]?.Value ?? "No description available.";
+        var description = node.Attributes["Description"]?.Value ?? "No description.";
+        var slotValue = node.Attributes["Slot"]?.Value ?? "None";
+        
+        // New Flags: Parsing strings "true"/"false" from XML to bool
+        var isStackable = (node.Attributes["IsStackable"]?.Value ?? "false").ToLower();
+        var isConsumable = (node.Attributes["IsConsumable"]?.Value ?? "false").ToLower();
+
+        var statsNode = node.SelectSingleNode("Stats");
+        var attackBonus = statsNode?.Attributes["AttackBonus"]?.Value ?? "0";
+        var defenseBonus = statsNode?.Attributes["DefenseBonus"]?.Value ?? "0";
+
+        var skillNodes = node.SelectNodes("Skill");
 #>
         {
             ItemId.<#= cleanName #>,
@@ -39,7 +57,18 @@ public static class ItemDatabase
             {
                 Id = ItemId.<#= cleanName #>,
                 Name = "<#= nameValue #>",
-                Description = "<#= description #>"
+                Slot = EquiptSlot.<#= slotValue #>,
+                Description = "<#= description #>",
+                AttackBonus = <#= attackBonus #>,
+                DefenseBonus = <#= defenseBonus #>,
+                IsStackable = <#= isStackable #>,
+                IsConsumable = <#= isConsumable #>,
+                GrantedSkills = new List<SkillId> { <# 
+                    for(int j=0; j < skillNodes.Count; j++) { 
+                        var skillName = skillNodes[j].Attributes["Name"].Value.Replace(" ", "");
+                        #>SkillId.<#= skillName #><#= j < skillNodes.Count - 1 ? ", " : "" #><# 
+                    } 
+                #> }
             }
         }<#= i < nodes.Count - 1 ? "," : "" #>
 <#

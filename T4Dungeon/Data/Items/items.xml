@@ -1,17 +1,95 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Items>
+  <Equipment>
+    <Item Id="1001" Name="Rusty Dagger" Slot="Weapon" IsStackable="false" IsConsumable="false" Description="Better than nothing.">
+      <Stats AttackBonus="2" />
+    </Item>
+    <Item Id="1002" Name="Iron Sword" Slot="Weapon" IsStackable="false" IsConsumable="false" Description="Reliable steel.">
+      <Stats AttackBonus="5" />
+    </Item>
+    <Item Id="1003" Name="Warhammer" Slot="Weapon" IsStackable="false" IsConsumable="false" Description="Heavy and brutal.">
+      <Stats AttackBonus="9" />
+      <Skill Name="Cleave" />
+    </Item>
+    <Item Id="1004" Name="Wizard Staff" Slot="Weapon" IsStackable="false" IsConsumable="false" Description="Channels arcane energy.">
+      <Stats AttackBonus="3" />
+      <Skill Name="Fireball" />
+    </Item>
+    <Item Id="1005" Name="Longbow" Slot="Weapon" IsStackable="false" IsConsumable="false" Description="Shoot from afar.">
+      <Stats AttackBonus="6" />
+      <Skill Name="Quick Shot" />
+    </Item>
+    <Item Id="1006" Name="Excalibur" Slot="Weapon" IsStackable="false" IsConsumable="false" Description="The legendary blade.">
+      <Stats AttackBonus="25" />
+      <Skill Name="Holy Light" />
+    </Item>
 
-  <Item Id="1001" Name="Iron Sword" Slot="Weapon">
-    <Stats Attack="5" />
-  </Item>
+    <Item Id="1101" Name="Cloth Tunic" Slot="Armor" IsStackable="false" IsConsumable="false" Description="Very breezy.">
+      <Stats DefenseBonus="1" />
+    </Item>
+    <Item Id="1102" Name="Leather Armor" Slot="Armor" IsStackable="false" IsConsumable="false" Description="Light and flexible.">
+      <Stats DefenseBonus="4" />
+    </Item>
+    <Item Id="1103" Name="Chainmail" Slot="Armor" IsStackable="false" IsConsumable="false" Description="Solid protection.">
+      <Stats DefenseBonus="8" />
+    </Item>
+    <Item Id="1104" Name="Plate Armor" Slot="Armor" IsStackable="false" IsConsumable="false" Description="A walking fortress.">
+      <Stats DefenseBonus="15" />
+    </Item>
+    <Item Id="1105" Name="Wooden Shield" Slot="Armor" IsStackable="false" IsConsumable="false" Description="A sturdy plank.">
+      <Stats DefenseBonus="3" />
+      <Skill Name="Shield Bash" />
+    </Item>
+    <Item Id="1106" Name="Dragon Scale" Slot="Armor" IsStackable="false" IsConsumable="false" Description="Impenetrable hide.">
+      <Stats DefenseBonus="22" />
+    </Item>
 
-  <Item Id="1002" Name="Wooden Shield" Slot="Offhand">
-    <Stats Defense="3" />
-  </Item>
+    <Item Id="1201" Name="Old Penny" Slot="Accessory" IsStackable="false" IsConsumable="false" Description="Might be lucky.">
+      <Stats DefenseBonus="1" />
+    </Item>
+    <Item Id="1202" Name="Apprentice Ring" Slot="Accessory" IsStackable="false" IsConsumable="false" Description="A student's trinket.">
+      <Stats AttackBonus="1" />
+      <Skill Name="Meditate" />
+    </Item>
+    <Item Id="1203" Name="Iron Band" Slot="Accessory" IsStackable="false" IsConsumable="false" Description="Increases grip strength.">
+      <Stats AttackBonus="2" />
+    </Item>
+    <Item Id="1204" Name="Amulet of Life" Slot="Accessory" IsStackable="false" IsConsumable="false" Description="Faintly glowing.">
+      <Stats DefenseBonus="2" />
+      <Skill Name="Heal" />
+    </Item>
+    <Item Id="1205" Name="Chaos Orb" Slot="Accessory" IsStackable="false" IsConsumable="false" Description="It whispers to you.">
+      <Stats AttackBonus="10" />
+      <Skill Name="Bloodlust" />
+    </Item>
+    <Item Id="1206" Name="Storm Pendant" Slot="Accessory" IsStackable="false" IsConsumable="false" Description="Crackles with static.">
+      <Stats AttackBonus="5" />
+      <Skill Name="Lightning Bolt" />
+    </Item>
+    <Item Id="1207" Name="Shield Ring" Slot="Accessory" IsStackable="false" IsConsumable="false" Description="Provides a tiny barrier.">
+      <Stats DefenseBonus="5" />
+    </Item>
+    <Item Id="1208" Name="Berserker Charm" Slot="Accessory" IsStackable="false" IsConsumable="false" Description="Reduces defense for power.">
+      <Stats AttackBonus="15" DefenseBonus="-5" />
+    </Item>
+  </Equipment>
 
-  <Item Id="1003" Name="Apprentice Ring" Slot="Accessory">
-    <Stats Mana="10" />
-    <Skill Id="Fireball" />
-  </Item>
-
+  <Consumables>
+    <Item Id="2001" Name="Health Potion" Slot="None" IsStackable="true" IsConsumable="true" Description="Tastes like cherries and magic.">
+      <Stats AttackBonus="0" DefenseBonus="0" />
+      <Skill Name="Heal" />
+    </Item>
+    <Item Id="2002" Name="Mana Potion" Slot="None" IsStackable="true" IsConsumable="true" Description="A shimmering blue liquid.">
+      <Stats AttackBonus="0" DefenseBonus="0" />
+      <Skill Name="Meditate" />
+    </Item>
+    <Item Id="2003" Name="Fire Scroll" Slot="None" IsStackable="true" IsConsumable="true" Description="Single-use pyrotechnics.">
+      <Stats AttackBonus="0" DefenseBonus="0" />
+      <Skill Name="Fireball" />
+    </Item>
+    <Item Id="2004" Name="Iron Skin Elixir" Slot="None" IsStackable="true" IsConsumable="true" Description="Hardens the skin temporarily.">
+      <Stats AttackBonus="0" DefenseBonus="0" />
+      <Skill Name="Shield Bash" />
+    </Item>
+  </Consumables>
 </Items>
