@@ -316,28 +316,53 @@ namespace T4Dungeon.Game.Core
 
         private void HandleInput()
         {
-            while (true)
+            int blinkStage = 0;
+            // We'll keep track of where we are so we can overwrite the same line
+            int promptLine = Console.CursorTop;
+
+            while (!Console.KeyAvailable)
             {
-                var key = Console.ReadKey(true);
+                Console.SetCursorPosition(0, promptLine);
 
-                int index = key.KeyChar - '1';
+                // Slightly abrasive color: DarkCyan or Magenta
+                Console.ForegroundColor = (blinkStage % 2 == 0) ? ConsoleColor.DarkCyan : ConsoleColor.Cyan;
 
-                if (index < 0 || index >= _ui.Options.Count)
-                {
-                    Log("Invalid Option", true);
-                    break; 
-                }
+                Console.Write(" >> CHOOSE AN OPTION [1-" + _ui.Options.Count + "] <<   ");
+                Console.ResetColor();
 
-                var option = _ui.Options[index];
-
-                if (!option.IsImplemented)
-                {
-                    Log("Option not implemented.");
-                    break; 
-                }
-                option.Action?.Invoke();
-                break;
+                Thread.Sleep(400); // Pulse speed
+                blinkStage++;
             }
+
+            // Once a key is pressed, handle it as before
+            var key = Console.ReadKey(true);
+            ClearLine(promptLine); // Clean up the prompt before moving on
+
+            int index = key.KeyChar - '1';
+
+            if (index < 0 || index >= _ui.Options.Count)
+            {
+                Log("Invalid Option", true);
+                return;
+            }
+
+            var option = _ui.Options[index];
+
+            if (!option.IsImplemented)
+            {
+                Log("Option not implemented.");
+                return;
+            }
+
+            option.Action?.Invoke();
+        }
+
+        // Simple helper to keep the console clean
+        private void ClearLine(int row)
+        {
+            Console.SetCursorPosition(0, row);
+            Console.Write(new string(' ', Console.WindowWidth));
+            Console.SetCursorPosition(0, row);
         }
 
         private void Log(string msg, bool waitForKey = true)

@@ -84,6 +84,19 @@ public static class ConsoleRenderer
         Console.WriteLine("\t\t\t\t---------------------");
     }
 
+    private static void DrawPrompt()
+    {
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+        Console.Write("\n  >> ");
+        Console.ForegroundColor = ConsoleColor.Gray;
+        Console.Write("Select an action [");
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.Write("1-5");
+        Console.ForegroundColor = ConsoleColor.Gray;
+        Console.WriteLine("] to continue...");
+        Console.ResetColor();
+    }
+
     private static void DrawInventory(Player player, bool showInventory)
     {
         if(!showInventory) return;
