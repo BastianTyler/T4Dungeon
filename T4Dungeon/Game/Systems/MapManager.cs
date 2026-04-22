@@ -45,8 +45,13 @@ namespace T4Dungeon.Game.Systems
 
         public void PlaceExit()
         {
-            int x = _rng.Next(_width);
-            int y = _rng.Next(_height);
+            int x, y;
+            do
+            {
+                x = _rng.Next(_width);
+                y = _rng.Next(_height);
+            } while (x == 0 && y == 0); // Don't put the exit on the start tile!
+
             ExitPosition = new Vector2Int(x, y);
             Grid[x, y].Type = CellType.Exit;
         }
@@ -76,6 +81,11 @@ namespace T4Dungeon.Game.Systems
         private CellType RollCellType()
         {
             int roll = _rng.Next(100);
+
+            if (roll < 80) return CellType.Shop;       // 80% Shop
+            if (roll < 90) return CellType.Treasure;   // 10% Treasure
+
+            return CellType.Empty;
 
             if (roll < 40) return CellType.Combat;     // 40%
             if (roll < 60) return CellType.Empty;      // 20%

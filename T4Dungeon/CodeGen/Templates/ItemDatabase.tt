@@ -20,6 +20,9 @@ public class ItemDef
     public List<SkillId> GrantedSkills { get; set; } = new();
     public bool IsStackable { get; set; }
     public bool IsConsumable { get; set; }
+    // --- SHOP UPDATES ---
+    public int BasePrice { get; set; }
+    public string Category { get; set; }
 }
 
 public static class ItemDatabase
@@ -41,9 +44,13 @@ public static class ItemDatabase
         var description = node.Attributes["Description"]?.Value ?? "No description.";
         var slotValue = node.Attributes["Slot"]?.Value ?? "None";
         
-        // New Flags: Parsing strings "true"/"false" from XML to bool
+        // Parsing existing flags
         var isStackable = (node.Attributes["IsStackable"]?.Value ?? "false").ToLower();
         var isConsumable = (node.Attributes["IsConsumable"]?.Value ?? "false").ToLower();
+
+        // --- SHOP UPDATES: Parsing new attributes ---
+        var basePrice = node.Attributes["BasePrice"]?.Value ?? "0";
+        var category = node.Attributes["Category"]?.Value ?? "None";
 
         var statsNode = node.SelectSingleNode("Stats");
         var attackBonus = statsNode?.Attributes["AttackBonus"]?.Value ?? "0";
@@ -63,6 +70,8 @@ public static class ItemDatabase
                 DefenseBonus = <#= defenseBonus #>,
                 IsStackable = <#= isStackable #>,
                 IsConsumable = <#= isConsumable #>,
+                BasePrice = <#= basePrice #>,
+                Category = "<#= category #>",
                 GrantedSkills = new List<SkillId> { <# 
                     for(int j=0; j < skillNodes.Count; j++) { 
                         var skillName = skillNodes[j].Attributes["Name"].Value.Replace(" ", "");

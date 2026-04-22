@@ -2,6 +2,7 @@
 using T4Dungeon.Game.Systems;
 using T4Dungeon.Game.Utils;
 using T4Dungeon.Generated;
+using static T4Dungeon.Game.Models.ShopSlot;
 
 namespace T4Dungeon.Game.Core
 {
@@ -16,6 +17,7 @@ namespace T4Dungeon.Game.Core
 
         private readonly List<string> _messages = new(); 
         private bool _showInventory = false;
+        private ShopInstance _currentShop;
 
         public void Run()
         {
@@ -31,13 +33,18 @@ namespace T4Dungeon.Game.Core
                         break;
 
                     case GameState.Running:
-                        ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, _showInventory);
+                        ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, _showInventory, false);
                         _messages.Clear();
                         HandleInput();
                         break;
 
                     case GameState.Combat:
                         RunCombatLoop();
+                        break;
+
+                    case GameState.Shop:
+                        ConsoleRenderer.Render(null, _ui, _messages, _player, false, false, null);
+                        HandleInput();
                         break;
                 }
             }
@@ -212,6 +219,95 @@ namespace T4Dungeon.Game.Core
         }
 
 
+        #region Shop Logic
+
+        private void GenerateShop()
+        {
+            _currentShop = new ShopInstance();
+            Random rng = new Random();
+            var allItems = ItemDatabase.Items.Values.ToList();
+
+            // 1. Guaranteed Healing Item
+            var heal = allItems.FirstOrDefault(i => i.Category == "Healing") ?? allItems[0];
+            _currentShop.Inventory.Add(new ShopSlot(heal));
+
+            // 2. Guaranteed Buff Item
+            var buff = allItems.FirstOrDefault(i => i.Category == "Buff") ?? allItems[1];
+            _currentShop.Inventory.Add(new ShopSlot(buff));
+
+            // 3. Fill up to 8 random items (No duplicates)
+            while (_currentShop.Inventory.Count < 8)
+            {
+                var rand = allItems[rng.Next(allItems.Count)];
+                if (!_currentShop.Inventory.Any(s => s.ItemId == rand.Id))
+                    _currentShop.Inventory.Add(new ShopSlot(rand));
+            }
+
+            // 4. The 90% Discount Logic
+            var discountSlot = _currentShop.Inventory[rng.Next(_currentShop.Inventory.Count)];
+            discountSlot.Price = (int)(discountSlot.Price * 0.1);
+            discountSlot.IsDiscounted = true;
+
+            SetShopWelcomeMenu();
+        }
+
+        private void SetShopWelcomeMenu()
+        {
+            _ui = new UIContext();
+            _ui.Options = new List<MenuOption>
+            {
+                new MenuOption { Text = "Browse Wares", Action = SetShopBuyMenu },
+                new MenuOption { Text = "Leave Shop (Merchant will leave)", Action = ExitShop }
+            };
+        }
+
+        private void SetShopBuyMenu()
+        {
+            _ui.Options = new List<MenuOption>();
+
+            foreach (var slot in _currentShop.Inventory)
+            {
+                var item = ItemDatabase.Items[slot.ItemId];
+                string status = slot.IsSold ? "[SOLD OUT]" : $"{slot.Price}g";
+                if (slot.IsDiscounted && !slot.IsSold) status += " %SALE%";
+
+                _ui.Options.Add(new MenuOption
+                {
+                    Text = $"{item.Name.PadRight(18)} | {status}",
+                    Action = () => BuyItem(slot),
+                    IsImplemented = !slot.IsSold
+                });
+            }
+
+            _ui.Options.Add(new MenuOption { Text = "Back", Action = SetShopWelcomeMenu });
+        }
+
+        private void BuyItem(ShopSlot slot)
+        {
+            if (_player.Gold >= slot.Price)
+            {
+                _player.Gold -= slot.Price;
+                _player.Inventory.Add(slot.ItemId, 1);
+                slot.IsSold = true;
+                Log($"Purchased {ItemDatabase.Items[slot.ItemId].Name}!", true);
+                SetShopBuyMenu();
+            }
+            else
+            {
+                Log("Not enough gold!", true);
+            }
+        }
+
+        private void ExitShop()
+        {
+            _state = GameState.Running;
+            var cell = _mapManager.Grid[_mapManager.PlayerPosition.X, _mapManager.PlayerPosition.Y];
+            ClearCell(cell); // Shop disappears forever
+            SetMainMenu();
+        }
+
+        #endregion
+
         private void SetSkillMenu()
         {
             _ui.Options = new List<MenuOption>
@@ -245,7 +341,7 @@ namespace T4Dungeon.Game.Core
         }
         private void RunCombatLoop()
         {
-            ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, false);
+            ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, false, true, _combat.Enemy);
 
             HandleInput();
 
@@ -264,6 +360,12 @@ namespace T4Dungeon.Game.Core
             
             switch (cell.Type)
             {
+                case CellType.Exit:
+                    Log("You found the exit! The light of the outside world blinds you...", true);
+                    Log("YOU WIN!", true);
+                    _state = GameState.Exit; // This will break the while loop in Run()
+                    break;
+
                 case CellType.Combat:
                    
                     Log(eventMsg, true);
@@ -273,6 +375,12 @@ namespace T4Dungeon.Game.Core
                 case CellType.Treasure:
                     Log(eventMsg, true);
                     ClearCell(cell); 
+                    break;
+
+                case CellType.Shop:
+                    Log(eventMsg, true);
+                    GenerateShop(); // Build the stock
+                    _state = GameState.Shop; // Enter shop state
                     break;
 
                 default:
@@ -310,28 +418,53 @@ namespace T4Dungeon.Game.Core
 
         private void HandleInput()
         {
-            while (true)
+            int blinkStage = 0;
+            // We'll keep track of where we are so we can overwrite the same line
+            int promptLine = Console.CursorTop;
+
+            while (!Console.KeyAvailable)
             {
-                var key = Console.ReadKey(true);
+                Console.SetCursorPosition(0, promptLine);
 
-                int index = key.KeyChar - '1';
+                // Slightly abrasive color: DarkCyan or Magenta
+                Console.ForegroundColor = (blinkStage % 2 == 0) ? ConsoleColor.DarkCyan : ConsoleColor.Cyan;
 
-                if (index < 0 || index >= _ui.Options.Count)
-                {
-                    Log("Invalid Option", true);
-                    break; 
-                }
+                Console.Write(" >> CHOOSE AN OPTION [1-" + _ui.Options.Count + "] <<   ");
+                Console.ResetColor();
 
-                var option = _ui.Options[index];
-
-                if (!option.IsImplemented)
-                {
-                    Log("Option not implemented.");
-                    break; 
-                }
-                option.Action?.Invoke();
-                break;
+                Thread.Sleep(400); // Pulse speed
+                blinkStage++;
             }
+
+            // Once a key is pressed, handle it as before
+            var key = Console.ReadKey(true);
+            ClearLine(promptLine); // Clean up the prompt before moving on
+
+            int index = key.KeyChar - '1';
+
+            if (index < 0 || index >= _ui.Options.Count)
+            {
+                Log("Invalid Option", true);
+                return;
+            }
+
+            var option = _ui.Options[index];
+
+            if (!option.IsImplemented)
+            {
+                Log("Option not implemented.");
+                return;
+            }
+
+            option.Action?.Invoke();
+        }
+
+        // Simple helper to keep the console clean
+        private void ClearLine(int row)
+        {
+            Console.SetCursorPosition(0, row);
+            Console.Write(new string(' ', Console.WindowWidth));
+            Console.SetCursorPosition(0, row);
         }
 
         private void Log(string msg, bool waitForKey = true)
@@ -339,8 +472,12 @@ namespace T4Dungeon.Game.Core
             _messages.Add(msg);
             if (_messages.Count > 10) _messages.RemoveAt(0);
 
-            ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, _showInventory);
+            bool isCombat = (_state == GameState.Combat);
+            bool isShop = (_state == GameState.Shop);
+            Enemy? currentEnemy = isCombat ? _combat?.Enemy : null;
+            var mapToRender = isShop ? null : _mapManager;
 
+            ConsoleRenderer.Render(mapToRender, _ui, _messages, _player, _showInventory, isCombat, currentEnemy);
             if (waitForKey)
             {
                 Console.WriteLine("\n -- Press any key to continue --");

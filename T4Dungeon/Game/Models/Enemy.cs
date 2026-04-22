@@ -7,6 +7,7 @@
         public string Name { get; set; }
         public int HP { get; set; }
         public int Attack { get; set; }
+        public List<MoveDef> Moves { get; set; } = new();
 
         public Enemy(EnemyId id)
         {
@@ -14,6 +15,7 @@
             Name = def.Name;
             HP = def.HP;
             Attack = def.Attack;
+            Moves = def.Moves;
         }
 
         public Enemy() : this(EnemyId.Slime) { }

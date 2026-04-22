@@ -7,12 +7,33 @@ using System.Collections.Generic;
 
 namespace T4Dungeon.Generated;
 
+public class MoveDef
+{
+    public string Name { get; set; }
+    public string Type { get; set; }
+    public char Key { get; set; }
+    public int TimeLimit { get; set; }
+    public int Goal { get; set; }
+    public int Count { get; set; }
+    public double Target { get; set; }
+    public double Threshold { get; set; }
+}
+
+public class LootItemDef {
+    public ItemId Id { get; set; }
+    public double Chance { get; set; }
+}
+
 public class EnemyDef
 {
     public EnemyId Id { get; set; }
     public string Name { get; set; }
     public int HP { get; set; }
     public int Attack { get; set; }
+    public List<MoveDef> Moves { get; set; } = new();
+    public int MinGold { get; set; }
+    public int MaxGold { get; set; }
+    public List<LootItemDef> LootTable { get; set; } = new();
 }
 
 public static class EnemyDatabase
@@ -32,6 +53,11 @@ public static class EnemyDatabase
         var cleanName = name.Replace(" ", "");
         var hp = node.Attributes["HP"].Value;
         var atk = node.Attributes["Attack"].Value;
+        var minGold = node.Attributes["MinGold"]?.Value ?? "0";
+        var maxGold = node.Attributes["MaxGold"]?.Value ?? "0";
+        
+        var moveNodes = node.SelectNodes("Moves/Move");
+        var lootNodes = node.SelectNodes("LootTable/Item");
 #>
         {
             EnemyId.<#= cleanName #>,
@@ -40,11 +66,52 @@ public static class EnemyDatabase
                 Id = EnemyId.<#= cleanName #>,
                 Name = "<#= name #>",
                 HP = <#= hp #>,
-                Attack = <#= atk #>
+                Attack = <#= atk #>,
+                MinGold = <#= minGold #>,
+                MaxGold = <#= maxGold #>,
+                Moves = new List<MoveDef> 
+                {
+<# 
+                for(int j = 0; j < moveNodes.Count; j++) 
+                { 
+                    var m = moveNodes[j];
+#>
+                    new MoveDef 
+                    { 
+                        Name = "<#= m.Attributes["Name"]?.Value ?? "Attack" #>",
+                        Type = "<#= m.Attributes["Type"]?.Value ?? "Timed" #>",
+                        Key = '<#= m.Attributes["Key"]?.Value ?? "D" #>',
+                        TimeLimit = <#= m.Attributes["TimeLimit"]?.Value ?? "2000" #>,
+                        Goal = <#= m.Attributes["Goal"]?.Value ?? "0" #>,
+                        Count = <#= m.Attributes["Count"]?.Value ?? "0" #>,
+                        Target = <#= m.Attributes["Target"]?.Value ?? "0.5" #>,
+                        Threshold = <#= m.Attributes["Threshold"]?.Value ?? "0.1" #>
+                    }<#= j < moveNodes.Count - 1 ? "," : "" #>
+<# 
+                } // End of Move loop
+#>
+                }, // End of Moves List
+                LootTable = new List<LootItemDef>
+                {
+<# 
+                for(int k = 0; k < lootNodes.Count; k++) 
+                { 
+                    var l = lootNodes[k];
+                    var rawId = l.Attributes["Id"].Value;
+#>
+                    new LootItemDef 
+                    { 
+                        Id = (ItemId)<#= rawId #>, 
+                        Chance = <#= l.Attributes["Chance"]?.Value ?? "0.0" #> 
+                    }<#= k < lootNodes.Count - 1 ? "," : "" #>
+<# 
+                } // End of Loot loop
+#>
+                } // End of LootTable List
             }
         }<#= i < nodes.Count - 1 ? "," : "" #>
 <#
-    }
+    } // End of Enemy loop
 #>
     };
 }

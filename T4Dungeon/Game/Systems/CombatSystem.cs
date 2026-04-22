@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using T4Dungeon.Game.Models;
+using T4Dungeon.Generated;
 
 namespace T4Dungeon.Game.Systems
 {
@@ -52,6 +53,7 @@ namespace T4Dungeon.Game.Systems
 
             if(_enemy.HP <= 0)
             {
+                ProcessLoot();
                 _combatOver = true;
                 _log($"You defeated the {_enemy.Name}!");
                 return true;
@@ -150,34 +152,64 @@ namespace T4Dungeon.Game.Systems
             var start = DateTime.Now;
             int totalBarLength = 30;
             int cursorTop = Console.CursorTop;
+
+            // Calculate integer indices for the visual zone
             int targetIndex = (int)(targetPercent * totalBarLength);
+            int halfZoneWidth = (int)(threshold * totalBarLength);
+
+            // Ensure the zone is at least 1 character wide so it's never impossible
+            if (halfZoneWidth < 1) halfZoneWidth = 1;
+
+            int zoneStart = Math.Max(0, targetIndex - halfZoneWidth);
+            int zoneEnd = Math.Min(totalBarLength - 1, targetIndex + halfZoneWidth);
 
             while (true)
             {
-                // Use Trig to make the bar bounce back and forth
                 double elapsed = (DateTime.Now - start).TotalMilliseconds;
-                double progress = (Math.Sin(elapsed / speedMs * Math.PI * 2) + 1) / 2; // Returns 0 to 1
-
+                // Periodic bounce 0 to 1 to 0
+                double progress = (Math.Sin(elapsed / speedMs * Math.PI * 2) + 1) / 2;
                 int markerIndex = (int)(progress * totalBarLength);
 
-                // Build the visual bar
-                char[] bar = new string('-', totalBarLength).ToCharArray();
-                bar[targetIndex] = 'V'; // The goal
-
-                // Draw the cursor
+                // --- RENDER LOGIC ---
                 Console.SetCursorPosition(0, cursorTop);
-                string visualBar = new string(bar);
-                // We replace the char at markerIndex with a highlight for the player
-                Console.Write($"[ {visualBar.Remove(markerIndex, 1).Insert(markerIndex, "X")} ] - STOP AT V! ");
+                Console.Write("[ ");
+                for (int i = 0; i < totalBarLength; i++)
+                {
+                    if (i == markerIndex)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.Write("X");
+                    }
+                    else if (i == targetIndex)
+                    {
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write("V");
+                    }
+                    else if (i >= zoneStart && i <= zoneEnd)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write("=");
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.Write("-");
+                    }
+                    Console.ResetColor();
+                }
+                Console.Write(" ] - SPACE TO HIT!   ");
 
+                // --- INPUT LOGIC ---
                 if (Console.KeyAvailable)
                 {
                     var key = Console.ReadKey(true).KeyChar;
                     if (char.ToLower(key) == char.ToLower(stopKey))
                     {
-                        double distance = Math.Abs(progress - targetPercent);
+                        // WIN CONDITION: Is the marker index inside the green zone index?
+                        bool isVisualHit = markerIndex >= zoneStart && markerIndex <= zoneEnd;
+
                         ClearLine(cursorTop);
-                        return distance <= threshold;
+                        return isVisualHit;
                     }
                 }
 
@@ -187,26 +219,80 @@ namespace T4Dungeon.Game.Systems
 
         private void EnemyTurn()
         {
-            int moveType = new Random().Next(3);
+            
+            var move = _enemy.Moves[new Random().Next(_enemy.Moves.Count)];
 
-            if (moveType == 0)
+            _log($"{_enemy.Name} uses {move.Name}! PRESS {move.Key}!", false);
+
+            bool success = false;
+
+            
+            switch (move.Type)
             {
-                _log("Quick attack! React!", false);
-                if (TimedInput('d')) _log("Parried!");
-                else TakeDamage();
+                case "Timed":
+                    success = TimedInput(move.Key, move.TimeLimit);
+                    break;
+                case "Mash":
+                    success = MashInput(move.Key, move.Goal, move.TimeLimit);
+                    break;
+                case "SweetSpot":
+                    success = SweetSpotInput(move.Key, move.Target, move.Threshold);
+                    break;
+                case "Sequence":
+                    success = SequenceInput(move.Key, move.Count);
+                    break;
             }
-            else if (moveType == 1)
+
+            if (success)
             {
-                _log("The enemy is crushing you! MASH SPACE!", false);
-                if (MashInput(' ', 15)) _log("You pushed them back!");
-                else TakeDamage();
+                _log($"Successfully countered {move.Name}!");
             }
             else
             {
-                _log("Powerful swing incoming! Time your block!", false);
-                if (SweetSpotInput('d', 0.8, 0.08)) _log("Perfect block!");
-                else TakeDamage();
+                _player.TakeDamage(_enemy.Attack);
+                _log($"Failed! You took damage!");
             }
+        }
+
+        private void ProcessLoot()
+        {
+            Random rng = new Random();
+
+            // 1. Calculate Gold
+            // We fetch these values from the enemy definition
+            var def = EnemyDatabase.Enemies.Values.First(e => e.Name == _enemy.Name);
+            int goldDropped = rng.Next(def.MinGold, def.MaxGold + 1);
+
+            _player.Gold += goldDropped;
+            _log($"The {_enemy.Name} dropped {goldDropped} gold!", true);
+
+            // 2. Roll for Items
+            foreach (var loot in def.LootTable)
+            {
+                if (rng.NextDouble() <= loot.Chance)
+                {
+                    _player.Inventory.Add(loot.Id, 1);
+                    var itemDef = ItemDatabase.Items[loot.Id];
+                    _log($"LOOTED: {itemDef.Name}!", true);
+                }
+            }
+        }
+
+        private bool SequenceInput(char key, int count, int timeLimitPerPress = 1000)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                _log($"({i + 1}/{count}) QUICK! PRESS {char.ToUpper(key)}!", false);
+
+                if (!TimedInput(key, timeLimitPerPress))
+                {
+                    return false;
+                }
+
+                // Small buffer so one key press doesn't count for two
+                System.Threading.Thread.Sleep(100);
+            }
+            return true;
         }
 
         private void TakeDamage()

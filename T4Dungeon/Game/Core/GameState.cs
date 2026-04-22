@@ -9,6 +9,7 @@ namespace T4Dungeon.Game.Core
         NewGame,
         Running,
         Combat,
+        Shop,
         GameOver,
         Exit
     }

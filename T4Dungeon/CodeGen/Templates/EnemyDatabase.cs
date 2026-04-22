@@ -2,12 +2,33 @@
 
 namespace T4Dungeon.Generated;
 
+public class MoveDef
+{
+    public string Name { get; set; }
+    public string Type { get; set; }
+    public char Key { get; set; }
+    public int TimeLimit { get; set; }
+    public int Goal { get; set; }
+    public int Count { get; set; }
+    public double Target { get; set; }
+    public double Threshold { get; set; }
+}
+
+public class LootItemDef {
+    public ItemId Id { get; set; }
+    public double Chance { get; set; }
+}
+
 public class EnemyDef
 {
     public EnemyId Id { get; set; }
     public string Name { get; set; }
     public int HP { get; set; }
     public int Attack { get; set; }
+    public List<MoveDef> Moves { get; set; } = new();
+    public int MinGold { get; set; }
+    public int MaxGold { get; set; }
+    public List<LootItemDef> LootTable { get; set; } = new();
 }
 
 public static class EnemyDatabase
@@ -21,7 +42,31 @@ public static class EnemyDatabase
                 Id = EnemyId.Slime,
                 Name = "Slime",
                 HP = 20,
-                Attack = 5
+                Attack = 5,
+                MinGold = 2,
+                MaxGold = 6,
+                Moves = new List<MoveDef> 
+                {
+                    new MoveDef 
+                    { 
+                        Name = "Slime Ram",
+                        Type = "Timed",
+                        Key = 'D',
+                        TimeLimit = 2500,
+                        Goal = 0,
+                        Count = 0,
+                        Target = 0.5,
+                        Threshold = 0.1
+                    }
+                }, // End of Moves List
+                LootTable = new List<LootItemDef>
+                {
+                    new LootItemDef 
+                    { 
+                        Id = (ItemId)3001, 
+                        Chance = 0.2 
+                    }
+                } // End of LootTable List
             }
         },
         {
@@ -31,7 +76,42 @@ public static class EnemyDatabase
                 Id = EnemyId.Goblin,
                 Name = "Goblin",
                 HP = 45,
-                Attack = 12
+                Attack = 12,
+                MinGold = 10,
+                MaxGold = 20,
+                Moves = new List<MoveDef> 
+                {
+                    new MoveDef 
+                    { 
+                        Name = "Quick Stab",
+                        Type = "Timed",
+                        Key = 'D',
+                        TimeLimit = 1200,
+                        Goal = 0,
+                        Count = 0,
+                        Target = 0.5,
+                        Threshold = 0.1
+                    },
+                    new MoveDef 
+                    { 
+                        Name = "Dagger Throw",
+                        Type = "SweetSpot",
+                        Key = 'R',
+                        TimeLimit = 2000,
+                        Goal = 0,
+                        Count = 0,
+                        Target = 0.5,
+                        Threshold = 0.1
+                    }
+                }, // End of Moves List
+                LootTable = new List<LootItemDef>
+                {
+                    new LootItemDef 
+                    { 
+                        Id = (ItemId)1005, 
+                        Chance = 0.05 
+                    }
+                } // End of LootTable List
             }
         },
         {
@@ -41,7 +121,47 @@ public static class EnemyDatabase
                 Id = EnemyId.Orc,
                 Name = "Orc",
                 HP = 100,
-                Attack = 25
+                Attack = 25,
+                MinGold = 35,
+                MaxGold = 60,
+                Moves = new List<MoveDef> 
+                {
+                    new MoveDef 
+                    { 
+                        Name = "Crushing Club",
+                        Type = "Mash",
+                        Key = 'B',
+                        TimeLimit = 3000,
+                        Goal = 15,
+                        Count = 0,
+                        Target = 0.5,
+                        Threshold = 0.1
+                    },
+                    new MoveDef 
+                    { 
+                        Name = "Double Swing",
+                        Type = "Sequence",
+                        Key = 'B',
+                        TimeLimit = 2000,
+                        Goal = 0,
+                        Count = 2,
+                        Target = 0.5,
+                        Threshold = 0.1
+                    }
+                }, // End of Moves List
+                LootTable = new List<LootItemDef>
+                {
+                    new LootItemDef 
+                    { 
+                        Id = (ItemId)1001, 
+                        Chance = 0.1 
+                    },
+                    new LootItemDef 
+                    { 
+                        Id = (ItemId)2001, 
+                        Chance = 0.15 
+                    }
+                } // End of LootTable List
             }
         }
     };
