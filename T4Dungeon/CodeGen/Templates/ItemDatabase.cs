@@ -15,6 +15,9 @@ public class ItemDef
     public List<SkillId> GrantedSkills { get; set; } = new();
     public bool IsStackable { get; set; }
     public bool IsConsumable { get; set; }
+    // --- SHOP UPDATES ---
+    public int BasePrice { get; set; }
+    public string Category { get; set; }
 }
 
 public static class ItemDatabase
@@ -33,6 +36,8 @@ public static class ItemDatabase
                 DefenseBonus = 0,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 40,
+                Category = "Weapon",
                 GrantedSkills = new List<SkillId> {  }
             }
         },
@@ -48,6 +53,8 @@ public static class ItemDatabase
                 DefenseBonus = 0,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 120,
+                Category = "Weapon",
                 GrantedSkills = new List<SkillId> {  }
             }
         },
@@ -63,6 +70,8 @@ public static class ItemDatabase
                 DefenseBonus = 0,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 250,
+                Category = "Weapon",
                 GrantedSkills = new List<SkillId> { SkillId.Cleave }
             }
         },
@@ -78,6 +87,8 @@ public static class ItemDatabase
                 DefenseBonus = 0,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 180,
+                Category = "Weapon",
                 GrantedSkills = new List<SkillId> { SkillId.Fireball }
             }
         },
@@ -93,6 +104,8 @@ public static class ItemDatabase
                 DefenseBonus = 0,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 160,
+                Category = "Weapon",
                 GrantedSkills = new List<SkillId> { SkillId.QuickShot }
             }
         },
@@ -108,6 +121,8 @@ public static class ItemDatabase
                 DefenseBonus = 0,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 2000,
+                Category = "Weapon",
                 GrantedSkills = new List<SkillId> { SkillId.HolyLight }
             }
         },
@@ -123,6 +138,8 @@ public static class ItemDatabase
                 DefenseBonus = 1,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 30,
+                Category = "Armor",
                 GrantedSkills = new List<SkillId> {  }
             }
         },
@@ -138,6 +155,8 @@ public static class ItemDatabase
                 DefenseBonus = 4,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 100,
+                Category = "Armor",
                 GrantedSkills = new List<SkillId> {  }
             }
         },
@@ -153,6 +172,8 @@ public static class ItemDatabase
                 DefenseBonus = 8,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 300,
+                Category = "Armor",
                 GrantedSkills = new List<SkillId> {  }
             }
         },
@@ -168,6 +189,8 @@ public static class ItemDatabase
                 DefenseBonus = 15,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 750,
+                Category = "Armor",
                 GrantedSkills = new List<SkillId> {  }
             }
         },
@@ -183,6 +206,8 @@ public static class ItemDatabase
                 DefenseBonus = 3,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 80,
+                Category = "Armor",
                 GrantedSkills = new List<SkillId> { SkillId.ShieldBash }
             }
         },
@@ -198,6 +223,8 @@ public static class ItemDatabase
                 DefenseBonus = 22,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 1500,
+                Category = "Armor",
                 GrantedSkills = new List<SkillId> {  }
             }
         },
@@ -213,6 +240,8 @@ public static class ItemDatabase
                 DefenseBonus = 1,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 10,
+                Category = "Accessory",
                 GrantedSkills = new List<SkillId> {  }
             }
         },
@@ -228,6 +257,8 @@ public static class ItemDatabase
                 DefenseBonus = 0,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 90,
+                Category = "Accessory",
                 GrantedSkills = new List<SkillId> { SkillId.Meditate }
             }
         },
@@ -243,6 +274,8 @@ public static class ItemDatabase
                 DefenseBonus = 0,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 110,
+                Category = "Accessory",
                 GrantedSkills = new List<SkillId> {  }
             }
         },
@@ -258,6 +291,8 @@ public static class ItemDatabase
                 DefenseBonus = 2,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 220,
+                Category = "Accessory",
                 GrantedSkills = new List<SkillId> { SkillId.Heal }
             }
         },
@@ -273,6 +308,8 @@ public static class ItemDatabase
                 DefenseBonus = 0,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 1200,
+                Category = "Accessory",
                 GrantedSkills = new List<SkillId> { SkillId.Bloodlust }
             }
         },
@@ -288,6 +325,8 @@ public static class ItemDatabase
                 DefenseBonus = 0,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 600,
+                Category = "Accessory",
                 GrantedSkills = new List<SkillId> { SkillId.LightningBolt }
             }
         },
@@ -303,6 +342,8 @@ public static class ItemDatabase
                 DefenseBonus = 5,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 450,
+                Category = "Accessory",
                 GrantedSkills = new List<SkillId> {  }
             }
         },
@@ -318,6 +359,8 @@ public static class ItemDatabase
                 DefenseBonus = -5,
                 IsStackable = false,
                 IsConsumable = false,
+                BasePrice = 550,
+                Category = "Accessory",
                 GrantedSkills = new List<SkillId> {  }
             }
         },
@@ -333,6 +376,8 @@ public static class ItemDatabase
                 DefenseBonus = 0,
                 IsStackable = true,
                 IsConsumable = true,
+                BasePrice = 25,
+                Category = "Healing",
                 GrantedSkills = new List<SkillId> { SkillId.Heal }
             }
         },
@@ -348,6 +393,8 @@ public static class ItemDatabase
                 DefenseBonus = 0,
                 IsStackable = true,
                 IsConsumable = true,
+                BasePrice = 25,
+                Category = "Buff",
                 GrantedSkills = new List<SkillId> { SkillId.Meditate }
             }
         },
@@ -363,6 +410,8 @@ public static class ItemDatabase
                 DefenseBonus = 0,
                 IsStackable = true,
                 IsConsumable = true,
+                BasePrice = 60,
+                Category = "Consumable",
                 GrantedSkills = new List<SkillId> { SkillId.Fireball }
             }
         },
@@ -378,6 +427,8 @@ public static class ItemDatabase
                 DefenseBonus = 0,
                 IsStackable = true,
                 IsConsumable = true,
+                BasePrice = 45,
+                Category = "Buff",
                 GrantedSkills = new List<SkillId> { SkillId.ShieldBash }
             }
         }
