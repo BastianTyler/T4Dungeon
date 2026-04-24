@@ -1,0 +1,30 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ master, beta/v1.00 ] # Triggers on both master and your current beta branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x' 
+
+      - name: Publish App
+        # This builds the Web project specifically
+        run: dotnet publish RedTowerAdventure.Web/RedTowerAdventure.Web.csproj -c Release -o release
+
+      - name: Fix Base Path
+        # CRITICAL: Without a custom domain, GitHub needs to know the sub-folder is /T4Dungeon/
+        run: sed -i 's/<base href="\/" \/>/<base href="\/T4Dungeon\/" \/>/g' release/wwwroot/index.html
+
+      - name: Commit and Push to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: release/wwwroot
+          branch: gh-pages # The output goes to a clean, hidden branch
