@@ -4,10 +4,12 @@ on:
   push:
     branches: [ master, beta/v1.00 ]
 
+permissions:
+  contents: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -17,19 +19,23 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Publish App
-        # We are publishing directly to the 'output' folder to keep it clean
         run: dotnet publish RedTowerAdventure.Web/RedTowerAdventure.Web.csproj -c Release -o output /p:BlazorEnableCompression=false
 
-      - name: Fix Base Path
-        # Updated path to match the output folder directly
-        run: sed -i 's|<base href=".*" />|<base href="/T4Dungeon/" />|g' output/wwwroot/index.html
+      - name: Rewrite base href
+        uses: SteveSandersonMS/ghaction-rewrite-base-href@v1.1.0
+        with:
+          html_path: output/wwwroot/index.html
+          base_href: /T4Dungeon/
+
+      - name: Copy index.html to 404.html
+        run: cp output/wwwroot/index.html output/wwwroot/404.html
 
       - name: Add .nojekyll
         run: touch output/wwwroot/.nojekyll
 
-      - name: Commit and Push to GitHub Pages
+      - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: output/wwwroot # This points to the actual web files
+          folder: output/wwwroot
           branch: gh-pages
           token: ${{ secrets.GITHUB_TOKEN }}
