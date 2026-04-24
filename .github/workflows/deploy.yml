@@ -20,11 +20,14 @@ jobs:
         run: dotnet publish RedTowerAdventure.Web/RedTowerAdventure.Web.csproj -c Release -o output /p:BlazorEnableCompression=false
 
       - name: Fix Base Path
-        # This ensures the browser looks in the /T4Dungeon/ subfolder for the game files
-        run: sed -i 's/<base href="\/" \/>/<base href="\/T4Dungeon\/" \/>/g' output/wwwroot/index.html
+        # This matches <base href="..." /> regardless of the current content or spacing
+        run: sed -i 's|<base href=".*" />|<base href="/T4Dungeon/" />|g' output/wwwroot/index.html
+
+      - name: Add .nojekyll
+        # This is mandatory for Blazor on GitHub Pages to serve the _framework folder
+        run: touch output/wwwroot/.nojekyll
 
       - name: Copy index to 404
-        # This prevents the "MIME type" error on page refreshes
         run: cp output/wwwroot/index.html output/wwwroot/404.html
 
       - name: Commit and Push to GitHub Pages
