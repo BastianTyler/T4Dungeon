@@ -25,7 +25,7 @@ namespace T4Dungeon.Game.Models
             public List<ShopSlot> Inventory { get; set; } = new();
 
             /// <summary>
-            /// Logic moved from GameEngine. Handles stock generation.
+            /// Handles stock generation.
             /// </summary>
             public void GenerateInventory()
             {
