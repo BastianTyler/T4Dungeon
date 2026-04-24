@@ -1,0 +1,29 @@
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [ web ]
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Publish App
+        run: dotnet publish RedTowerAdventure.Web/RedTowerAdventure.Web.csproj -c Release -o output /p:BlazorEnableCompression=false
+      - name: Fix base href
+        run: sed -i 's|<base href="/" />|<base href="/T4Dungeon/" />|g' output/wwwroot/index.html
+      - name: Copy index.html to 404.html
+        run: cp output/wwwroot/index.html output/wwwroot/404.html
+      - name: Add .nojekyll
+        run: touch output/wwwroot/.nojekyll
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: output/wwwroot
+          branch: gh-pages
+          token: ${{ secrets.GITHUB_TOKEN }}

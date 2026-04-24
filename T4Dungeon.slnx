@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="RedTowerAdventure.Web/RedTowerAdventure.Web.csproj" />
   <Project Path="T4Dungeon/T4Dungeon.csproj" />
 </Solution>
