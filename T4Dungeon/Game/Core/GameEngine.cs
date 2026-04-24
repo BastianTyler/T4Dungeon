@@ -8,6 +8,7 @@ namespace T4Dungeon.Game.Core
 {
     public class GameEngine
     {
+        #region Fields & Properties
         private GameState _state;
 
         private Player _player;
@@ -15,18 +16,34 @@ namespace T4Dungeon.Game.Core
         private UIContext _ui;
         private CombatSystem _combat;
 
-        private readonly List<string> _messages = new(); 
+        private readonly List<string> _messages = new();
         private bool _showInventory = false;
         private ShopInstance _currentShop;
+        #endregion
 
+        #region Core Loop
+        /// <summary>
+        /// Starts the game loop and handles top-level state transitions.
+        /// </summary>
         public void Run()
         {
-            _state = GameState.NewGame;
+            _state = GameState.StartScreen;
+            SetStartScreen();
 
             while (_state != GameState.Exit)
             {
                 switch (_state)
                 {
+                    case GameState.StartScreen:
+                        // we pass null for map and player as they aren't initialized yet
+                        ConsoleRenderer.Render(null, _ui, _messages, null, false, false);
+                        HandleInput();
+                        break;
+
+                    case GameState.Tutorial:
+                        RunTutorialLoop();
+                        break;
+
                     case GameState.NewGame:
                         InitGame();
                         SetMainMenu();
@@ -55,7 +72,9 @@ namespace T4Dungeon.Game.Core
             _state = GameState.Exit;
         }
 
-
+        /// <summary>
+        /// Initializes the player, map, and starting items.
+        /// </summary>
         private void InitGame()
         {
             //Init systems
@@ -69,154 +88,156 @@ namespace T4Dungeon.Game.Core
             _player.Inventory.Add(ItemId.IronSword, 1);
             _player.Inventory.Add(ItemId.HealthPotion, 1);
         }
+        #endregion
 
+
+        #region Start Screen Logic
+
+        /// <summary>
+        /// Configures the initial entry menu for the game.
+        /// </summary>
+        private void SetStartScreen()
+        {
+            _ui = new UIContext
+            {
+                // You could also add this to MenuFactory if you prefer
+                Options = new List<MenuOption>
+        {
+            new MenuOption
+            {
+                Text = "Start Game",
+                Action = () => { _state = GameState.NewGame; }
+            },
+            new MenuOption
+            {
+                Text = "Tutorial",
+                Action = () => { _state = GameState.Tutorial; }
+            },
+            new MenuOption
+            {
+                Text = "Dev Options",
+                IsImplemented = false
+            },
+            new MenuOption
+            {
+                Text = "Exit",
+                Action = () => _state = GameState.Exit
+            }
+        }
+            };
+        }
+
+        /// <summary>
+        /// Placeholder for the tutorial logic loop.
+        /// </summary>
+        private void RunTutorialLoop()
+        {
+            Log("Tutorial coming soon...", true);
+            _state = GameState.StartScreen;
+            SetStartScreen();
+        }
+
+        #endregion
+
+        #region Menu Construction
+        /// <summary>
+        /// Sets up the main exploration menu.
+        /// </summary>
         private void SetMainMenu()
         {
-            _ui = new UIContext();
-
-            _ui.Options = new List<MenuOption>
-            {
-                new MenuOption { Text = "Move", Action = SetMoveMenu },
-                new MenuOption { Text = "Equipment", Action = SetEquiptMenu },
-                new MenuOption { Text = "Open Inventory", Action = SetInventoryMenu },
-                new MenuOption { Text = "Interact", Action = null, IsImplemented = false },
-                new MenuOption { Text = "Exit Game", Action = () => _state = GameState.Exit }
-            };
+            _ui = MenuFactory.CreateMainMenu(
+                onMove: SetMoveMenu,
+                onEquip: SetEquiptMenu,
+                onInv: SetInventoryMenu,
+                onExit: () => _state = GameState.Exit
+            );
         }
 
-        private void SetMoveMenu() 
+        /// <summary>
+        /// Sets up the movement direction menu.
+        /// </summary>
+        private void SetMoveMenu()
         {
-            _ui.Options = new List<MenuOption>
-            {
-                new MenuOption { Text = "Up", Action = () => MovePlayer(0, -1) },
-                new MenuOption { Text = "Down", Action = () => MovePlayer(0, 1) },
-                new MenuOption { Text = "Left", Action = () => MovePlayer(-1, 0) },
-                new MenuOption { Text = "Right", Action = () => MovePlayer(1, 0) },
-                new MenuOption { Text = "Back", Action = SetMainMenu }
-            };
-
+            _ui = MenuFactory.CreateMoveMenu(
+                up: () => MovePlayer(0, -1),
+                down: () => MovePlayer(0, 1),
+                left: () => MovePlayer(-1, 0),
+                right: () => MovePlayer(1, 0),
+                back: SetMainMenu
+            );
         }
 
+        /// <summary>
+        /// Sets up the inventory display and usage menu.
+        /// </summary>
         private void SetInventoryMenu()
         {
             _showInventory = true;
-            _ui.Options = new List<MenuOption>();
-
-            foreach (var inventoryItem in _player.Inventory.Items)
-            {
-                var id = inventoryItem.ItemId;
-                var def = ItemDatabase.Items[id];
-
-                _ui.Options.Add(new MenuOption
-                {
-                    Text = $"{def.Name} (x{inventoryItem.Amount})",
-                    Action = () => UseItem(id),
-                    IsImplemented = def.IsConsumable
-                });
-            }
-
-            _ui.Options.Add(new MenuOption
-            {
-                Text = "Back",
-                Action = () =>
-                {
+            _ui = MenuFactory.CreateInventoryMenu(
+                _player,
+                onUse: UseItem,
+                onBack: () => {
                     _showInventory = false;
-                    // DYNAMIC RETURN: If in combat, go back to combat menu
                     if (_state == GameState.Combat) SetCombatMenu();
                     else SetMainMenu();
                 }
-            });
+            );
         }
 
+        /// <summary>
+        /// Sets up the combat action menu.
+        /// </summary>
         private void SetCombatMenu()
+        {
+            _ui = MenuFactory.CreateCombatMenu(
+                onAttack: () => _combat.RunTurn(_combat.Attack),
+                onDefend: () => _combat.RunTurn(_combat.Defend),
+                onFlee: AttemptFlee, // Refactored flee logic into a method
+                onInv: SetInventoryMenu
+            );
+        }
+
+        /// <summary>
+        /// Sets up the equipment slot selection menu.
+        /// </summary>
+        private void SetEquiptMenu()
+        {
+            _ui = MenuFactory.CreateEquipmentMenu(
+                _player,
+                onSelectSlot: SetItemSelectMenu,
+                onBack: SetMainMenu
+            );
+        }
+
+        /// <summary>
+        /// Sets up the item selection menu for a specific equipment slot.
+        /// </summary>
+        private void SetItemSelectMenu(EquiptSlot slot)
+        {
+            _ui = MenuFactory.CreateItemSelectMenu(
+                _player,
+                slot,
+                onEquip: (id) => { EquipItem(slot, id); SetEquiptMenu(); },
+                onBack: SetEquiptMenu
+            );
+        }
+
+        /// <summary>
+        /// Placeholder for combat skill menu.
+        /// </summary>
+        private void SetSkillMenu()
         {
             _ui.Options = new List<MenuOption>
             {
-                new MenuOption { Text = "Attack", Action = () => _combat.RunTurn(_combat.Attack) },
-
-                new MenuOption { Text = "Defend", Action = () => _combat.RunTurn(_combat.Defend) },
-
-                new MenuOption
-                {
-                    Text = "Attempt Flee",
-                    Action = () =>
-                    {
-                        bool escaped = _combat.TryFlee();
-                        if (escaped)
-                        {
-                            _showInventory = false; 
-                            _state = GameState.Running; 
-                            SetMainMenu(); 
-                            Log("You escaped!");
-                        }
-                        else
-                        {
-                            Log("Failed to escape!");
-                            _combat.EnemyTurn(); 
-                        }
-                    }
-                },
-
-                new MenuOption { Text = "Open Inventory", Action = SetInventoryMenu },
+                new MenuOption { Text = "Back", Action = SetCombatMenu }
             };
         }
+        #endregion
 
-        private void SetEquiptMenu()
-        {
-            _ui.Options = new List<MenuOption>();
-
-            var slotsToShow = new[] { EquiptSlot.Weapon, EquiptSlot.Armor, EquiptSlot.Accessory };
-
-            foreach (var slot in slotsToShow)
-            {
-                _player.Equipment.TryGetValue(slot, out var currentId);
-                string currentItemName = currentId.HasValue
-                    ? ItemDatabase.Items[currentId.Value].Name
-                    : "Empty";
-
-                _ui.Options.Add(new MenuOption
-                {
-                    Text = $"{slot}: {currentItemName}",
-                    Action = () => SetItemSelectMenu(slot)
-                });
-            }
-
-            _ui.Options.Add(new MenuOption { Text = "Back", Action = SetMainMenu });
-        }
-
-        private void SetItemSelectMenu(EquiptSlot slot)
-        {
-            _ui.Options = new List<MenuOption>();
-
-            // Filter inventory for items matching the Slot tag
-            var validItems = _player.Inventory.Items
-                .Select(i => ItemDatabase.Items[i.ItemId])
-                .Where(def => def.Slot == slot)
-                .Take(9) // Limit to 9 items 
-                .ToList();
-
-            if (validItems.Count == 0)
-            {
-                Log($"No equippable {slot} items found!");
-                SetEquiptMenu(); // Go back immediately
-                return;
-            }
-
-            foreach (var item in validItems)
-            {
-                _ui.Options.Add(new MenuOption
-                {
-                    Text = item.Name,
-                    Action = () => {
-                        EquipItem(slot, item.Id);
-                        SetEquiptMenu();
-                    }
-                });
-            }
-
-            _ui.Options.Add(new MenuOption { Text = "Back", Action = SetEquiptMenu });
-        }
-
+        #region Player Actions & Combat
+        /// <summary>
+        /// Handles player equipment logic.
+        /// </summary>
         private void EquipItem(EquiptSlot slot, ItemId newItemId)
         {
             _player.Equipment[slot] = newItemId;
@@ -225,146 +246,9 @@ namespace T4Dungeon.Game.Core
             Log($"Equipped {newDef.Name}!");
         }
 
-
-        #region Shop Logic
-
-        private void GenerateShop()
-        {
-            _currentShop = new ShopInstance();
-            Random rng = new Random();
-            var allItems = ItemDatabase.Items.Values.ToList();
-
-            // 1. Guaranteed Healing Item
-            var heal = allItems.FirstOrDefault(i => i.Category == "Healing") ?? allItems[0];
-            _currentShop.Inventory.Add(new ShopSlot(heal));
-
-            // 2. Guaranteed Buff Item
-            var buff = allItems.FirstOrDefault(i => i.Category == "Buff") ?? allItems[1];
-            _currentShop.Inventory.Add(new ShopSlot(buff));
-
-            // 3. Fill up to 8 random items (No duplicates)
-            while (_currentShop.Inventory.Count < 8)
-            {
-                var rand = allItems[rng.Next(allItems.Count)];
-                if (!_currentShop.Inventory.Any(s => s.ItemId == rand.Id))
-                    _currentShop.Inventory.Add(new ShopSlot(rand));
-            }
-
-            // 4. The 90% Discount Logic
-            var discountSlot = _currentShop.Inventory[rng.Next(_currentShop.Inventory.Count)];
-            discountSlot.Price = (int)(discountSlot.Price * 0.1);
-            discountSlot.IsDiscounted = true;
-
-            SetShopWelcomeMenu();
-        }
-
-        private void SetShopWelcomeMenu()
-        {
-            _ui = new UIContext();
-            _ui.Options = new List<MenuOption>
-            {
-                new MenuOption { Text = "Browse Wares", Action = SetShopBuyMenu },
-                new MenuOption { Text = "Leave Shop (Merchant will leave)", Action = ExitShop }
-            };
-        }
-
-        private void SetShopBuyMenu()
-        {
-            _ui.Options = new List<MenuOption>();
-
-            foreach (var slot in _currentShop.Inventory)
-            {
-                var item = ItemDatabase.Items[slot.ItemId];
-                string status = slot.IsSold ? "[SOLD OUT]" : $"{slot.Price}g";
-                if (slot.IsDiscounted && !slot.IsSold) status += " %SALE%";
-
-                _ui.Options.Add(new MenuOption
-                {
-                    Text = $"{item.Name.PadRight(18)} | {status}",
-                    Action = () => BuyItem(slot),
-                    IsImplemented = !slot.IsSold
-                });
-            }
-
-            _ui.Options.Add(new MenuOption { Text = "Back", Action = SetShopWelcomeMenu });
-        }
-
-        private void BuyItem(ShopSlot slot)
-        {
-            if (_player.Gold >= slot.Price)
-            {
-                _player.Gold -= slot.Price;
-                _player.Inventory.Add(slot.ItemId, 1);
-                slot.IsSold = true;
-                Log($"Purchased {ItemDatabase.Items[slot.ItemId].Name}!", true);
-                SetShopBuyMenu();
-            }
-            else
-            {
-                Log("Not enough gold!", true);
-            }
-        }
-
-        private void UseItem(ItemId id)
-        {
-            var itemDef = ItemDatabase.Items[id];
-
-            if (!itemDef.IsConsumable) return;
-
-            // We check the skills attached to the item
-            foreach (var skillId in itemDef.GrantedSkills)
-            {
-                // 1. Look up the definition of the skill (Heal)
-                var skillDef = SkillDatabase.Skills[skillId];
-
-                if (skillDef.SkillType == "Healing")
-                {
-                    // Use the 'Value' from the SkillDef (which is 25)
-                    int amountToHeal = skillDef.Value;
-
-                    int oldHP = _player.HP;
-                    _player.HP = Math.Min(_player.MaxHP, _player.HP + amountToHeal);
-                    int actualHeal = _player.HP - oldHP;
-
-                    Log($"Used {itemDef.Name}. Restored {actualHeal} HP!");
-                }
-
-                // You can add more SkillTypes here later (e.g., "Buff", "Damage")
-            }
-
-            // 2. Reduce inventory count
-            _player.Inventory.Remove(id, 1);
-
-            if (_state == GameState.Combat)
-            {
-                // If we used an item in combat, the enemy gets a turn!
-                _combat.EnemyTurn();
-                SetCombatMenu(); // Stay in combat UI
-            }
-            else
-            {
-                SetInventoryMenu(); // Refresh list if used in world map
-            }
-        }
-
-        private void ExitShop()
-        {
-            _state = GameState.Running;
-            var cell = _mapManager.Grid[_mapManager.PlayerPosition.X, _mapManager.PlayerPosition.Y];
-            ClearCell(cell); // Shop disappears forever
-            SetMainMenu();
-        }
-
-        #endregion
-
-        private void SetSkillMenu()
-        {
-            _ui.Options = new List<MenuOption>
-            {
-                new MenuOption { Text = "Back", Action = SetCombatMenu }
-            };
-        }
-
+        /// <summary>
+        /// Checks if combat has concluded.
+        /// </summary>
         private void CheckCombatState()
         {
             if (_combat.IsOver)
@@ -375,19 +259,9 @@ namespace T4Dungeon.Game.Core
             }
         }
 
-        private void MovePlayer(int dx, int dy)
-        {
-            if (!ValidateMove(dx, dy)) return;
-
-            
-            var currentPos = _mapManager.PlayerPosition;
-            _mapManager.PlayerPosition = new Vector2Int(currentPos.X + dx, currentPos.Y + dy);
-            var cell = _mapManager.Grid[_mapManager.PlayerPosition.X, _mapManager.PlayerPosition.Y];
-            cell.Explored = true;
-
-            
-            InteractWithCell(cell);
-        }
+        /// <summary>
+        /// Main combat logic loop.
+        /// </summary>
         private void RunCombatLoop()
         {
             ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, false, true, _combat.Enemy);
@@ -401,43 +275,9 @@ namespace T4Dungeon.Game.Core
             }
         }
 
-        private void InteractWithCell(Cell cell)
-        {
-            
-            string eventMsg = cell.Event.Execute(_player, cell);
-
-            
-            switch (cell.Type)
-            {
-                case CellType.Exit:
-                    Log("You found the exit! The light of the outside world blinds you...", true);
-                    Log("YOU WIN!", true);
-                    _state = GameState.Exit; // This will break the while loop in Run()
-                    break;
-
-                case CellType.Combat:
-                   
-                    Log(eventMsg, true);
-                    StartCombatTransition();
-                    break;
-
-                case CellType.Treasure:
-                    Log(eventMsg, true);
-                    ClearCell(cell); 
-                    break;
-
-                case CellType.Shop:
-                    Log(eventMsg, true);
-                    GenerateShop(); // Build the stock
-                    _state = GameState.Shop; // Enter shop state
-                    break;
-
-                default:
-                    if (!string.IsNullOrEmpty(eventMsg)) Log(eventMsg, false);
-                    break;
-            }
-        }
-
+        /// <summary>
+        /// Transitions the game state into a combat encounter.
+        /// </summary>
         private void StartCombatTransition()
         {
             var randomId = (EnemyId)new Random().Next(2001, 2004);
@@ -446,12 +286,91 @@ namespace T4Dungeon.Game.Core
             SetCombatMenu();
         }
 
+        /// <summary>
+        /// Handles the logic for attempting to flee from battle.
+        /// </summary>
+        private void AttemptFlee()
+        {
+            if (_combat.TryFlee())
+            {
+                _showInventory = false;
+                _state = GameState.Running;
+                SetMainMenu();
+                Log("You escaped!");
+            }
+            else
+            {
+                Log("Failed to escape!");
+                _combat.EnemyTurn();
+            }
+        }
+        #endregion
+
+        #region Movement & Exploration
+        /// <summary>
+        /// Handles player movement and triggers map interactions.
+        /// </summary>
+        private void MovePlayer(int dx, int dy)
+        {
+            if (!ValidateMove(dx, dy)) return;
+
+            var currentPos = _mapManager.PlayerPosition;
+            _mapManager.PlayerPosition = new Vector2Int(currentPos.X + dx, currentPos.Y + dy);
+            var cell = _mapManager.Grid[_mapManager.PlayerPosition.X, _mapManager.PlayerPosition.Y];
+            cell.Explored = true;
+
+            InteractWithCell(cell);
+        }
+
+        /// <summary>
+        /// Evaluates the cell type and executes the corresponding event.
+        /// </summary>
+        private void InteractWithCell(Cell cell)
+        {
+            string eventMsg = cell.Event.Execute(_player, cell);
+
+            switch (cell.Type)
+            {
+                case CellType.Exit:
+                    Log("You found the exit! The light of the outside world blinds you...", true);
+                    Log("YOU WIN!", true);
+                    _state = GameState.Exit;
+                    break;
+
+                case CellType.Combat:
+                    Log(eventMsg, true);
+                    StartCombatTransition();
+                    break;
+
+                case CellType.Treasure:
+                    Log(eventMsg, true);
+                    ClearCell(cell);
+                    break;
+
+                case CellType.Shop:
+                    Log(eventMsg, true);
+                    GenerateShop();
+                    _state = GameState.Shop;
+                    break;
+
+                default:
+                    if (!string.IsNullOrEmpty(eventMsg)) Log(eventMsg, false);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Clears an event from a map cell once completed.
+        /// </summary>
         private void ClearCell(Cell cell)
         {
             cell.Type = CellType.Empty;
             cell.Event = CellEventFactory.Create(CellType.Empty);
         }
 
+        /// <summary>
+        /// Ensures movement stays within map boundaries.
+        /// </summary>
         private bool ValidateMove(int dx, int dy)
         {
             var pos = _mapManager.PlayerPosition;
@@ -462,32 +381,92 @@ namespace T4Dungeon.Game.Core
                 Log("You can't move outside the map.");
                 return false;
             }
-            return true;    
+            return true;
+        }
+        #endregion
+
+        #region Item Usage
+        private void UseItem(ItemId id)
+        {
+            string logResult = InventorySystem.UseItem(_player, id);
+
+            if (!string.IsNullOrEmpty(logResult))
+            {
+                Log(logResult);
+            }
+
+            if (_state == GameState.Combat)
+            {
+                _combat.EnemyTurn();
+                SetCombatMenu();
+            }
+            else
+            {
+                SetInventoryMenu();
+            }
+        }
+        #endregion
+
+        #region Shop Logic
+        private void GenerateShop()
+        {
+            _currentShop = new ShopInstance();
+            _currentShop.GenerateInventory(); 
+            SetShopWelcomeMenu();
         }
 
+        private void BuyItem(ShopSlot slot)
+        {
+            if (_currentShop.PurchaseItem(slot, _player))
+            {
+                Log($"Purchased {ItemDatabase.Items[slot.ItemId].Name}!", true);
+                SetShopBuyMenu();
+            }
+            else
+            {
+                Log("Not enough gold!", true);
+            }
+        }
+
+        private void SetShopWelcomeMenu()
+        {
+            _ui = MenuFactory.CreateShopWelcomeMenu(onBrowse: SetShopBuyMenu, onLeave: ExitShop);
+        }
+
+        private void SetShopBuyMenu()
+        {
+            _ui = MenuFactory.CreateShopBuyMenu(_currentShop, onBuy: BuyItem, onBack: SetShopWelcomeMenu);
+        }
+
+        private void ExitShop()
+        {
+            _state = GameState.Running;
+            ClearCell(_mapManager.Grid[_mapManager.PlayerPosition.X, _mapManager.PlayerPosition.Y]);
+            SetMainMenu();
+        }
+        #endregion
+
+        #region Input & Messaging
+        /// <summary>
+        /// Handles console input and pulses the prompt.
+        /// </summary>
         private void HandleInput()
         {
             int blinkStage = 0;
-            // We'll keep track of where we are so we can overwrite the same line
             int promptLine = Console.CursorTop;
 
             while (!Console.KeyAvailable)
             {
                 Console.SetCursorPosition(0, promptLine);
-
-                // Slightly abrasive color: DarkCyan or Magenta
                 Console.ForegroundColor = (blinkStage % 2 == 0) ? ConsoleColor.DarkCyan : ConsoleColor.Cyan;
-
                 Console.Write(" >> CHOOSE AN OPTION [1-" + _ui.Options.Count + "] <<   ");
                 Console.ResetColor();
-
-                Thread.Sleep(400); // Pulse speed
+                Thread.Sleep(400);
                 blinkStage++;
             }
 
-            // Once a key is pressed, handle it as before
             var key = Console.ReadKey(true);
-            ClearLine(promptLine); // Clean up the prompt before moving on
+            ClearLine(promptLine);
 
             int index = key.KeyChar - '1';
 
@@ -508,7 +487,9 @@ namespace T4Dungeon.Game.Core
             option.Action?.Invoke();
         }
 
-        // Simple helper to keep the console clean
+        /// <summary>
+        /// Clears a line in the console for clean output.
+        /// </summary>
         private void ClearLine(int row)
         {
             Console.SetCursorPosition(0, row);
@@ -516,6 +497,9 @@ namespace T4Dungeon.Game.Core
             Console.SetCursorPosition(0, row);
         }
 
+        /// <summary>
+        /// Logs a message and refreshes the console render.
+        /// </summary>
         private void Log(string msg, bool waitForKey = true)
         {
             _messages.Add(msg);
@@ -535,10 +519,13 @@ namespace T4Dungeon.Game.Core
             }
         }
 
+        /// <summary>
+        /// Log overload for messages that don't require key presses.
+        /// </summary>
         private void Log(string msg)
         {
-            Log(msg, false); 
+            Log(msg, false);
         }
-
+        #endregion
     }
 }
