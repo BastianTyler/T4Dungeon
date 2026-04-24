@@ -67,6 +67,7 @@ namespace T4Dungeon.Game.Core
 
             //Test items
             _player.Inventory.Add(ItemId.IronSword, 1);
+            _player.Inventory.Add(ItemId.HealthPotion, 1);
         }
 
         private void SetMainMenu()
@@ -98,24 +99,20 @@ namespace T4Dungeon.Game.Core
 
         private void SetInventoryMenu()
         {
-
             _showInventory = true;
             _ui.Options = new List<MenuOption>();
 
-            int index = 1;
-
-            foreach (var item in _player.Inventory.Items)
+            foreach (var inventoryItem in _player.Inventory.Items)
             {
-                var def = ItemDatabase.Items[item.ItemId];
+                var id = inventoryItem.ItemId;
+                var def = ItemDatabase.Items[id];
 
                 _ui.Options.Add(new MenuOption
                 {
-                    Text = $" {def.Name} \tx{item.Amount} \t- {def.Description}",
-                    Action = () => Log("Use not implemented"),
-                    IsImplemented = false
+                    Text = $"{def.Name} (x{inventoryItem.Amount})",
+                    Action = () => UseItem(id),
+                    IsImplemented = def.IsConsumable
                 });
-
-                index++;
             }
 
             _ui.Options.Add(new MenuOption
@@ -124,7 +121,9 @@ namespace T4Dungeon.Game.Core
                 Action = () =>
                 {
                     _showInventory = false;
-                    SetMainMenu();
+                    // DYNAMIC RETURN: If in combat, go back to combat menu
+                    if (_state == GameState.Combat) SetCombatMenu();
+                    else SetMainMenu();
                 }
             });
         }
@@ -143,10 +142,18 @@ namespace T4Dungeon.Game.Core
                     Action = () =>
                     {
                         bool escaped = _combat.TryFlee();
-                        Console.WriteLine(escaped ? "You escaped!" : "Failed to escape!");
-                        Log(escaped ? "You escaped!" : "Failed to escape!");
                         if (escaped)
-                            _state = GameState.Running;
+                        {
+                            _showInventory = false; 
+                            _state = GameState.Running; 
+                            SetMainMenu(); 
+                            Log("You escaped!");
+                        }
+                        else
+                        {
+                            Log("Failed to escape!");
+                            _combat.EnemyTurn(); 
+                        }
                     }
                 },
 
@@ -295,6 +302,48 @@ namespace T4Dungeon.Game.Core
             else
             {
                 Log("Not enough gold!", true);
+            }
+        }
+
+        private void UseItem(ItemId id)
+        {
+            var itemDef = ItemDatabase.Items[id];
+
+            if (!itemDef.IsConsumable) return;
+
+            // We check the skills attached to the item
+            foreach (var skillId in itemDef.GrantedSkills)
+            {
+                // 1. Look up the definition of the skill (Heal)
+                var skillDef = SkillDatabase.Skills[skillId];
+
+                if (skillDef.SkillType == "Healing")
+                {
+                    // Use the 'Value' from the SkillDef (which is 25)
+                    int amountToHeal = skillDef.Value;
+
+                    int oldHP = _player.HP;
+                    _player.HP = Math.Min(_player.MaxHP, _player.HP + amountToHeal);
+                    int actualHeal = _player.HP - oldHP;
+
+                    Log($"Used {itemDef.Name}. Restored {actualHeal} HP!");
+                }
+
+                // You can add more SkillTypes here later (e.g., "Buff", "Damage")
+            }
+
+            // 2. Reduce inventory count
+            _player.Inventory.Remove(id, 1);
+
+            if (_state == GameState.Combat)
+            {
+                // If we used an item in combat, the enemy gets a turn!
+                _combat.EnemyTurn();
+                SetCombatMenu(); // Stay in combat UI
+            }
+            else
+            {
+                SetInventoryMenu(); // Refresh list if used in world map
             }
         }
 
@@ -490,5 +539,6 @@ namespace T4Dungeon.Game.Core
         {
             Log(msg, false); 
         }
+
     }
 }

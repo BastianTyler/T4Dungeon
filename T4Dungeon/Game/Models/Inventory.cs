@@ -20,5 +20,22 @@ namespace T4Dungeon.Game.Models
             else
                 _items.Add(new InventoryItem { ItemId = id, Amount = amount });
         }
+
+        public void Remove(ItemId id, int amount = 1)
+        {
+            // Find the item entry in your internal list/dictionary
+            var existing = _items.FirstOrDefault(i => i.ItemId == id);
+
+            if (existing != null)
+            {
+                existing.Amount -= amount;
+
+                // If we ran out of the item, wipe it from the list
+                if (existing.Amount <= 0)
+                {
+                    _items.Remove(existing);
+                }
+            }
+        }
     }
 }
