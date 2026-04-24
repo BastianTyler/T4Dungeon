@@ -28,6 +28,18 @@
 
     <script src="terminal.js"></script>
 
-    <script src="_framework/blazor.webassembly.js"></script>
+    <script>
+        const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+        const script = document.createElement('script');
+
+        if (isLocal) {
+            // Use the standard version for Visual Studio debugging
+            script.src = "_framework/blazor.webassembly.js";
+        } else {
+            // Use the fingerprinted version for the GitHub build
+            script.src = "_framework/blazor.webassembly.zxhwjtv6sc.js";
+        }
+        document.body.appendChild(script);
+    </script>
 </body>
 </html>
