@@ -6,40 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RedTowerAdventure.Web</title>
 
-    <!-- IMPORTANT: This gets replaced by your GitHub Actions script -->
+    <!-- IMPORTANT: must be "/" in source repo -->
     <base href="/" />
 
-    <!-- Styles -->
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
-    <link rel="icon" type="image/png" href="favicon.png" />
     <link href="RedTowerAdventure.Web.styles.css" rel="stylesheet" />
 
-    <!-- xterm -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
-    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
-
-    <!-- Your JS (safe to include BEFORE Blazor) -->
-    <script src="terminal.js"></script>
-
-    <!-- ✅ ONLY ONE Blazor loader -->
-    <script src="_framework/blazor.webassembly.js"></script>
+    <link rel="icon" type="image/png" href="favicon.png" />
 </head>
 
 <body>
-    <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
-    </div>
+    <div id="app">Loading...</div>
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.
-        <a href="." class="reload">Reload</a>
+        <a href=".">Reload</a>
         <span class="dismiss">🗙</span>
     </div>
+
+    <!-- ONLY THIS SCRIPT -->
+    <script src="_framework/blazor.webassembly.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
+    <script src="terminal.js"></script>
 </body>
 
 </html>

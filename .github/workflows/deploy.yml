@@ -7,6 +7,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -16,20 +17,17 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Publish App
-        # This points specifically to your sub-folder
-        run: dotnet publish RedTowerAdventure.Web/RedTowerAdventure.Web.csproj -c Release -o output /p:BlazorEnableCompression=false
+        run: dotnet publish RedTowerAdventure.Web/RedTowerAdventure.Web.csproj -c Release -o output /p:BlazorWebAssemblyEnableCompression=false
 
-      - name: Fix Base Path
-        # This ensures the browser looks in the /T4Dungeon/ subfolder for the game files
-        run: sed -i 's/<base href="\/" \/>/<base href="\/T4Dungeon\/" \/>/g' output/wwwroot/index.html
+      - name: Fix base path for GitHub Pages
+        run: sed -i 's|<base href="/" />|<base href="/T4Dungeon/" />|g' output/wwwroot/index.html
 
-      - name: Copy index to 404
-        # This prevents the "MIME type" error on page refreshes
+      - name: Copy index to 404 fallback
         run: cp output/wwwroot/index.html output/wwwroot/404.html
 
-      - name: Commit and Push to GitHub Pages
+      - name: Deploy to GitHub Pages branch
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: output/wwwroot
           branch: gh-pages
-          token: ${{ secrets.GITHUB_TOKEN }}
+          clean: true
