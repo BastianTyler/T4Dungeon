@@ -11,7 +11,7 @@
     term.open(container);
     term.writeln('Welcome to Red Tower OS...');
     term.writeln('Connecting to T4Dungeon engine...');
-
+    
     // Store the terminal instance globally so Blazor can call it
     window.terminalInstance = term;
 };
