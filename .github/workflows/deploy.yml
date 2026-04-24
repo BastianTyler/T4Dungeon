@@ -16,8 +16,7 @@ jobs:
           dotnet-version: '10.0.x' 
 
       - name: Publish App
-        # This builds the Web project specifically
-        run: dotnet publish RedTowerAdventure.Web/RedTowerAdventure.Web.csproj -c Release -o release
+        run: dotnet publish RedTowerAdventure.Web/RedTowerAdventure.Web.csproj -c Release -o release /p:BlazorEnableCompression=false
 
       - name: Fix Base Path
         # CRITICAL: Without a custom domain, GitHub needs to know the sub-folder is /T4Dungeon/
