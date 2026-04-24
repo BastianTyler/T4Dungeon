@@ -1,0 +1,63 @@
+/* Core Page Setup */
+html, body {
+    font-family: 'Courier New', Courier, monospace; /* Fits the terminal aesthetic */
+    background-color: #000; /* Replaces the blue with black */
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden; /* Prevents scrollbars */
+}
+
+/* Center the Terminal on the screen */
+.terminal-wrapper {
+    display: flex;
+    justify-content: center; /* Horizontal centering */
+    align-items: center;     /* Vertical centering */
+    height: 100vh;
+    width: 100vw;
+}
+
+/* The actual box the terminal lives in */
+#terminal-container {
+    width: 800px;
+    height: 450px;
+    box-shadow: 0 0 25px rgba(0, 255, 0, 0.1); /* Subtle green glow */
+    border: 1px solid #111;
+}
+
+/* Blazor Error UI cleanup */
+#blazor-error-ui {
+    background: #111;
+    color: #ff4444;
+    bottom: 0;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    display: none;
+    padding: 0.6rem;
+}
+
+/* Loading State Styling */
+.loading-progress {
+    position: absolute;
+    display: block;
+    width: 8rem;
+    height: 8rem;
+    inset: 40vh 0 auto 0;
+    margin: 0 auto;
+}
+
+.loading-progress circle {
+    fill: none;
+    stroke: #004400; /* Darker green for the track */
+    stroke-width: 0.6rem;
+    transform-origin: 50% 50%;
+    transform: rotate(-90deg);
+}
+
+.loading-progress circle:last-child {
+    stroke: #00ff00; /* Matrix green for the progress */
+    stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
+    transition: stroke-dasharray 0.05s ease-in-out;
+}
