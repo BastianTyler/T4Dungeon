@@ -18,8 +18,10 @@ jobs:
       - name: Publish App
         run: dotnet publish RedTowerAdventure.Web/RedTowerAdventure.Web.csproj -c Release -o output /p:BlazorEnableCompression=false
 
-      - name: Fix Blazor script tag for importmap
-        run: sed -i 's|<script src="_framework/blazor.webassembly.js"></script>|<script type="module">import "./_framework/blazor.webassembly.js";</script>|g' output/wwwroot/index.html
+      - name: Create blazor.webassembly.js shim
+        run: |
+          FINGERPRINTED=$(ls output/wwwroot/_framework/blazor.webassembly.*.js | head -1 | xargs basename)
+          echo "import './$FINGERPRINTED';" > output/wwwroot/_framework/blazor.webassembly.js
 
       - name: Rewrite base href
         uses: SteveSandersonMS/ghaction-rewrite-base-href@v1.1.0
