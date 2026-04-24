@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "RedTowerAdventure.Web",
   "resources": {
-    "hash": "sha256-QM4RI+aT0zqJWMFFcnKksbobDZyW8FdL2Gh8yHRusjs=",
+    "hash": "sha256-MOosKjnXj2iYaDayZ8/A/Qde1vyr4xMs4KwMNx1HZW8=",
     "jsModuleNative": {
       "dotnet.native.js": "sha256-A16ka545FHaB+QXjyJ4exXh7XpBAAIFnX8YkC4xAng8="
     },
@@ -47,7 +47,7 @@
       "System.Text.Json.wasm": "sha256-ZbNmNkx0V+8CKB0xg1XRpgJTlnEyAypL7svkXmzVWTY=",
       "System.Text.RegularExpressions.wasm": "sha256-vTjmo8W+mDOdlHRP0L2XPX6WOPBjjNP1eAT8UWYxM8I=",
       "System.Private.CoreLib.wasm": "sha256-SSjetBDHTgRXh3Syy+T0YEM8ILOmy8AAvxF2kKh3kfM=",
-      "RedTowerAdventure.Web.wasm": "sha256-wy+VZj6o6L1uioZlPckIjiOWwOOwW0tuJ8BI8x+aqNQ="
+      "RedTowerAdventure.Web.wasm": "sha256-IiTrIX00T2ZDFsDigyTSL8Mz3SIFtJbGjTh2YjIYOcA="
     }
   },
   "cacheBootResources": true,
