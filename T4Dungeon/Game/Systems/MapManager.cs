@@ -82,10 +82,10 @@ namespace T4Dungeon.Game.Systems
         {
             int roll = _rng.Next(100);
 
-            if (roll < 80) return CellType.Shop;       // 80% Shop
-            if (roll < 90) return CellType.Treasure;   // 10% Treasure
+            //if (roll < 80) return CellType.Shop;       // 80% Shop
+            //if (roll < 90) return CellType.Treasure;   // 10% Treasure
 
-            return CellType.Empty;
+            //return CellType.Empty;
 
             if (roll < 40) return CellType.Combat;     // 40%
             if (roll < 60) return CellType.Empty;      // 20%

@@ -11,25 +11,60 @@ public static class ConsoleRenderer
     public static void Render(MapManager map, UIContext ui, List<string> messages, Player player, bool showInventory, bool isCombat, Enemy? enemy = null)
     {
         Console.Clear();
-
         DrawTopBar();
-        DrawPlayerStats(player);
-        DrawInventory(player, showInventory);
+
+        // Only draw stats if the player exists
+        if (player != null)
+        {
+            DrawPlayerStats(player);
+            DrawInventory(player, showInventory);
+        }
+        else
+        {
+            DrawTitleLogo();
+        }
+
         DrawLeftMenu(ui, map, isCombat, enemy);
+
         if (isCombat)
         {
             DrawCombatArena();
         }
-        else if (map == null) 
+        else if (map == null && player != null) // Shopping
         {
             DrawShopHeader();
         }
-        else
+        else if (map != null) // Exploring
         {
             DrawMap(map);
         }
+        else // Start Screen empty space
+        {
+            DrawStartScreenArt();
+        }
 
         DrawBottomText(messages);
+    }
+
+    private static void DrawTitleLogo()
+    {
+        Console.ForegroundColor = ConsoleColor.Magenta;
+        Console.WriteLine("\n\t\t████████╗██╗  ██╗    ██████╗ ");
+        Console.WriteLine("\t\t╚══██╔══╝██║  ██║    ██╔══██╗");
+        Console.WriteLine("\t\t   ██║   ███████║    ██║  ██║");
+        Console.WriteLine("\t\t   ██║   ╚════██║    ██║  ██║");
+        Console.WriteLine("\t\t   ██║        ██║    ██████╔╝");
+        Console.WriteLine("\t\t   ╚═╝        ╚═╝    ╚═════╝ ");
+        Console.WriteLine("\t\t      DUNGEON CRAWLER");
+        Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        Console.ResetColor();
+    }
+
+    private static void DrawStartScreenArt()
+    {
+        for (int i = 0; i < 3; i++) Console.WriteLine();
+        Console.WriteLine("\t\t      [ Press a key to begin ]");
+        for (int i = 0; i < 7; i++) Console.WriteLine();
     }
 
     private static void DrawTopBar()

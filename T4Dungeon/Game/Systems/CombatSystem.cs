@@ -217,7 +217,7 @@ namespace T4Dungeon.Game.Systems
             }
         }
 
-        private void EnemyTurn()
+        public void EnemyTurn()
         {
             
             var move = _enemy.Moves[new Random().Next(_enemy.Moves.Count)];
