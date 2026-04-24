@@ -1,7 +1,18 @@
 ﻿@page "/"
+@inject IJSRuntime JSRuntime
 
-<PageTitle>Home</PageTitle>
+<div id="terminal-container" style="width: 800px; height: 450px;"></div>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Initialize the xterm instance
+            await JSRuntime.InvokeVoidAsync("setupTerminal", "terminal-container");
+            
+            // Example of sending data from C# to the terminal
+            await JSRuntime.InvokeVoidAsync("writeToTerminal", "T4Dungeon Beta v1.00 Loaded.");
+        }
+    }
+}
