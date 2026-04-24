@@ -1,12 +1,9 @@
 name: Deploy to GitHub Pages
-
 on:
   push:
     branches: [ master, beta/v1.00 ]
-
 permissions:
   contents: write
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -19,7 +16,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Publish App
-  	run: dotnet publish RedTowerAdventure.Web/RedTowerAdventure.Web.csproj -c Release -o output /p:BlazorEnableCompression=false /p:BlazorCacheBootResources=false
+        run: dotnet publish RedTowerAdventure.Web/RedTowerAdventure.Web.csproj -c Release -o output /p:BlazorEnableCompression=false /p:BlazorCacheBootResources=false
 
       - name: Rewrite base href
         uses: SteveSandersonMS/ghaction-rewrite-base-href@v1.1.0
