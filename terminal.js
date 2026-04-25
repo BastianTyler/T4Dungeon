@@ -1,8 +1,10 @@
 ﻿window.terminalInterop = {
     term: null,
-    fitAddon: null,
+    dotnetRef: null,
+    inputBuffer: '',
 
     init: function (dotnetRef) {
+        this.dotnetRef = dotnetRef;
         this.term = new Terminal({
             cursorBlink: true,
             fontSize: 16,
@@ -16,21 +18,31 @@
             rows: 24,
         });
 
-        this.fitAddon = new FitAddon.FitAddon();
-        this.term.loadAddon(this.fitAddon);
+        const fitAddon = new FitAddon.FitAddon();
+        this.term.loadAddon(fitAddon);
         this.term.open(document.getElementById('terminal-container'));
-        this.fitAddon.fit();
+        fitAddon.fit();
 
-        this.term.onData(data => {
-            dotnetRef.invokeMethodAsync('OnTerminalInput', data);
+        this.term.onKey(({ key, domEvent }) => {
+            const code = domEvent.keyCode;
+
+            if (code === 13) { // Enter
+                this.term.write('\r\n');
+                this.dotnetRef.invokeMethodAsync('OnTerminalInput', this.inputBuffer);
+                this.inputBuffer = '';
+            } else if (code === 8) { // Backspace
+                if (this.inputBuffer.length > 0) {
+                    this.inputBuffer = this.inputBuffer.slice(0, -1);
+                    this.term.write('\b \b');
+                }
+            } else {
+                this.inputBuffer += key;
+                this.term.write(key);
+            }
         });
     },
 
     write: function (text) {
         if (this.term) this.term.write(text);
-    },
-
-    writeLine: function (text) {
-        if (this.term) this.term.write(text + '\r\n');
     }
 };
