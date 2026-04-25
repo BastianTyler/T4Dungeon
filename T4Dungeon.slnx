@@ -1,4 +1,6 @@
 <Solution>
+  <Folder Name="/Solution Items/" />
   <Project Path="RedTowerAdventure.Web/RedTowerAdventure.Web.csproj" />
+  <Project Path="T4Dungeon.EXE/T4Dungeon.EXE.csproj" Id="4cc813b2-8055-4c49-ab83-d9c979197859" />
   <Project Path="T4Dungeon/T4Dungeon.csproj" />
 </Solution>
