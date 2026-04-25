@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using T4Dungeon.Game.Models;
+using T4Dungeon.Game.Utils; // Ensure this is here for TerminalGuard
 using T4Dungeon.Generated;
 
 namespace T4Dungeon.Game.Systems
@@ -43,15 +45,15 @@ namespace T4Dungeon.Game.Systems
         }
 
         public bool CheckEnd()
-        { 
-            if(_player.HP <= 0)
+        {
+            if (_player.HP <= 0)
             {
                 _combatOver = true;
                 _log("You died.");
                 return true;
             }
 
-            if(_enemy.HP <= 0)
+            if (_enemy.HP <= 0)
             {
                 ProcessLoot();
                 _combatOver = true;
@@ -68,8 +70,8 @@ namespace T4Dungeon.Game.Systems
             var start = DateTime.Now;
             int totalBarLength = 30;
 
-            // Save the current cursor position to restore it later
-            int cursorTop = Console.CursorTop;
+            // FIX: Use ANSI Save instead of Console.CursorTop
+            TerminalGuard.SaveCursor();
 
             while ((DateTime.Now - start).TotalMilliseconds < timeLimitMs)
             {
@@ -79,31 +81,30 @@ namespace T4Dungeon.Game.Systems
                 int barsToDraw = (int)(percent * totalBarLength);
                 string bar = new string('|', barsToDraw).PadRight(totalBarLength, '.');
 
-                // DIRECT CONSOLE MANIPULATION (No flicker)
-                // We target the area just below the log or at a fixed bottom position
-                Console.SetCursorPosition(0, cursorTop);
+                // FIX: Restore cursor to the exact spot we started the minigame
+                TerminalGuard.RestoreCursor();
                 Console.Write($"[ {bar} ] - PRESS {char.ToUpper(expectedKey)}!    ");
 
                 if (Console.KeyAvailable)
                 {
                     var key = Console.ReadKey(true).KeyChar;
-                    // Clean up the bar line before returning
-                    ClearLine(cursorTop);
+                    ClearLine(); // Clean up current line
                     return char.ToLower(key) == char.ToLower(expectedKey);
                 }
 
-                Thread.Sleep(20); // Smooth 50fps update
+                Thread.Sleep(30);
             }
 
-            ClearLine(cursorTop);
+            ClearLine();
             return false;
         }
 
-        private void ClearLine(int row)
+        // Updated ClearLine to be coordinate-independent
+        private void ClearLine()
         {
-            Console.SetCursorPosition(0, row);
-            Console.Write(new string(' ', Console.WindowWidth));
-            Console.SetCursorPosition(0, row);
+            TerminalGuard.RestoreCursor();
+            Console.Write(new string(' ', 60)); // Clear with spaces
+            TerminalGuard.RestoreCursor();
         }
 
         private bool MashInput(char keyToMash, int goalStrikes, int timeLimitMs = 3000)
@@ -113,7 +114,8 @@ namespace T4Dungeon.Game.Systems
             var start = DateTime.Now;
             int currentStrikes = 0;
             int totalBarLength = 30;
-            int cursorTop = Console.CursorTop;
+
+            TerminalGuard.SaveCursor();
 
             while ((DateTime.Now - start).TotalMilliseconds < timeLimitMs)
             {
@@ -126,23 +128,24 @@ namespace T4Dungeon.Game.Systems
 
                 if (currentStrikes >= goalStrikes)
                 {
-                    ClearLine(cursorTop);
-                    return true; // Success!
+                    ClearLine();
+                    return true;
                 }
 
-                // Draw progress bar based on strikes vs goal
                 double percent = (double)currentStrikes / goalStrikes;
                 int barsToDraw = (int)(percent * totalBarLength);
                 string bar = new string('#', barsToDraw).PadRight(totalBarLength, '-');
 
-                Console.SetCursorPosition(0, cursorTop);
+                TerminalGuard.RestoreCursor();
+                TerminalGuard.SetColor(ConsoleColor.Yellow);
                 Console.Write($"[ {bar} ] MASH {char.ToUpper(keyToMash)}! ({currentStrikes}/{goalStrikes})   ");
+                TerminalGuard.Reset();
 
-                Thread.Sleep(20);
+                Thread.Sleep(30);
             }
 
-            ClearLine(cursorTop);
-            return false; // Time's up
+            ClearLine();
+            return false;
         }
 
         private bool SweetSpotInput(char stopKey, double targetPercent = 0.5, double threshold = 0.1, int speedMs = 1500)
@@ -151,82 +154,73 @@ namespace T4Dungeon.Game.Systems
 
             var start = DateTime.Now;
             int totalBarLength = 30;
-            int cursorTop = Console.CursorTop;
 
-            // Calculate integer indices for the visual zone
             int targetIndex = (int)(targetPercent * totalBarLength);
             int halfZoneWidth = (int)(threshold * totalBarLength);
-
-            // Ensure the zone is at least 1 character wide so it's never impossible
             if (halfZoneWidth < 1) halfZoneWidth = 1;
 
             int zoneStart = Math.Max(0, targetIndex - halfZoneWidth);
             int zoneEnd = Math.Min(totalBarLength - 1, targetIndex + halfZoneWidth);
 
+            TerminalGuard.SaveCursor();
+
             while (true)
             {
                 double elapsed = (DateTime.Now - start).TotalMilliseconds;
-                // Periodic bounce 0 to 1 to 0
                 double progress = (Math.Sin(elapsed / speedMs * Math.PI * 2) + 1) / 2;
                 int markerIndex = (int)(progress * totalBarLength);
 
-                // --- RENDER LOGIC ---
-                Console.SetCursorPosition(0, cursorTop);
+                TerminalGuard.RestoreCursor();
                 Console.Write("[ ");
                 for (int i = 0; i < totalBarLength; i++)
                 {
                     if (i == markerIndex)
                     {
-                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        TerminalGuard.SetColor(ConsoleColor.Yellow);
                         Console.Write("X");
                     }
                     else if (i == targetIndex)
                     {
-                        Console.ForegroundColor = ConsoleColor.White;
+                        TerminalGuard.SetColor(ConsoleColor.White);
                         Console.Write("V");
                     }
                     else if (i >= zoneStart && i <= zoneEnd)
                     {
-                        Console.ForegroundColor = ConsoleColor.Green;
+                        TerminalGuard.SetColor(ConsoleColor.Green);
                         Console.Write("=");
                     }
                     else
                     {
-                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        TerminalGuard.SetColor(ConsoleColor.Gray);
                         Console.Write("-");
                     }
-                    Console.ResetColor();
+                    TerminalGuard.Reset();
                 }
                 Console.Write(" ] - SPACE TO HIT!   ");
 
-                // --- INPUT LOGIC ---
                 if (Console.KeyAvailable)
                 {
                     var key = Console.ReadKey(true).KeyChar;
                     if (char.ToLower(key) == char.ToLower(stopKey))
                     {
-                        // WIN CONDITION: Is the marker index inside the green zone index?
                         bool isVisualHit = markerIndex >= zoneStart && markerIndex <= zoneEnd;
-
-                        ClearLine(cursorTop);
+                        ClearLine();
                         return isVisualHit;
                     }
                 }
 
-                Thread.Sleep(15);
+                Thread.Sleep(30);
             }
         }
 
         public void EnemyTurn()
         {
-            
             var move = _enemy.Moves[new Random().Next(_enemy.Moves.Count)];
 
             _log($"{_enemy.Name} uses {move.Name}! PRESS {move.Key}!", false);
 
             bool success = false;
 
-            
             switch (move.Type)
             {
                 case "Timed":
@@ -257,16 +251,12 @@ namespace T4Dungeon.Game.Systems
         private void ProcessLoot()
         {
             Random rng = new Random();
-
-            // 1. Calculate Gold
-            // We fetch these values from the enemy definition
             var def = EnemyDatabase.Enemies.Values.First(e => e.Name == _enemy.Name);
             int goldDropped = rng.Next(def.MinGold, def.MaxGold + 1);
 
             _player.Gold += goldDropped;
             _log($"The {_enemy.Name} dropped {goldDropped} gold!", true);
 
-            // 2. Roll for Items
             foreach (var loot in def.LootTable)
             {
                 if (rng.NextDouble() <= loot.Chance)
@@ -288,8 +278,6 @@ namespace T4Dungeon.Game.Systems
                 {
                     return false;
                 }
-
-                // Small buffer so one key press doesn't count for two
                 System.Threading.Thread.Sleep(100);
             }
             return true;
@@ -316,6 +304,5 @@ namespace T4Dungeon.Game.Systems
         {
             return new Random().Next(100) < 50;
         }
-
     }
 }

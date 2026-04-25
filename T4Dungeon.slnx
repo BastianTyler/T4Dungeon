@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="RedTowerAdventure.Web/RedTowerAdventure.Web.csproj" />
+  <Project Path="T4Dungeon.Desktop/T4Dungeon.Desktop.csproj" Id="b4cc015d-ad8d-42fb-a3a1-d4aca935ba71" />
   <Project Path="T4Dungeon/T4Dungeon.csproj" />
 </Solution>

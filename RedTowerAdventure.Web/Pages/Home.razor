@@ -1,11 +1,14 @@
 ﻿@page "/"
 @inject IJSRuntime JS
 @implements IDisposable
+@using T4Dungeon.Game.Core
+@using RedTowerAdventure.Web
 
 <div id="terminal-container"></div>
 
 @code {
     private DotNetObjectReference<Home>? _dotNetRef;
+    private TaskCompletionSource<ConsoleKeyInfo>? _inputWaiter;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -13,22 +16,39 @@
         {
             _dotNetRef = DotNetObjectReference.Create(this);
             await JS.InvokeVoidAsync("terminalInterop.init", _dotNetRef);
-            await StartGame();
+
+            Console.SetOut(new WebConsoleWriter(text =>
+            {
+                _ = JS.InvokeVoidAsync("terminalInterop.write", text.Replace("\n", "\r\n"));
+            }));
+
+            Console.SetIn(new WebConsoleReader(() =>
+            {
+                _inputWaiter = new TaskCompletionSource<ConsoleKeyInfo>();
+                return _inputWaiter.Task;
+            }));
+
+            await Task.Yield();
+            var engine = new GameEngine();
+            engine.Run();
         }
     }
 
-    private async Task StartGame()
-    {
-        // TODO: hook your game engine output here
-        await JS.InvokeVoidAsync("terminalInterop.writeLine", "Welcome to Red Tower Adventure!");
-        await JS.InvokeVoidAsync("terminalInterop.writeLine", "Loading...");
-    }
-
     [JSInvokable]
-    public async Task OnTerminalInput(string data)
+    public void OnTerminalInput(string data)
     {
-        // TODO: feed input into your game engine
-        await JS.InvokeVoidAsync("terminalInterop.write", data);
+        if (data.Length > 0)
+        {
+            var key = new ConsoleKeyInfo(data[0], ConsoleKey.A, false, false, false);
+            _inputWaiter?.TrySetResult(key);
+        }
+    }
+    private void OnTerminalKey(string keyData)
+    {
+        char c = keyData[0];
+        // Convert the string key into a ConsoleKeyInfo and push it to the buffer
+        var keyInfo = new ConsoleKeyInfo(c, ConsoleKey.NoName, false, false, false);
+        InputManager.WebInputBuffer.Enqueue(keyInfo);
     }
 
     public void Dispose() => _dotNetRef?.Dispose();
