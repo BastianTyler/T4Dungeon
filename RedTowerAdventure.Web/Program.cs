@@ -8,7 +8,11 @@ var app = builder.Build();
 app.UseWebSockets();
 app.UseStaticFiles();
 
-app.MapGet("/", () => Results.File("wwwroot/index.html", "text/html"));
+app.MapGet("/", async context =>
+{
+    context.Response.ContentType = "text/html";
+    await context.Response.SendFileAsync("wwwroot/index.html");
+});
 
 app.Map("/ws", async context =>
 {
