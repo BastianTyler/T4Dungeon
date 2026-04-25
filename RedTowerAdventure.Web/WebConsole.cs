@@ -20,3 +20,11 @@ public class WebConsoleReader : TextReader
         return result.Length > 0 ? result[0] : -1;
     }
 }
+
+public static class AnsiConsole
+{
+    public static void Clear()
+    {
+        Console.Write("\x1b[2J\x1b[H");
+    }
+}
