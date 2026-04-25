@@ -36,6 +36,10 @@
 
         const ws = new WebSocket(`wss://${location.host}/ws`);
         ws.onmessage = e => term.write(e.data);
-        term.onKey(({ key }) => ws.send(key));</script>
+        term.onKey(({ key, domEvent }) => {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(key);
+            }
+        });</script>
 </body>
 </html>
