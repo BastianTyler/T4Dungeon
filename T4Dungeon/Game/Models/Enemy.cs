@@ -6,6 +6,7 @@
     {
         public string Name { get; set; }
         public int HP { get; set; }
+        public int MaxHp { get; set; }
         public int Attack { get; set; }
         public List<MoveDef> Moves { get; set; } = new();
 

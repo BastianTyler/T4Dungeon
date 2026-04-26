@@ -29,6 +29,7 @@ public class EnemyDef
     public EnemyId Id { get; set; }
     public string Name { get; set; }
     public int HP { get; set; }
+    public int MaxHp {get; set; }
     public int Attack { get; set; }
     public List<MoveDef> Moves { get; set; } = new();
     public int MinGold { get; set; }
@@ -52,6 +53,7 @@ public static class EnemyDatabase
         var name = node.Attributes["Name"].Value;
         var cleanName = name.Replace(" ", "");
         var hp = node.Attributes["HP"].Value;
+        var maxHp = node.Attributes["MaxHp"].Value;
         var atk = node.Attributes["Attack"].Value;
         var minGold = node.Attributes["MinGold"]?.Value ?? "0";
         var maxGold = node.Attributes["MaxGold"]?.Value ?? "0";
@@ -66,6 +68,7 @@ public static class EnemyDatabase
                 Id = EnemyId.<#= cleanName #>,
                 Name = "<#= name #>",
                 HP = <#= hp #>,
+                MaxHp = <#= maxHp #>,
                 Attack = <#= atk #>,
                 MinGold = <#= minGold #>,
                 MaxGold = <#= maxGold #>,

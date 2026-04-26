@@ -275,12 +275,34 @@ namespace T4Dungeon.Game.Core
             }
         }
 
+                private static readonly List<(EnemyId id, int weight)> _spawnTable = new()
+        {
+            (EnemyId.Slime,  0),
+            (EnemyId.Goblin, 100),
+            (EnemyId.Orc,    0),
+        };
+
+        private EnemyId GetRandomEnemy()
+        {
+            int total = _spawnTable.Sum(e => e.weight);
+            int roll = new Random().Next(total);
+            int cumulative = 0;
+
+            foreach (var (id, weight) in _spawnTable)
+            {
+                cumulative += weight;
+                if (roll < cumulative) return id;
+            }
+
+            return _spawnTable[0].id;
+        }
+
         /// <summary>
         /// Transitions the game state into a combat encounter.
         /// </summary>
         private void StartCombatTransition()
         {
-            var randomId = (EnemyId)new Random().Next(2001, 2004);
+            var randomId = GetRandomEnemy();
             _combat = new CombatSystem(_player, new Enemy(randomId), Log);
             _state = GameState.Combat;
             SetCombatMenu();
@@ -411,7 +433,7 @@ namespace T4Dungeon.Game.Core
         private void GenerateShop()
         {
             _currentShop = new ShopInstance();
-            _currentShop.GenerateInventory(); 
+            _currentShop.GenerateInventory();
             SetShopWelcomeMenu();
         }
 

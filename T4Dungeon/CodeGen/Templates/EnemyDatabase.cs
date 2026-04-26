@@ -24,6 +24,7 @@ public class EnemyDef
     public EnemyId Id { get; set; }
     public string Name { get; set; }
     public int HP { get; set; }
+    public int MaxHp {get; set; }
     public int Attack { get; set; }
     public List<MoveDef> Moves { get; set; } = new();
     public int MinGold { get; set; }
@@ -42,6 +43,7 @@ public static class EnemyDatabase
                 Id = EnemyId.Slime,
                 Name = "Slime",
                 HP = 20,
+                MaxHp = 20,
                 Attack = 5,
                 MinGold = 2,
                 MaxGold = 6,
@@ -63,7 +65,7 @@ public static class EnemyDatabase
                 {
                     new LootItemDef 
                     { 
-                        Id = (ItemId)3001, 
+                        Id = (ItemId)2001, 
                         Chance = 0.2 
                     }
                 } // End of LootTable List
@@ -76,6 +78,7 @@ public static class EnemyDatabase
                 Id = EnemyId.Goblin,
                 Name = "Goblin",
                 HP = 45,
+                MaxHp = 45,
                 Attack = 12,
                 MinGold = 10,
                 MaxGold = 20,
@@ -121,6 +124,7 @@ public static class EnemyDatabase
                 Id = EnemyId.Orc,
                 Name = "Orc",
                 HP = 100,
+                MaxHp = 100,
                 Attack = 25,
                 MinGold = 35,
                 MaxGold = 60,

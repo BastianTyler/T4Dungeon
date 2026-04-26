@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using T4Dungeon.Game.Models;
+using T4Dungeon.Game.Utils;
 using T4Dungeon.Generated;
 
 namespace T4Dungeon.Game.Systems
@@ -32,26 +34,22 @@ namespace T4Dungeon.Game.Systems
         public void RunTurn(Action playerAction)
         {
             if (_combatOver) return;
-
             playerAction?.Invoke();
-
             if (CheckEnd()) return;
-
             EnemyTurn();
-
             CheckEnd();
         }
 
         public bool CheckEnd()
-        { 
-            if(_player.HP <= 0)
+        {
+            if (_player.HP <= 0)
             {
                 _combatOver = true;
                 _log("You died.");
                 return true;
             }
 
-            if(_enemy.HP <= 0)
+            if (_enemy.HP <= 0)
             {
                 ProcessLoot();
                 _combatOver = true;
@@ -61,6 +59,14 @@ namespace T4Dungeon.Game.Systems
             return false;
         }
 
+        /// <summary>
+        /// Timed Press minigame — a bar fills left to right over the time limit.
+        /// The fill color shifts green → yellow → red as time runs out.
+        /// Player must press the expected key before the bar fills completely.
+        /// </summary>
+        /// <param name="expectedKey">The key the player must press to succeed.</param>
+        /// <param name="timeLimitMs">Time limit in milliseconds before auto-fail.</param>
+        /// <returns>True if the player pressed the correct key in time.</returns>
         private bool TimedInput(char expectedKey, int timeLimitMs = 2000)
         {
             while (Console.KeyAvailable) Console.ReadKey(intercept: true);
@@ -68,37 +74,50 @@ namespace T4Dungeon.Game.Systems
             var start = DateTime.Now;
             int totalBarLength = 30;
 
-            // Save the current cursor position to restore it later
+            Console.WriteLine();
             int cursorTop = Console.CursorTop;
+            Console.WriteLine();
 
             while ((DateTime.Now - start).TotalMilliseconds < timeLimitMs)
             {
                 double elapsed = (DateTime.Now - start).TotalMilliseconds;
                 double percent = elapsed / timeLimitMs;
+                int filled = (int)(percent * totalBarLength);
 
-                int barsToDraw = (int)(percent * totalBarLength);
-                string bar = new string('|', barsToDraw).PadRight(totalBarLength, '.');
+                // Fill color shifts green → yellow → red as urgency increases
+                string fillColor = percent < 0.5 ? TextColor.Green
+                                 : percent < 0.8 ? TextColor.Yellow
+                                 : TextColor.Red;
 
-                // DIRECT CONSOLE MANIPULATION (No flicker)
-                // We target the area just below the log or at a fixed bottom position
                 Console.SetCursorPosition(0, cursorTop);
-                Console.Write($"[ {bar} ] - PRESS {char.ToUpper(expectedKey)}!    ");
+                Console.Write($"  {TextColor.Cyan}▐{TextColor.Reset}");
+
+                for (int i = 0; i < totalBarLength; i++)
+                    Console.Write(i < filled
+                        ? $"{fillColor}█{TextColor.Reset}"
+                        : $"{TextColor.Gray}░{TextColor.Reset}");
+
+                Console.Write($"{TextColor.Cyan}▌{TextColor.Reset}  PRESS {TextColor.Yellow}{TextColor.Bold}{char.ToUpper(expectedKey)}{TextColor.Reset}!    ");
 
                 if (Console.KeyAvailable)
                 {
                     var key = Console.ReadKey(true).KeyChar;
-                    // Clean up the bar line before returning
                     ClearLine(cursorTop);
                     return char.ToLower(key) == char.ToLower(expectedKey);
                 }
 
-                Thread.Sleep(20); // Smooth 50fps update
+                Thread.Sleep(20);
             }
 
             ClearLine(cursorTop);
             return false;
         }
 
+        /// <summary>
+        /// Clears a single console line by overwriting it with spaces,
+        /// then repositions the cursor at the start of that line.
+        /// </summary>
+        /// <param name="row">The console row index to clear.</param>
         private void ClearLine(int row)
         {
             Console.SetCursorPosition(0, row);
@@ -106,6 +125,14 @@ namespace T4Dungeon.Game.Systems
             Console.SetCursorPosition(0, row);
         }
 
+        /// <summary>
+        /// Mash minigame — a progress bar fills as the player repeatedly presses the key.
+        /// Player must hit the key enough times to reach the goal before time runs out.
+        /// </summary>
+        /// <param name="keyToMash">The key the player must repeatedly press.</param>
+        /// <param name="goalStrikes">Number of successful presses needed to win.</param>
+        /// <param name="timeLimitMs">Time limit in milliseconds before auto-fail.</param>
+        /// <returns>True if the player reached the goal number of presses in time.</returns>
         private bool MashInput(char keyToMash, int goalStrikes, int timeLimitMs = 3000)
         {
             while (Console.KeyAvailable) Console.ReadKey(true);
@@ -113,7 +140,10 @@ namespace T4Dungeon.Game.Systems
             var start = DateTime.Now;
             int currentStrikes = 0;
             int totalBarLength = 30;
+
+            Console.WriteLine();
             int cursorTop = Console.CursorTop;
+            Console.WriteLine();
 
             while ((DateTime.Now - start).TotalMilliseconds < timeLimitMs)
             {
@@ -127,89 +157,89 @@ namespace T4Dungeon.Game.Systems
                 if (currentStrikes >= goalStrikes)
                 {
                     ClearLine(cursorTop);
-                    return true; // Success!
+                    return true;
                 }
 
-                // Draw progress bar based on strikes vs goal
-                double percent = (double)currentStrikes / goalStrikes;
-                int barsToDraw = (int)(percent * totalBarLength);
-                string bar = new string('#', barsToDraw).PadRight(totalBarLength, '-');
+                int filled = (int)((double)currentStrikes / goalStrikes * totalBarLength);
 
                 Console.SetCursorPosition(0, cursorTop);
-                Console.Write($"[ {bar} ] MASH {char.ToUpper(keyToMash)}! ({currentStrikes}/{goalStrikes})   ");
+                Console.Write($"  {TextColor.Cyan}▐{TextColor.Reset}");
+
+                for (int i = 0; i < totalBarLength; i++)
+                    Console.Write(i < filled
+                        ? $"{TextColor.Green}█{TextColor.Reset}"
+                        : $"{TextColor.Gray}░{TextColor.Reset}");
+
+                Console.Write(
+                    $"{TextColor.Cyan}▌{TextColor.Reset}  MASH " +
+                    $"{TextColor.Yellow}{TextColor.Bold}{char.ToUpper(keyToMash)}{TextColor.Reset}!" +
+                    $"  {TextColor.Gray}({currentStrikes}/{goalStrikes}){TextColor.Reset}   "
+                );
 
                 Thread.Sleep(20);
             }
 
             ClearLine(cursorTop);
-            return false; // Time's up
+            return false;
         }
 
+        /// <summary>
+        /// Sweet Spot minigame — a marker bounces back and forth across the bar.
+        /// A green safe zone and white target marker are displayed.
+        /// Player must press the key when the moving marker lands inside the green zone.
+        /// </summary>
+        /// <param name="stopKey">The key the player must press to attempt a hit.</param>
+        /// <param name="targetPercent">Center of the safe zone as a 0.0-1.0 position along the bar.</param>
+        /// <param name="threshold">Half-width of the safe zone as a 0.0-1.0 fraction of the bar.</param>
+        /// <param name="speedMs">Time in milliseconds for one full bounce cycle.</param>
+        /// <returns>True if the player pressed the key while the marker was inside the safe zone.</returns>
         private bool SweetSpotInput(char stopKey, double targetPercent = 0.5, double threshold = 0.1, int speedMs = 1500)
         {
             while (Console.KeyAvailable) Console.ReadKey(true);
 
             var start = DateTime.Now;
             int totalBarLength = 30;
-            int cursorTop = Console.CursorTop;
 
-            // Calculate integer indices for the visual zone
             int targetIndex = (int)(targetPercent * totalBarLength);
-            int halfZoneWidth = (int)(threshold * totalBarLength);
-
-            // Ensure the zone is at least 1 character wide so it's never impossible
-            if (halfZoneWidth < 1) halfZoneWidth = 1;
-
+            int halfZoneWidth = Math.Max(1, (int)(threshold * totalBarLength));
             int zoneStart = Math.Max(0, targetIndex - halfZoneWidth);
             int zoneEnd = Math.Min(totalBarLength - 1, targetIndex + halfZoneWidth);
+
+            Console.WriteLine();
+            int cursorTop = Console.CursorTop;
+            Console.WriteLine();
 
             while (true)
             {
                 double elapsed = (DateTime.Now - start).TotalMilliseconds;
-                // Periodic bounce 0 to 1 to 0
                 double progress = (Math.Sin(elapsed / speedMs * Math.PI * 2) + 1) / 2;
                 int markerIndex = (int)(progress * totalBarLength);
 
-                // --- RENDER LOGIC ---
                 Console.SetCursorPosition(0, cursorTop);
-                Console.Write("[ ");
+                Console.Write($"  {TextColor.Cyan}▐{TextColor.Reset}");
+
                 for (int i = 0; i < totalBarLength; i++)
                 {
                     if (i == markerIndex)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.Write("X");
-                    }
+                        Console.Write($"{TextColor.Cyan}{TextColor.Bold}▌{TextColor.Reset}");   // Thin cyan marker
                     else if (i == targetIndex)
-                    {
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.Write("V");
-                    }
+                        Console.Write($"{TextColor.White}{TextColor.Bold}▓{TextColor.Yellow}");  // Exact target
                     else if (i >= zoneStart && i <= zoneEnd)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.Write("=");
-                    }
+                        Console.Write($"{TextColor.Green}▓{TextColor.Reset}");                  // Safe zone — medium block
                     else
-                    {
-                        Console.ForegroundColor = ConsoleColor.DarkGray;
-                        Console.Write("-");
-                    }
-                    Console.ResetColor();
+                        Console.Write($"{TextColor.Gray}▒{TextColor.Reset}");                   // Dead zone — light shade
                 }
-                Console.Write(" ] - SPACE TO HIT!   ");
 
-                // --- INPUT LOGIC ---
+                Console.Write($"{TextColor.Cyan}▌{TextColor.Reset}  PRESS {TextColor.Yellow}{TextColor.Bold}{char.ToUpper(stopKey)}{TextColor.Reset}!   ");
+
                 if (Console.KeyAvailable)
                 {
                     var key = Console.ReadKey(true).KeyChar;
                     if (char.ToLower(key) == char.ToLower(stopKey))
                     {
-                        // WIN CONDITION: Is the marker index inside the green zone index?
-                        bool isVisualHit = markerIndex >= zoneStart && markerIndex <= zoneEnd;
-
+                        bool hit = markerIndex >= zoneStart && markerIndex <= zoneEnd;
                         ClearLine(cursorTop);
-                        return isVisualHit;
+                        return hit;
                     }
                 }
 
@@ -217,94 +247,84 @@ namespace T4Dungeon.Game.Systems
             }
         }
 
+        /// <summary>
+        /// Sequence minigame — the player must perform a timed press multiple times in a row.
+        /// Each press must succeed within its individual time limit.
+        /// Failing any single press in the sequence counts as a full failure.
+        /// </summary>
+        /// <param name="key">The key the player must press for each step.</param>
+        /// <param name="count">Number of successful presses required to complete the sequence.</param>
+        /// <param name="timeLimitPerPress">Time limit in milliseconds for each individual press.</param>
+        /// <returns>True if all presses in the sequence were successful.</returns>
+        private bool SequenceInput(char key, int count, int timeLimitPerPress = 1000)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                _log($"{TextColor.Gray}({i + 1}/{count}){TextColor.Reset} QUICK! PRESS {TextColor.Yellow}{TextColor.Bold}{char.ToUpper(key)}{TextColor.Reset}!", false);
+
+                if (!TimedInput(key, timeLimitPerPress))
+                    return false;
+
+                Thread.Sleep(100);
+            }
+            return true;
+        }
+
         public void EnemyTurn()
         {
-            
             var move = _enemy.Moves[new Random().Next(_enemy.Moves.Count)];
 
-            _log($"{_enemy.Name} uses {move.Name}! PRESS {move.Key}!", false);
+            _log($"{TextColor.Red}{_enemy.Name}{TextColor.Reset} uses {TextColor.Yellow}{move.Name}{TextColor.Reset}! PRESS {TextColor.Yellow}{TextColor.Bold}{move.Key}{TextColor.Reset}!", false);
 
             bool success = false;
 
-            
             switch (move.Type)
             {
-                case "Timed":
-                    success = TimedInput(move.Key, move.TimeLimit);
-                    break;
-                case "Mash":
-                    success = MashInput(move.Key, move.Goal, move.TimeLimit);
-                    break;
-                case "SweetSpot":
-                    success = SweetSpotInput(move.Key, move.Target, move.Threshold);
-                    break;
-                case "Sequence":
-                    success = SequenceInput(move.Key, move.Count);
-                    break;
+                case "Timed": success = TimedInput(move.Key, move.TimeLimit); break;
+                case "Mash": success = MashInput(move.Key, move.Goal, move.TimeLimit); break;
+                case "SweetSpot": success = SweetSpotInput(move.Key, move.Target, move.Threshold); break;
+                case "Sequence": success = SequenceInput(move.Key, move.Count); break;
             }
 
             if (success)
-            {
-                _log($"Successfully countered {move.Name}!");
-            }
+                _log($"{TextColor.Green}Successfully countered {move.Name}!{TextColor.Reset}");
             else
             {
                 _player.TakeDamage(_enemy.Attack);
-                _log($"Failed! You took damage!");
+                _log($"{TextColor.Red}Failed! You took {_enemy.Attack} damage!{TextColor.Reset}");
             }
         }
 
         private void ProcessLoot()
         {
             Random rng = new Random();
-
-            // 1. Calculate Gold
-            // We fetch these values from the enemy definition
             var def = EnemyDatabase.Enemies.Values.First(e => e.Name == _enemy.Name);
             int goldDropped = rng.Next(def.MinGold, def.MaxGold + 1);
 
             _player.Gold += goldDropped;
-            _log($"The {_enemy.Name} dropped {goldDropped} gold!", true);
+            _log($"{TextColor.Yellow}The {_enemy.Name} dropped {goldDropped} gold!{TextColor.Reset}", true);
 
-            // 2. Roll for Items
             foreach (var loot in def.LootTable)
             {
                 if (rng.NextDouble() <= loot.Chance)
                 {
                     _player.Inventory.Add(loot.Id, 1);
                     var itemDef = ItemDatabase.Items[loot.Id];
-                    _log($"LOOTED: {itemDef.Name}!", true);
+                    _log($"{TextColor.Cyan}LOOTED: {itemDef.Name}!{TextColor.Reset}", true);
                 }
             }
-        }
-
-        private bool SequenceInput(char key, int count, int timeLimitPerPress = 1000)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                _log($"({i + 1}/{count}) QUICK! PRESS {char.ToUpper(key)}!", false);
-
-                if (!TimedInput(key, timeLimitPerPress))
-                {
-                    return false;
-                }
-
-                // Small buffer so one key press doesn't count for two
-                System.Threading.Thread.Sleep(100);
-            }
-            return true;
         }
 
         private void TakeDamage()
         {
             _player.HP -= _enemy.Attack;
-            _log("You took damage!");
+            _log($"{TextColor.Red}You took damage!{TextColor.Reset}");
         }
 
         public void Attack()
         {
             _enemy.HP -= _player.Attack;
-            _log($"You attacked the {_enemy.Name} for {_player.Attack} damage!");
+            _log($"You attacked {TextColor.Red}{_enemy.Name}{TextColor.Reset} for {TextColor.Yellow}{_player.Attack}{TextColor.Reset} damage!");
         }
 
         public void Defend()
@@ -316,6 +336,5 @@ namespace T4Dungeon.Game.Systems
         {
             return new Random().Next(100) < 50;
         }
-
     }
 }
