@@ -18,5 +18,19 @@
         }
 
         public void SetState(TutorialState state) => CurrentState = state;
+
+        #region TUTORIAL CONTENT
+        public string GetYellMessage()
+        {
+            return CurrentState switch
+            {
+                TutorialState.StartExploration => "Investigate the noise!",
+                TutorialState.CombatFirstContact => "Block the attack!",
+                TutorialState.DefendUsed => "Now counter-attack!",
+                TutorialState.LootInventory => "Check your rewards!",
+                _ => "That's not allowed right now."
+            };
+        }
+        #endregion
     }
 }
