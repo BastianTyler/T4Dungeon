@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
+using System.Text;
+using T4Dungeon.Game.Core;
 using T4Dungeon.Game.Models;
 using T4Dungeon.Game.Utils;
 using T4Dungeon.Generated;
@@ -12,8 +13,7 @@ namespace T4Dungeon.Game.Systems
     {
         private Player _player;
         private Enemy _enemy;
-        private bool _isTutorialActive; 
-        private int _tutorialStep;      
+        private TutorialManager _tutorial;
 
         private bool _combatOver;
         private string _message;
@@ -23,14 +23,12 @@ namespace T4Dungeon.Game.Systems
         public Enemy Enemy => _enemy;
         private Action<string, bool> _logger;
         private void _log(string m, bool w = true) => _logger?.Invoke(m, w);
-        public int GetTutorialStep() => _tutorialStep;
 
-        public CombatSystem(Player player, Enemy enemy, bool isTutorial, int tutorialStep, Action<string, bool> logger)
+        public CombatSystem(Player player, Enemy enemy, TutorialManager tutorial, Action<string, bool> logger)
         {
             _player = player;
             _enemy = enemy;
-            _isTutorialActive = isTutorial;
-            _tutorialStep = tutorialStep;
+            _tutorial = tutorial;
             _combatOver = false;
             _logger = logger;
             _log($"You encountered a {_enemy.Name}!", false);
@@ -88,10 +86,6 @@ namespace T4Dungeon.Game.Systems
             // We do NOT call EnemyTurn() here, effectively skipping it
         }
 
-        public void SetTutorialStep(int step)
-        {
-            _tutorialStep = step;
-        }
 
         /// <summary>
         /// Timed Press minigame — a bar fills left to right over the time limit.
@@ -444,13 +438,13 @@ namespace T4Dungeon.Game.Systems
             _player.IsDefending = true;
             _player.BaseDefense += 5;
 
-            if (_isTutorialActive && _tutorialStep == 1)
+            #region TUTORIAL CONTENT
+            if (_tutorial.IsActive && _tutorial.CurrentState == TutorialState.CombatFirstContact)
             {
-                _log("TUTORIAL: Defense +5 active for this turn!", true);
-                _log("Watch the slime's attack timing...", true);
-
-                _tutorialStep = 2; // Advance the step
+                _log("You blocked! Now try to attack.", true);
+                _tutorial.Advance(); // Moves state to DefendUsed
             }
+            #endregion
         }
 
         public void UseSkill(SkillId id)

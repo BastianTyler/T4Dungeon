@@ -7,7 +7,7 @@
         CombatFirstContact, // step 1: First turn logic
         DefendUsed,         // step 2: Player has defended
         AttackTaught,       // step 3: Player must attack
-        SkillUnlocked,      // step 4: Skill usage tutorial
+        SkillsUnlocked,      // step 4: Skill usage tutorial
         LootInventory,      // step 5: Forced inventory open
         UsePotion,          // step 6: Using the health potion
         EquipShield,        // step 7: Forcing equipment menu
