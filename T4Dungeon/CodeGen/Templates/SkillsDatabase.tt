@@ -14,8 +14,25 @@ public class SkillDef
     public string Name { get; set; }
     public string SkillType { get; set; }
     public int Value { get; set; }
-    public int Cost { get; set; }
     public string Description { get; set; }
+    public List<SkillStep> Steps { get; set; } = new();
+    public List<SkillCost> ResourceCosts { get; set; } = new();
+}
+
+public class SkillStep
+{
+    public string Type { get; set; }
+    public char Key { get; set; }
+    public int Goal { get; set; }
+    public int Time { get; set; }
+    public string FailMsg { get; set; }
+    public string ChainedHitBarPositions { get; set; }
+}
+
+public class SkillCost
+{
+    public string ResourceType { get; set; }
+    public int Amount { get; set; }
 }
 
 public static class SkillDatabase
@@ -35,8 +52,11 @@ public static class SkillDatabase
         var cleanName = name.Replace(" ", "");
         var type = node.Attributes["Type"].Value;
         var val = node.Attributes["Value"].Value;
-        var cost = node.Attributes["Cost"].Value;
+        var legacyCost = node.Attributes["Cost"]?.Value ?? "0";
         var desc = node.Attributes["Description"].Value;
+        
+        var costNodes = node.SelectNodes("Costs/Cost");
+        var stepNodes = node.SelectNodes("GameSteps/Step");
 #>
         {
             SkillId.<#= cleanName #>,
@@ -46,8 +66,47 @@ public static class SkillDatabase
                 Name = "<#= name #>",
                 SkillType = "<#= type #>",
                 Value = <#= val #>,
-                Cost = <#= cost #>,
-                Description = "<#= desc #>"
+                Description = "<#= desc #>",
+                ResourceCosts = new List<SkillCost>
+                {
+<# 
+                    if (costNodes.Count > 0) 
+                    {
+                        foreach(XmlNode cost in costNodes) 
+                        { 
+                            var cType = cost.Attributes["Type"].Value;
+                            var cVal = cost.Attributes["Value"].Value;
+#>
+                    new SkillCost { ResourceType = "<#= cType #>", Amount = <#= cVal #> },
+<# 
+                        } 
+                    }
+                    else 
+                    {
+                        // Fallback: If no <Costs> block exists, use the 'Cost' attribute as Mana
+#>
+                    new SkillCost { ResourceType = "Mana", Amount = <#= legacyCost #> },
+<#
+                    }
+#>
+                },
+                Steps = new List<SkillStep> 
+                {
+<# 
+                    foreach(XmlNode step in stepNodes) 
+                    { 
+                        var sType = step.Attributes["Type"]?.Value ?? "Auto";
+                        var sKey = step.Attributes["Key"]?.Value ?? " ";
+                        var sGoal = step.Attributes["Goal"]?.Value ?? "1";
+                        var sTime = step.Attributes["Time"]?.Value ?? "0";
+                        var sFail = step.Attributes["FailMsg"]?.Value ?? "Missed!";
+                        var sPositions = step.Attributes["ChainedHitBarPositions"]?.Value ?? "";
+#>
+                    new SkillStep { Type = "<#= sType #>", Key = '<#= sKey #>', Goal = <#= sGoal #>, Time = <#= sTime #>, FailMsg = "<#= sFail #>", ChainedHitBarPositions = "<#= sPositions #>" },
+<# 
+                    } 
+#>
+                }
             }
         }<#= i < nodes.Count - 1 ? "," : "" #>
 <#

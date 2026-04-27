@@ -15,10 +15,13 @@ namespace T4Dungeon.Game.Core
         private MapManager _mapManager;
         private UIContext _ui;
         private CombatSystem _combat;
+        private ShopInstance _currentShop;
 
         private readonly List<string> _messages = new();
+
         private bool _showInventory = false;
-        private ShopInstance _currentShop;
+        private bool _isTutorialActive = false;
+        private int _tutorialStep = 0;
         #endregion
 
         #region Core Loop
@@ -57,6 +60,11 @@ namespace T4Dungeon.Game.Core
 
                     case GameState.Combat:
                         RunCombatLoop();
+
+                        if (_isTutorialActive && _combat != null)
+                        {
+                            _tutorialStep = _combat.GetTutorialStep();
+                        }
                         break;
 
                     case GameState.Shop:
@@ -132,9 +140,29 @@ namespace T4Dungeon.Game.Core
         /// </summary>
         private void RunTutorialLoop()
         {
-            Log("Tutorial coming soon...", true);
-            _state = GameState.StartScreen;
-            SetStartScreen();
+            string mapPath = @"E:\VisualStudio\2026Repos\T4Dungeon\T4Dungeon\Data\Maps\tutorial_map.txt";
+
+            
+            _player ??= new Player();
+            _player.Inventory.Add(ItemId.IronSword, 1);
+            EquipItem(EquiptSlot.Weapon, ItemId.IronSword);
+            _mapManager ??= new MapManager(10, 10);
+            _isTutorialActive = true;
+
+            if (File.Exists(mapPath))
+            {
+                _mapManager.LoadMapFromFile(mapPath);
+                _state = GameState.Running;
+
+                SetMainMenu(); // Populate UI options for exploration
+                Log("Tutorial Loaded. Use the Move menu to navigate.", true);
+            }
+            else
+            {
+                Log($"Error: Map not found at {mapPath}", true);
+                _state = GameState.StartScreen;
+                SetStartScreen();
+            }
         }
 
         #endregion
@@ -144,14 +172,36 @@ namespace T4Dungeon.Game.Core
         /// Sets up the main exploration menu.
         /// </summary>
         private void SetMainMenu()
+{
+    _ui = MenuFactory.CreateMainMenu(
+        onMove: SetMoveMenu,
+        onEquip: SetEquiptMenu,
+        onInv: SetInventoryMenu,
+        onExit: () => _state = GameState.Exit
+    );
+
+    if (_isTutorialActive)
+    {
+        // PHASE 1: Initial Movement
+        if (_tutorialStep == 0)
         {
-            _ui = MenuFactory.CreateMainMenu(
-                onMove: SetMoveMenu,
-                onEquip: SetEquiptMenu,
-                onInv: SetInventoryMenu,
-                onExit: () => _state = GameState.Exit
-            );
+            _ui.Options = _ui.Options.Where(o => o.Text == "Move").ToList();
         }
+        // PHASE 2: Post-Combat Loot Check
+        else if (_tutorialStep == 5)
+        {
+            // Restrict to only the Inventory option
+            _ui.Options = _ui.Options.Where(o => o.Text == "Open Inventory").ToList();
+
+            // Optional: Add a flavor hint to the menu button
+            var invOpt = _ui.Options.FirstOrDefault();
+            if (invOpt != null)
+            {
+                invOpt.Text = "Open Inventory (Check your loot!)";
+            }
+        }
+    }
+}
 
         /// <summary>
         /// Sets up the movement direction menu.
@@ -165,6 +215,21 @@ namespace T4Dungeon.Game.Core
                 right: () => MovePlayer(1, 0),
                 back: SetMainMenu
             );
+
+            if (_isTutorialActive && _tutorialStep == 0)
+            {
+                // Only allow "Down" to reach the Slime and "Back" to return to the main menu
+                _ui.Options = _ui.Options
+                    .Where(opt => opt.Text == "Down" || opt.Text == "Back")
+                    .ToList();
+
+                
+                var downOpt = _ui.Options.FirstOrDefault(o => o.Text == "Down");
+                if (downOpt != null)
+                {
+                    downOpt.Text = "Down (Investigate the rustling...)";
+                }
+            }
         }
 
         /// <summary>
@@ -190,11 +255,30 @@ namespace T4Dungeon.Game.Core
         private void SetCombatMenu()
         {
             _ui = MenuFactory.CreateCombatMenu(
-                onAttack: () => _combat.RunTurn(_combat.Attack),
-                onDefend: () => _combat.RunTurn(_combat.Defend),
-                onFlee: AttemptFlee, // Refactored flee logic into a method
+                onAttack: () => {
+                    // Manual control for tutorial step 3
+                    if (_isTutorialActive && _tutorialStep == 3) _combat.Attack();
+                    else _combat.RunTurn(_combat.Attack);
+                },
+                onSkill: SetSkillMenu,
+                onDefend: () => {
+                    // Manual control for tutorial step 3
+                    if (_isTutorialActive && _tutorialStep == 3) _combat.Defend();
+                    else _combat.RunTurn(_combat.Defend);
+                },
+                onFlee: AttemptFlee,
                 onInv: SetInventoryMenu
             );
+
+            if (_isTutorialActive)
+            {
+                if (_tutorialStep <= 2)
+                    _ui.Options = _ui.Options.Where(o => o.Text == "Defend").ToList();
+                else if (_tutorialStep == 3)
+                    _ui.Options = _ui.Options.Where(o => o.Text == "Attack" || o.Text == "Defend").ToList();
+                else if (_tutorialStep >= 4)
+                    _ui.Options = _ui.Options.Where(o => o.Text == "Attack" || o.Text == "Defend" || o.Text == "Skills").ToList();
+            }
         }
 
         /// <summary>
@@ -222,15 +306,28 @@ namespace T4Dungeon.Game.Core
             );
         }
 
-        /// <summary>
-        /// Placeholder for combat skill menu.
-        /// </summary>
         private void SetSkillMenu()
         {
-            _ui.Options = new List<MenuOption>
-            {
-                new MenuOption { Text = "Back", Action = SetCombatMenu }
-            };
+
+            var weaponId = _player.Equipment[EquiptSlot.Weapon];
+
+            var equippedSkills = _player.Equipment.Values
+                .Where(id => id.HasValue)
+                .Select(id => ItemDatabase.Items[id.Value])
+                .SelectMany(item => item.GrantedSkills)
+                .Select(skillId => SkillDatabase.Skills[skillId])
+                .ToList();
+
+            _ui = MenuFactory.CreateSkillMenu(equippedSkills,
+                (id) => {
+                    // Use RunTurn so the enemy actually gets a chance to hit back!
+                    _combat.RunTurn(() => _combat.UseSkill(id));
+
+                    // CRITICAL: Call this to go back to the main combat menu options
+                    SetCombatMenu();
+                },
+                () => SetCombatMenu() // Back button logic
+            );
         }
         #endregion
 
@@ -264,18 +361,92 @@ namespace T4Dungeon.Game.Core
         /// </summary>
         private void RunCombatLoop()
         {
+            // Step 1: Initial Tutorial Setup
+            if (_isTutorialActive && _tutorialStep == 1)
+            {
+                // Ensure the menu is filtered BEFORE the first render
+                SetCombatMenu();
+
+                Log("TUTORIAL: A Slime appeared! Combat is turn-based.", true);
+                Log("After you act, the enemy will get a chance to attack.", true);
+                Log("Pay attention to the warnings and the minigame area.", true);
+            }
+            // Step 2: Advance to Attack phase (Triggered after player hits Defend)
+            else if (_isTutorialActive && _tutorialStep == 2)
+            {
+                Log("Well done! You survived. Now it's time to fight back.", true);
+                // 2. Advance the state and rebuild the menu IMMEDIATELY
+                _tutorialStep = 3;
+                _combat.SetTutorialStep(_tutorialStep);
+                SetCombatMenu();
+
+                // 3. Show the next message (Now the menu will show Attack and Defend)
+                Log("Notice that 'Attack' is now available in your menu.", true);
+                Log("Try Attacking the Slime, remember, after your attack the Slime will make it's own move.", true);
+            }
+
+            if (_ui.Options.Any(o => o.Text == "Move"))
+            {
+                SetCombatMenu();
+            }
+
             ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, false, true, _combat.Enemy);
 
+            int enemyHpBefore = _combat.Enemy.HP;
             HandleInput();
+
+            // DETECTION BRANCH
+            if (_isTutorialActive && _tutorialStep == 3)
+            {
+                // 1. If they defended, IsDefending will still be TRUE because 
+                // we didn't call RunTurn (which usually resets it).
+                if (_player.IsDefending)
+                {
+                    Log("No, get in there and attack! Defense won't win this fight.", true);
+
+                    // Manual Reset: Since we didn't run a full turn, we must clear the buff manually
+                    _player.IsDefending = false;
+                    if (_player.BaseDefense > 5) _player.BaseDefense -= 5;
+
+                    // We do NOT call _combat.EnemyTurn(), so the loop simply restarts.
+                }
+                // 2. If they attacked, the Enemy HP will be lower.
+                else if (_combat.Enemy.HP < enemyHpBefore)
+                {
+                    Log("Great hit! Now watch out, the Slime is counter-attacking!", true);
+
+                    // MANUALLY trigger the enemy response now that they've followed instructions
+                    _combat.EnemyTurn();
+
+                    Log("You've got the basics down. I've unlocked 'Skills' for you.", true);
+
+                    _tutorialStep = 4;
+                    _combat.SetTutorialStep(_tutorialStep);
+                    SetCombatMenu();
+                }
+            }
 
             if (_combat.IsOver)
             {
+                // Sync the final step from combat
+                _tutorialStep = _combat.GetTutorialStep();
+
                 _state = GameState.Running;
+
+                if (_isTutorialActive && _tutorialStep >= 4)
+                {
+                    Log("Good job! Check what's in your inventory.", true);
+
+                    // Advance to the "Inventory Required" step
+                    _tutorialStep = 5;
+                }
+
+                // This call will now respect the new step 5 filter
                 SetMainMenu();
             }
         }
 
-                private static readonly List<(EnemyId id, int weight)> _spawnTable = new()
+        private static readonly List<(EnemyId id, int weight)> _spawnTable = new()
         {
             (EnemyId.Slime,  0),
             (EnemyId.Goblin, 100),
@@ -302,9 +473,15 @@ namespace T4Dungeon.Game.Core
         /// </summary>
         private void StartCombatTransition()
         {
-            var randomId = GetRandomEnemy();
-            _combat = new CombatSystem(_player, new Enemy(randomId), Log);
+            EnemyId targetId = _isTutorialActive ? EnemyId.Slime : GetRandomEnemy();
+
+            // Ensure the step is at least 1 for the tutorial
+            if (_isTutorialActive && _tutorialStep == 0) _tutorialStep = 1;
+
+            _combat = new CombatSystem(_player, new Enemy(targetId), _isTutorialActive, _tutorialStep, Log);
             _state = GameState.Combat;
+
+            // This will now use the filtered logic we added in Step 1
             SetCombatMenu();
         }
 
@@ -342,6 +519,17 @@ namespace T4Dungeon.Game.Core
             cell.Explored = true;
 
             InteractWithCell(cell);
+
+            // Check if we hit the tutorial combat trigger
+            if (_isTutorialActive && _tutorialStep == 0)
+            {
+                var currentCell = _mapManager.Grid[_mapManager.PlayerPosition.X, _mapManager.PlayerPosition.Y];
+                if (currentCell.Type == CellType.Combat)
+                {
+                    _tutorialStep = 1; // Mark that we've started the first lesson
+                                       // The combat loop will now fire
+                }
+            }
         }
 
         /// <summary>

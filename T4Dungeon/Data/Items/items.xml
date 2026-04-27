@@ -6,6 +6,7 @@
 		</Item>
 		<Item Id="1002" Name="Iron Sword" Slot="Weapon" IsStackable="false" IsConsumable="false" BasePrice="120" Category="Weapon" Description="Reliable steel.">
 			<Stats AttackBonus="5" />
+			<Skill Name="Cleave" />
 		</Item>
 		<Item Id="1003" Name="Warhammer" Slot="Weapon" IsStackable="false" IsConsumable="false" BasePrice="250" Category="Weapon" Description="Heavy and brutal.">
 			<Stats AttackBonus="9" />

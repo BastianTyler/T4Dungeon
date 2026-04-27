@@ -15,6 +15,7 @@
             var def = EnemyDatabase.Enemies[id];
             Name = def.Name;
             HP = def.HP;
+            MaxHp = def.MaxHp;
             Attack = def.Attack;
             Moves = def.Moves;
         }

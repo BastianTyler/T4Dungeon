@@ -43,6 +43,50 @@ namespace T4Dungeon.Game.Systems
             FillCells();
         }
 
+        public void LoadMapFromFile(string path)
+        {
+            if (!File.Exists(path)) return;
+
+            string[] lines = File.ReadAllLines(path);
+            int height = lines.Length;
+            int width = lines[0].Length;
+
+            // Resize grid to match the file
+            Grid = new Cell[width, height];
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    char c = lines[y][x];
+                    Grid[x, y] = new Cell(x, y);
+                    Grid[x, y].Explored = false;
+
+                    // Handle Special Characters
+                    switch (c)
+                    {
+                        case 'P':
+                            PlayerPosition = new Vector2Int(x, y);
+                            Grid[x, y].Type = CellType.Empty;
+                            Grid[x, y].Explored = true;
+                            break;
+                        case 'C': Grid[x, y].Type = CellType.Combat; break;
+                        case 'S': Grid[x, y].Type = CellType.Shop; break;
+                        case 'T': Grid[x, y].Type = CellType.Treasure; break;
+                        case 'E': Grid[x, y].Type = CellType.Exit; break;
+                        case 'B': Grid[x, y].Type = CellType.Combat; break; // Boss logic
+                        default: Grid[x, y].Type = CellType.Empty; break;
+                    }
+
+                    // Initialize the event for the cell
+                    Grid[x, y].Event = CellEventFactory.Create(Grid[x, y].Type);
+                }
+            }
+
+            // Initial reveal for the starting area
+            //RevealAdjacent(PlayerPosition);
+        }
+
         public void PlaceExit()
         {
             int x, y;

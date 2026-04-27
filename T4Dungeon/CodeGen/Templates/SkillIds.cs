@@ -8,6 +8,7 @@ namespace T4Dungeon.Generated
         Heal = 3002,
         Sunder = 3003,
         Cleave = 3004,
+        HeavyCleave = 3011,
         ShieldBash = 3005,
         QuickShot = 3006,
         LightningBolt = 3007,

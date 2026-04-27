@@ -12,6 +12,7 @@ public class MoveDef
     public int Count { get; set; }
     public double Target { get; set; }
     public double Threshold { get; set; }
+    public string ChainedHitBarPositions { get; set; }
 }
 
 public class LootItemDef {
@@ -65,7 +66,7 @@ public static class EnemyDatabase
                 {
                     new LootItemDef 
                     { 
-                        Id = (ItemId)2001, 
+                        Id = (ItemId)3001, 
                         Chance = 0.2 
                     }
                 } // End of LootTable List

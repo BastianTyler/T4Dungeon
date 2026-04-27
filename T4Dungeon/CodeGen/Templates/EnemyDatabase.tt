@@ -17,6 +17,7 @@ public class MoveDef
     public int Count { get; set; }
     public double Target { get; set; }
     public double Threshold { get; set; }
+    public string ChainedHitBarPositions { get; set; }
 }
 
 public class LootItemDef {

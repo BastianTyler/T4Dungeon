@@ -12,6 +12,8 @@ namespace T4Dungeon.Game.Systems
     {
         private Player _player;
         private Enemy _enemy;
+        private bool _isTutorialActive; 
+        private int _tutorialStep;      
 
         private bool _combatOver;
         private string _message;
@@ -21,11 +23,14 @@ namespace T4Dungeon.Game.Systems
         public Enemy Enemy => _enemy;
         private Action<string, bool> _logger;
         private void _log(string m, bool w = true) => _logger?.Invoke(m, w);
+        public int GetTutorialStep() => _tutorialStep;
 
-        public CombatSystem(Player player, Enemy enemy, Action<string, bool> logger)
+        public CombatSystem(Player player, Enemy enemy, bool isTutorial, int tutorialStep, Action<string, bool> logger)
         {
             _player = player;
             _enemy = enemy;
+            _isTutorialActive = isTutorial;
+            _tutorialStep = tutorialStep;
             _combatOver = false;
             _logger = logger;
             _log($"You encountered a {_enemy.Name}!", false);
@@ -34,9 +39,22 @@ namespace T4Dungeon.Game.Systems
         public void RunTurn(Action playerAction)
         {
             if (_combatOver) return;
+
+            // 1. Player acts (This calls Defend() or Attack())
             playerAction?.Invoke();
+
             if (CheckEnd()) return;
+
+            // 2. Enemy acts (This is where the real-time minigame happens)
             EnemyTurn();
+
+            // 3. Post-turn cleanup: Remove the temporary defense boost
+            if (_player.IsDefending)
+            {
+                _player.BaseDefense -= 5;
+                _player.IsDefending = false;
+            }
+
             CheckEnd();
         }
 
@@ -57,6 +75,22 @@ namespace T4Dungeon.Game.Systems
                 return true;
             }
             return false;
+        }
+
+        public void SkipEnemyTurn()
+        {
+            // Reset the defense boost so it's not permanent
+            if (_player.IsDefending)
+            {
+                _player.BaseDefense -= 5;
+                _player.IsDefending = false;
+            }
+            // We do NOT call EnemyTurn() here, effectively skipping it
+        }
+
+        public void SetTutorialStep(int step)
+        {
+            _tutorialStep = step;
         }
 
         /// <summary>
@@ -247,6 +281,8 @@ namespace T4Dungeon.Game.Systems
             }
         }
 
+
+
         /// <summary>
         /// Sequence minigame — the player must perform a timed press multiple times in a row.
         /// Each press must succeed within its individual time limit.
@@ -270,6 +306,81 @@ namespace T4Dungeon.Game.Systems
             return true;
         }
 
+        private bool ChainedHitBarInput(string data, int totalTime, int barWidth = 40)
+        {
+            // Parse target positions from XML Data attribute
+            var targets = data.Split(',')
+                .Select(s => new SweetspotTarget
+                {
+                    Center = float.Parse(s.Trim()),
+                    Width = 0.08f,
+                    IsHit = false
+                }).ToList();
+
+            DateTime startTime = DateTime.Now;
+            float cursor = 0f;
+
+            // Flush the buffer to prevent instant fails from menu selection
+            while (Console.KeyAvailable) Console.ReadKey(true);
+
+            while (cursor < 1.0f)
+            {
+                float elapsed = (float)(DateTime.Now - startTime).TotalMilliseconds;
+                cursor = elapsed / totalTime;
+
+                RenderChainedBar(cursor, targets, barWidth);
+
+                if (Console.KeyAvailable)
+                {
+                    var key = Console.ReadKey(true).Key;
+                    if (key == ConsoleKey.Spacebar)
+                    {
+                        // Check if the cursor is inside ANY target zone that hasn't been hit
+                        for (int i = 0; i < targets.Count; i++)
+                        {
+                            var t = targets[i];
+                            if (!t.IsHit && Math.Abs(cursor - t.Center) < t.Width / 2)
+                            {
+                                t.IsHit = true;
+                                targets[i] = t;
+                                break;
+                            }
+                        }
+                    }
+                }
+                Thread.Sleep(15);
+            }
+
+            // Success if all zones were tapped
+            return targets.All(t => t.IsHit);
+        }
+
+        private void RenderChainedBar(float cursor, List<SweetspotTarget> targets, int width)
+        {
+            Console.SetCursorPosition(0, Console.CursorTop);
+
+            // Instruction Line
+            Console.Write($"{TextColor.Cyan}  [ SPACE ]{TextColor.Reset} to HIT!  ");
+
+            Console.Write("[");
+            for (int i = 0; i < width; i++)
+            {
+                float pos = (float)i / width;
+                bool isCursor = Math.Abs(pos - cursor) < (1.5f / width);
+                var target = targets.FirstOrDefault(t => Math.Abs(pos - t.Center) < t.Width / 2);
+
+                if (isCursor)
+                    Console.Write($"{TextColor.White}|{TextColor.Reset}");
+                else if (target.Center != 0)
+                    Console.Write(target.IsHit ? $"{TextColor.Green}█{TextColor.Reset}" : $"{TextColor.Red}▒{TextColor.Reset}");
+                else
+                    Console.Write($"{TextColor.Gray}-{TextColor.Reset}");
+            }
+
+            int hits = targets.Count(t => t.IsHit);
+            Console.Write($"]  {TextColor.Yellow}{hits}/{targets.Count}{TextColor.Reset}  ");
+        }
+
         public void EnemyTurn()
         {
             var move = _enemy.Moves[new Random().Next(_enemy.Moves.Count)];
@@ -284,6 +395,7 @@ namespace T4Dungeon.Game.Systems
                 case "Mash": success = MashInput(move.Key, move.Goal, move.TimeLimit); break;
                 case "SweetSpot": success = SweetSpotInput(move.Key, move.Target, move.Threshold); break;
                 case "Sequence": success = SequenceInput(move.Key, move.Count); break;
+                case "ChaineHitBar": success = ChainedHitBarInput(move.ChainedHitBarPositions, move.TimeLimit); break;
             }
 
             if (success)
@@ -330,6 +442,113 @@ namespace T4Dungeon.Game.Systems
         public void Defend()
         {
             _player.IsDefending = true;
+            _player.BaseDefense += 5;
+
+            if (_isTutorialActive && _tutorialStep == 1)
+            {
+                _log("TUTORIAL: Defense +5 active for this turn!", true);
+                _log("Watch the slime's attack timing...", true);
+
+                _tutorialStep = 2; // Advance the step
+            }
+        }
+
+        public void UseSkill(SkillId id)
+        {
+            var skill = SkillDatabase.Skills[id];
+
+            // 1. Validation: Check if the player can afford EVERY required resource
+            foreach (var cost in skill.ResourceCosts)
+            {
+                bool hasEnough = cost.ResourceType switch
+                {
+                    "Mana" => _player.BaseMana >= cost.Amount,
+                    "Stamina" => _player.Stamina >= cost.Amount,
+                    "HP" => _player.HP > cost.Amount,
+                    _ => true
+                };
+
+                if (!hasEnough)
+                {
+                    _log($"{TextColor.Red}Not enough {cost.ResourceType}!{TextColor.Reset}");
+                    return;
+                }
+            }
+
+            // --- DEDUCTION POINT ---
+            // Deduct resources as soon as the attempt starts so failures still cost energy
+            foreach (var cost in skill.ResourceCosts)
+            {
+                if (cost.ResourceType == "Mana") _player.BaseMana -= cost.Amount;
+                else if (cost.ResourceType == "Stamina") _player.Stamina -= cost.Amount;
+                else if (cost.ResourceType == "HP") _player.HP -= cost.Amount;
+            }
+
+            bool totalSuccess = true;
+
+            // 2. Run Mini-games
+            foreach (var step in skill.Steps)
+            {
+                // FIX: The variable is declared and assigned here
+                bool stepSuccess = step.Type switch
+                {
+                    "Mash" => MashInput(step.Key, step.Goal, step.Time),
+                    "Timed" => TimedInput(step.Key, step.Time),
+                    "Sequence" => SequenceInput(step.Key, step.Goal, step.Time),
+                    "ChainedHitBar" => ChainedHitBarInput(step.ChainedHitBarPositions, step.Time),
+                    _ => true
+                };
+
+                // Now stepSuccess is in scope for this check
+                if (!stepSuccess)
+                {
+                    _log($"{TextColor.Red}{step.FailMsg}{TextColor.Reset}");
+                    totalSuccess = false;
+                    break;
+                }
+            }
+
+            // 3. Execution: Only apply effects (damage/healing) if mini-game succeeded
+            if (totalSuccess)
+            {
+                ApplySkillEffects(skill);
+                _log($"{TextColor.Green}Success!{TextColor.Reset} Executed {skill.Name}.");
+            }
+            else
+            {
+                _log($"{TextColor.Red}Skill Failed! Resources wasted.{TextColor.Reset}");
+            }
+        }
+
+        private void ApplySkillEffects(SkillDef skill)
+        {
+            switch (skill.SkillType)
+            {
+                case "Damage":
+                    int damage = _player.Attack + skill.Value;
+                    _enemy.HP -= damage;
+                    _log($"Dealt {TextColor.Yellow}{damage}{TextColor.Reset} damage to {TextColor.Red}{_enemy.Name}{TextColor.Reset}!");
+                    break;
+
+                case "Healing":
+                    _player.HP = Math.Min(_player.MaxHP, _player.HP + skill.Value);
+                    _log($"Restored {TextColor.Green}{skill.Value}{TextColor.Reset} HP!");
+                    break;
+
+                case "Mana":
+                    _player.BaseMana += skill.Value;
+                    _log($"Restored {TextColor.Cyan}{skill.Value}{TextColor.Reset} Mana!");
+                    break;
+            }
+
+            //// Apply Stun logic if defined in XML
+            //if (skill.StunDuration > 0)
+            //{
+            //    // Assuming you add these properties to your Enemy model
+            //    _enemy.IsStunned = true;
+            //    _enemy.StunTurns = skill.StunDuration;
+            //    _log($"{TextColor.Magenta}{_enemy.Name} is stunned for {skill.StunDuration} turns!{TextColor.Reset}");
+            //}
         }
 
         public bool TryFlee()

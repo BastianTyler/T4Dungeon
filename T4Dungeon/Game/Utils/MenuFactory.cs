@@ -58,18 +58,52 @@ namespace T4Dungeon.Game.Utils
             return ui;
         }
 
-        public static UIContext CreateCombatMenu(Action onAttack, Action onDefend, Action onFlee, Action onInv)
+        public static UIContext CreateCombatMenu(Action onAttack, Action onDefend, Action onSkill, Action onFlee, Action onInv)
         {
             return new UIContext
             {
                 Options = new List<MenuOption>
                 {
                     new MenuOption { Text = "Attack", Action = onAttack },
+                    new MenuOption { Text = "Skills", Action = onSkill },
                     new MenuOption { Text = "Defend", Action = onDefend },
                     new MenuOption { Text = "Attempt Flee", Action = onFlee },
                     new MenuOption { Text = "Open Inventory", Action = onInv }
                 }
             };
+        }
+
+        public static UIContext CreateSkillMenu(List<SkillDef> availableSkills, Action<SkillId> onSkillSelect, Action onBack)
+        {
+            var ui = new UIContext { Options = new List<MenuOption>() };
+
+            foreach (var skill in availableSkills)
+            {
+                // 1. Determine the label based on SkillType
+                string valueLabel = skill.SkillType switch
+                {
+                    "Damage" => "DMG",
+                    "Healing" => "HEAL",
+                    "Mana" => "RECV", // For things like Meditate
+                    _ => "VAL"   // Default fallback
+                };
+
+                // 2. Format shorthands for the costs (MP, SP, HP)
+                string costString = string.Join(", ", skill.ResourceCosts.Select(c =>
+                    $"{(c.ResourceType == "Mana" ? "MP" : c.ResourceType == "Stamina" ? "SP" : c.ResourceType)} {c.Amount}"));
+
+                // 3. Build the aligned string
+                string menuText = $"{skill.Name.PadRight(12)} | {valueLabel.PadRight(4)}: {skill.Value.ToString().PadRight(3)} | COST: {costString}";
+
+                ui.Options.Add(new MenuOption
+                {
+                    Text = menuText,
+                    Action = () => onSkillSelect(skill.Id)
+                });
+            }
+
+            ui.Options.Add(new MenuOption { Text = "Back", Action = onBack });
+            return ui;
         }
 
         public static UIContext CreateEquipmentMenu(Player player, Action<EquiptSlot> onSelectSlot, Action onBack)

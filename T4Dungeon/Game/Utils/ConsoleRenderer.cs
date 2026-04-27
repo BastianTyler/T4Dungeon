@@ -82,16 +82,35 @@ public static class ConsoleRenderer
 
     private static void DrawPlayerStats(Player player)
     {
-        // HP color shifts green → yellow → red based on health percentage
-        double hpPercent = (double)player.HP / player.MaxHP;
-        string hpColor = hpPercent > 0.6 ? TextColor.Green : hpPercent > 0.3 ? TextColor.Yellow : TextColor.Red;
+        // Health Color Logic
+        double hpPct = (double)player.HP / player.MaxHP;
+        string hpColor = hpPct > 0.6 ? TextColor.Green : hpPct > 0.3 ? TextColor.Yellow : TextColor.Red;
 
-        Console.Write($"{TextColor.Cyan}HP: {hpColor}{TextColor.Bold}{player.HP}/{player.MaxHP}{TextColor.Reset}");
-        Console.Write($"  {TextColor.Gray}|{TextColor.Reset}  ATK: {TextColor.White}{player.Attack}{TextColor.Reset}");
-        Console.Write($"  {TextColor.Gray}|{TextColor.Reset}  DEF: {TextColor.White}{player.Defense}{TextColor.Reset}");
-        Console.Write($"  {TextColor.Gray}|{TextColor.Reset}  ");
+        // Stamina Color Logic
+        double spPct = (double)player.Stamina / player.MaxStamina;
+        string spColor = spPct > 0.4 ? TextColor.Yellow : TextColor.Red;
+
+        // Segment 1: HP
+        Console.Write($"{TextColor.Bold}HP: {hpColor}{player.HP}/{player.MaxHP}{TextColor.Reset}  ");
+        Console.Write($"{TextColor.Gray}|{TextColor.Reset}  ");
+
+        // Segment 2: MP (Cyan)
+        Console.Write($"{TextColor.Bold}MP: {TextColor.Cyan}{player.BaseMana}/{player.MaxMana}{TextColor.Reset}  ");
+        Console.Write($"{TextColor.Gray}|{TextColor.Reset}  ");
+
+        // Segment 3: SP (Stamina)
+        Console.Write($"{TextColor.Bold}SP: {spColor}{player.Stamina}/{player.MaxStamina}{TextColor.Reset}  ");
+        Console.Write($"{TextColor.Gray}|{TextColor.Reset}  ");
+
+        // Segment 4: ATK/DEF
+        Console.Write($"{TextColor.Gray}ATK:{TextColor.White}{player.Attack}{TextColor.Reset} ");
+        Console.Write($"{TextColor.Gray}DEF:{TextColor.White}{player.Defense}{TextColor.Reset}  ");
+        Console.Write($"{TextColor.Gray}|{TextColor.Reset}  ");
+
+        // Segment 5: Gold (Ends with NewLine)
         Console.WriteLine($"{TextColor.Yellow}{TextColor.Bold}GOLD: {player.Gold}{TextColor.Reset}");
-        Console.WriteLine($"{TextColor.Gray}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{TextColor.Reset}");
+
+        Console.WriteLine($"{TextColor.Gray}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{TextColor.Reset}");
     }
 
     private static void DrawLeftMenu(UIContext ui, MapManager? map, bool isCombat, Enemy? currentEnemy = null)
