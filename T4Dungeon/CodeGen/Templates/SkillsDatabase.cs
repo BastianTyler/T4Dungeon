@@ -9,8 +9,25 @@ public class SkillDef
     public string Name { get; set; }
     public string SkillType { get; set; }
     public int Value { get; set; }
-    public int Cost { get; set; }
     public string Description { get; set; }
+    public List<SkillStep> Steps { get; set; } = new();
+    public List<SkillCost> ResourceCosts { get; set; } = new();
+}
+
+public class SkillStep
+{
+    public string Type { get; set; }
+    public char Key { get; set; }
+    public int Goal { get; set; }
+    public int Time { get; set; }
+    public string FailMsg { get; set; }
+    public string ChainedHitBarPositions { get; set; }
+}
+
+public class SkillCost
+{
+    public string ResourceType { get; set; }
+    public int Amount { get; set; }
 }
 
 public static class SkillDatabase
@@ -25,8 +42,15 @@ public static class SkillDatabase
                 Name = "Fireball",
                 SkillType = "Damage",
                 Value = 20,
-                Cost = 8,
-                Description = "A blast of fire."
+                Description = "A blast of fire.",
+                ResourceCosts = new List<SkillCost>
+                {
+                    new SkillCost { ResourceType = "Mana", Amount = 8 },
+                },
+                Steps = new List<SkillStep> 
+                {
+                    new SkillStep { Type = "Timed", Key = 'F', Goal = 1, Time = 1200, FailMsg = "The flames sputtered out!", ChainedHitBarPositions = "" },
+                }
             }
         },
         {
@@ -37,8 +61,14 @@ public static class SkillDatabase
                 Name = "Heal",
                 SkillType = "Healing",
                 Value = 25,
-                Cost = 10,
-                Description = "Restores health."
+                Description = "Restores health.",
+                ResourceCosts = new List<SkillCost>
+                {
+                    new SkillCost { ResourceType = "Mana", Amount = 10 },
+                },
+                Steps = new List<SkillStep> 
+                {
+                }
             }
         },
         {
@@ -49,8 +79,14 @@ public static class SkillDatabase
                 Name = "Sunder",
                 SkillType = "Damage",
                 Value = 12,
-                Cost = 4,
-                Description = "Reduces target defense."
+                Description = "Reduces target defense.",
+                ResourceCosts = new List<SkillCost>
+                {
+                    new SkillCost { ResourceType = "Mana", Amount = 4 },
+                },
+                Steps = new List<SkillStep> 
+                {
+                }
             }
         },
         {
@@ -61,8 +97,35 @@ public static class SkillDatabase
                 Name = "Cleave",
                 SkillType = "Damage",
                 Value = 15,
-                Cost = 5,
-                Description = "A wide swinging strike."
+                Description = "A wide swinging strike.",
+                ResourceCosts = new List<SkillCost>
+                {
+                    new SkillCost { ResourceType = "Stamina", Amount = 25 },
+                },
+                Steps = new List<SkillStep> 
+                {
+                    new SkillStep { Type = "ChainedHitBar", Key = ' ', Goal = 1, Time = 3000, FailMsg = "Momentum lost!", ChainedHitBarPositions = "0.25, 0.5, 0.75" },
+                }
+            }
+        },
+        {
+            SkillId.HeavyCleave,
+            new SkillDef
+            {
+                Id = SkillId.HeavyCleave,
+                Name = "Heavy Cleave",
+                SkillType = "Damage",
+                Value = 35,
+                Description = "A brutal two-stage overhead strike.",
+                ResourceCosts = new List<SkillCost>
+                {
+                    new SkillCost { ResourceType = "Mana", Amount = 12 },
+                },
+                Steps = new List<SkillStep> 
+                {
+                    new SkillStep { Type = "Mash", Key = 'H', Goal = 20, Time = 2500, FailMsg = "The weight of the blade was too much!", ChainedHitBarPositions = "" },
+                    new SkillStep { Type = "Timed", Key = 'X', Goal = 1, Time = 600, FailMsg = "You swung wide and hit the dirt!", ChainedHitBarPositions = "" },
+                }
             }
         },
         {
@@ -73,8 +136,14 @@ public static class SkillDatabase
                 Name = "Shield Bash",
                 SkillType = "Damage",
                 Value = 8,
-                Cost = 3,
-                Description = "Hits with shield edge."
+                Description = "Hits with shield edge.",
+                ResourceCosts = new List<SkillCost>
+                {
+                    new SkillCost { ResourceType = "Mana", Amount = 3 },
+                },
+                Steps = new List<SkillStep> 
+                {
+                }
             }
         },
         {
@@ -85,8 +154,15 @@ public static class SkillDatabase
                 Name = "Quick Shot",
                 SkillType = "Damage",
                 Value = 10,
-                Cost = 2,
-                Description = "Fast but weak shot."
+                Description = "Fast but weak shot.",
+                ResourceCosts = new List<SkillCost>
+                {
+                    new SkillCost { ResourceType = "Mana", Amount = 2 },
+                },
+                Steps = new List<SkillStep> 
+                {
+                    new SkillStep { Type = "Timed", Key = 'Q', Goal = 1, Time = 500, FailMsg = "Slow on the draw!", ChainedHitBarPositions = "" },
+                }
             }
         },
         {
@@ -97,8 +173,14 @@ public static class SkillDatabase
                 Name = "Lightning Bolt",
                 SkillType = "Damage",
                 Value = 35,
-                Cost = 15,
-                Description = "High energy strike."
+                Description = "High energy strike.",
+                ResourceCosts = new List<SkillCost>
+                {
+                    new SkillCost { ResourceType = "Mana", Amount = 15 },
+                },
+                Steps = new List<SkillStep> 
+                {
+                }
             }
         },
         {
@@ -109,8 +191,14 @@ public static class SkillDatabase
                 Name = "Meditate",
                 SkillType = "Mana",
                 Value = 15,
-                Cost = 0,
-                Description = "Restores mana."
+                Description = "Restores mana.",
+                ResourceCosts = new List<SkillCost>
+                {
+                    new SkillCost { ResourceType = "Mana", Amount = 0 },
+                },
+                Steps = new List<SkillStep> 
+                {
+                }
             }
         },
         {
@@ -121,8 +209,14 @@ public static class SkillDatabase
                 Name = "Bloodlust",
                 SkillType = "Damage",
                 Value = 25,
-                Cost = 5,
-                Description = "Powerful blow, hurts self."
+                Description = "Powerful blow, hurts self.",
+                ResourceCosts = new List<SkillCost>
+                {
+                    new SkillCost { ResourceType = "Mana", Amount = 5 },
+                },
+                Steps = new List<SkillStep> 
+                {
+                }
             }
         },
         {
@@ -133,8 +227,14 @@ public static class SkillDatabase
                 Name = "Holy Light",
                 SkillType = "Healing",
                 Value = 50,
-                Cost = 20,
-                Description = "Massive restoration."
+                Description = "Massive restoration.",
+                ResourceCosts = new List<SkillCost>
+                {
+                    new SkillCost { ResourceType = "Mana", Amount = 20 },
+                },
+                Steps = new List<SkillStep> 
+                {
+                }
             }
         }
     };

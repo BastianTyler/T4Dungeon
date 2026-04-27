@@ -55,7 +55,7 @@ public static class ItemDatabase
                 IsConsumable = false,
                 BasePrice = 120,
                 Category = "Weapon",
-                GrantedSkills = new List<SkillId> {  }
+                GrantedSkills = new List<SkillId> { SkillId.Cleave }
             }
         },
         {
