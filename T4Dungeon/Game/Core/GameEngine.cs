@@ -23,13 +23,23 @@ namespace T4Dungeon.Game.Core
 
         #endregion
 
+
         #region TUTORIAL CONTENT
         private TutorialManager _tutorial = new();
 
         private void RunTutorialLoop()
         {
-            string mapPath = @"E:\VisualStudio\2026Repos\T4Dungeon\T4Dungeon\Data\Maps\tutorial_map.txt";
-            
+            // Path.Combine handles the slashes correctly for the environment
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string mapPath = Path.Combine(baseDir, "Data", "Maps", "tutorial_map.txt");
+
+            if (!File.Exists(mapPath))
+            {
+                // This will print the actual folder the program is looking in
+                Console.WriteLine($"Error: Map not found at {mapPath}");
+            }
+            Log(mapPath);
+
             _player ??= new Player();
             _player.Inventory.Add(ItemId.IronSword, 1);
             EquipItem(EquiptSlot.Weapon, ItemId.IronSword);
