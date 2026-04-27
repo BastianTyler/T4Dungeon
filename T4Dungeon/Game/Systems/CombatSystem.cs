@@ -379,7 +379,9 @@ namespace T4Dungeon.Game.Systems
         {
             var move = _enemy.Moves[new Random().Next(_enemy.Moves.Count)];
 
-            _log($"{TextColor.Red}{_enemy.Name}{TextColor.Reset} uses {TextColor.Yellow}{move.Name}{TextColor.Reset}! PRESS {TextColor.Yellow}{TextColor.Bold}{move.Key}{TextColor.Reset}!", false);
+            _log($"{TextColor.Red}{_enemy.Name}{TextColor.Reset} uses {TextColor.Yellow}{move.Name}{TextColor.Reset}!", false);
+
+            System.Threading.Thread.Sleep(3000);
 
             bool success = false;
 
@@ -393,11 +395,33 @@ namespace T4Dungeon.Game.Systems
             }
 
             if (success)
+            {
                 _log($"{TextColor.Green}Successfully countered {move.Name}!{TextColor.Reset}");
+
+                #region TUTORIAL CONTENT
+                // Only trigger this once the counter is confirmed successful
+                if (_tutorial.IsActive && _tutorial.CurrentState == TutorialState.TutForceDefend)
+                {
+                    _log("You blocked! Now try to attack.", true);
+                    _tutorial.SetState(TutorialState.TutSuccessfullyDefended);
+                }
+                #endregion
+            }
+
             else
             {
                 _player.TakeDamage(_enemy.Attack);
                 _log($"{TextColor.Red}Failed! You took {_enemy.Attack} damage!{TextColor.Reset}");
+                if(_tutorial.IsActive && _tutorial.CurrentState == TutorialState.TutForceDefend)
+                    _tutorial.SetState(TutorialState.TutFailedDefend);
+
+                #region TUTORIAL CONTENT
+                if (_tutorial.IsActive && _tutorial.CurrentState == TutorialState.TutFailedDefend)
+                {
+                    _log("You missed the timing! Don't worry, try to block the next one.", true);
+                    _tutorial.SetState(TutorialState.TutForceDefend);
+                }
+                #endregion
             }
         }
 
@@ -431,6 +455,14 @@ namespace T4Dungeon.Game.Systems
         {
             _enemy.HP -= _player.Attack;
             _log($"You attacked {TextColor.Red}{_enemy.Name}{TextColor.Reset} for {TextColor.Yellow}{_player.Attack}{TextColor.Reset} damage!");
+
+            #region TUTORIAL CONTENT
+            if (_tutorial.IsActive && _tutorial.CurrentState == TutorialState.TutForceAttack)
+            {
+                _log("Great hit! Now watch out, the Slime is counter-attacking!", true);
+                _tutorial.SetState(TutorialState.TutSuccessfullyAttacked);
+            }
+            #endregion
         }
 
         public void Defend()
@@ -439,10 +471,9 @@ namespace T4Dungeon.Game.Systems
             _player.BaseDefense += 5;
 
             #region TUTORIAL CONTENT
-            if (_tutorial.IsActive && _tutorial.CurrentState == TutorialState.CombatFirstContact)
+            if (_tutorial.IsActive && _tutorial.CurrentState == TutorialState.TutForceDefend)
             {
-                _log("You blocked! Now try to attack.", true);
-                _tutorial.Advance(); // Moves state to DefendUsed
+                _tutorial.SetState(TutorialState.TutSuccessfullyDefended);
             }
             #endregion
         }
@@ -451,7 +482,7 @@ namespace T4Dungeon.Game.Systems
         {
             var skill = SkillDatabase.Skills[id];
 
-            // 1. Validation: Check if the player can afford EVERY required resource
+            // 1. Validation
             foreach (var cost in skill.ResourceCosts)
             {
                 bool hasEnough = cost.ResourceType switch
@@ -470,7 +501,6 @@ namespace T4Dungeon.Game.Systems
             }
 
             // --- DEDUCTION POINT ---
-            // Deduct resources as soon as the attempt starts so failures still cost energy
             foreach (var cost in skill.ResourceCosts)
             {
                 if (cost.ResourceType == "Mana") _player.BaseMana -= cost.Amount;
@@ -483,7 +513,6 @@ namespace T4Dungeon.Game.Systems
             // 2. Run Mini-games
             foreach (var step in skill.Steps)
             {
-                // FIX: The variable is declared and assigned here
                 bool stepSuccess = step.Type switch
                 {
                     "Mash" => MashInput(step.Key, step.Goal, step.Time),
@@ -493,7 +522,6 @@ namespace T4Dungeon.Game.Systems
                     _ => true
                 };
 
-                // Now stepSuccess is in scope for this check
                 if (!stepSuccess)
                 {
                     _log($"{TextColor.Red}{step.FailMsg}{TextColor.Reset}");
@@ -502,15 +530,43 @@ namespace T4Dungeon.Game.Systems
                 }
             }
 
-            // 3. Execution: Only apply effects (damage/healing) if mini-game succeeded
+            // 3. Execution & Tutorial Interception
             if (totalSuccess)
             {
                 ApplySkillEffects(skill);
                 _log($"{TextColor.Green}Success!{TextColor.Reset} Executed {skill.Name}.");
+
+                #region TUTORIAL CONTENT
+                if (_tutorial.IsActive && (_tutorial.CurrentState == TutorialState.TutForceSkills || _tutorial.CurrentState == TutorialState.TutSelectedSkills))
+                {
+                    _log("Devastating! That's how you use skills to end a fight.", true);
+                    _tutorial.SetState(TutorialState.TutSuccessfullyUsedSkill);
+                    _enemy.HP = 0; // Forced win
+                }
+                #endregion
             }
             else
             {
                 _log($"{TextColor.Red}Skill Failed! Resources wasted.{TextColor.Reset}");
+
+                #region TUTORIAL CONTENT
+                if (_tutorial.IsActive)
+                {
+                    // 1. REFUND RESOURCES: Prevent soft-lock if they fail the minigame
+                    foreach (var cost in skill.ResourceCosts)
+                    {
+                        if (cost.ResourceType == "Mana") _player.BaseMana += cost.Amount;
+                        else if (cost.ResourceType == "Stamina") _player.Stamina += cost.Amount;
+                    }
+
+                    // 2. RESET STATE: Force them back to the specific skill gating
+                    _tutorial.SetState(TutorialState.TutForceSkills);
+                    _log("Momentum lost! Focus and try again.", true);
+
+                    // Note: The GameEngine loop should call SetCombatMenu() next 
+                    // to fix the [1-5] menu back to the [1-1] Skill menu.
+                }
+                #endregion
             }
         }
 
