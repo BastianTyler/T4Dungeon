@@ -470,12 +470,12 @@ namespace T4Dungeon.Game.Systems
             _player.IsDefending = true;
             _player.BaseDefense += 5;
 
-            #region TUTORIAL CONTENT
-            if (_tutorial.IsActive && _tutorial.CurrentState == TutorialState.TutForceDefend)
-            {
-                _tutorial.SetState(TutorialState.TutSuccessfullyDefended);
-            }
-            #endregion
+            //#region TUTORIAL CONTENT
+            //if (_tutorial.IsActive && _tutorial.CurrentState == TutorialState.TutForceDefend)
+            //{
+            //    _tutorial.SetState(TutorialState.TutSuccessfullyDefended);
+            //}
+            //#endregion
         }
 
         public void UseSkill(SkillId id)
