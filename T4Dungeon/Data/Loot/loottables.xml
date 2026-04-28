@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LootTables>
+	<LootTable Id="4001" Name="Early Dungeon">
+		<Entry ItemId="1001" Weight="10" />
+		<Entry ItemId="1002" Weight="10" />
+		<Entry ItemId="1003" Weight="10" />
+		<Entry ItemId="1004" Weight="10" />
+		<Entry ItemId="1005" Weight="10" />
+		<Entry ItemId="1101" Weight="10" />
+		<Entry ItemId="1105" Weight="10" />
+		<Entry ItemId="1201" Weight="5" />
+		<Entry ItemId="1202" Weight="5" />
+		<Entry ItemId="2001" Weight="5" />
+		<Entry ItemId="2002" Weight="5" />
+		<Entry ItemId="2003" Weight="5" />
+		<Entry ItemId="2005" Weight="5" />
+	</LootTable>
+</LootTables>

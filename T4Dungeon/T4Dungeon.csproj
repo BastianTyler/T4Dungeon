@@ -41,6 +41,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ItemDatabase.tt</DependentUpon>
     </None>
+    <None Include="CodeGen\Templates\LootDatabase.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LootDatabase.tt</DependentUpon>
+    </None>
     <None Include="CodeGen\Templates\SkillIds.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -82,6 +87,10 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SkillsDatabase.cs</LastGenOutput>
     </None>
+    <None Update="CodeGen\Templates\LootDatabase.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LootDatabase.cs</LastGenOutput>
+    </None>
     <None Update="Data\Maps\tutorial_map.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -116,6 +125,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>ItemIds.tt</DependentUpon>
+    </Compile>
+    <Compile Update="CodeGen\Templates\LootDatabase.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LootDatabase.tt</DependentUpon>
     </Compile>
     <Compile Update="CodeGen\Templates\SkillIds.cs">
       <DesignTime>True</DesignTime>
