@@ -152,6 +152,7 @@ namespace T4Dungeon.Game.Core
             //Test items
             _player.Inventory.Add(ItemId.IronSword, 1);
             _player.Inventory.Add(ItemId.HealthPotion, 1);
+            _player.Inventory.Add(ItemId.FireScroll, 1);
         }
         #endregion
 
@@ -191,36 +192,6 @@ namespace T4Dungeon.Game.Core
         }
             };
         }
-
-        ///// <summary>
-        ///// Placeholder for the tutorial logic loop.
-        ///// </summary>
-        //private void RunTutorialLoop()
-        //{
-        //    string mapPath = @"E:\VisualStudio\2026Repos\T4Dungeon\T4Dungeon\Data\Maps\tutorial_map.txt";
-
-
-        //    _player ??= new Player();
-        //    _player.Inventory.Add(ItemId.IronSword, 1);
-        //    EquipItem(EquiptSlot.Weapon, ItemId.IronSword);
-        //    _mapManager ??= new MapManager(10, 10);
-        //    _isTutorialActive = true;
-
-        //    if (File.Exists(mapPath))
-        //    {
-        //        _mapManager.LoadMapFromFile(mapPath);
-        //        _state = GameState.Running;
-
-        //        SetMainMenu(); // Populate UI options for exploration
-        //        Log("Tutorial Loaded. Use the Move menu to navigate.", true);
-        //    }
-        //    else
-        //    {
-        //        Log($"Error: Map not found at {mapPath}", true);
-        //        _state = GameState.StartScreen;
-        //        SetStartScreen();
-        //    }
-        //}
 
         #endregion
 
@@ -561,24 +532,25 @@ namespace T4Dungeon.Game.Core
         /// <summary>
         /// Transitions the game state into a combat encounter.
         /// </summary>
-        #region TUTORIAL CONTENT
+        
         private void StartCombatTransition()
         {
             // Logic: If in tutorial, always spawn a Slime. Otherwise, get a random enemy.
             EnemyId targetId = _tutorial.IsActive ? EnemyId.Slime : GetRandomEnemy();
             Enemy encounteredEnemy = new Enemy(targetId);
-
+            #region TUTORIAL CONTENT
             if (_tutorial.IsActive)
             {
                 _tutorial.SetState(TutorialState.TutForceDefend);
             }
+            #endregion
 
             // Pass the newly created enemy into the CombatSystem
             _combat = new CombatSystem(_player, encounteredEnemy, _tutorial, Log);
             _state = GameState.Combat;
             SetCombatMenu();
         }
-        #endregion
+        
 
         /// <summary>
         /// Handles the logic for attempting to flee from battle.
@@ -712,35 +684,27 @@ namespace T4Dungeon.Game.Core
         private void UseItem(ItemId id)
         {
             var itemDef = ItemDatabase.Items[id];
-            string logResult = InventorySystem.UseItem(_player, id);
+            Enemy currentEnemy = (_state == GameState.Combat) ? _combat.Enemy : null;
 
-            if (!string.IsNullOrEmpty(logResult))
+            // Capture the tuple result
+            var result = InventorySystem.UseItem(_player, id, currentEnemy, _mapManager);
+
+            // Use result.Message for logging
+            if (!string.IsNullOrEmpty(result.Message))
             {
-                Log(logResult);
+                Log(result.Message);
             }
 
-            // Trigger Torch effect if the skill is "Illuminate"
-            if (itemDef.GrantedSkills.Any(sid => SkillDatabase.Skills[sid].Name == "Illuminate"))
+            #region TUTORIAL CONTENT
+            if (_tutorial.IsActive && itemDef.GrantedSkills.Any(sid => SkillDatabase.Skills[sid].Name == "Illuminate"))
             {
-                // 1. Reveal using the property found in your MapManager
-                _mapManager.RevealAdjacent(_mapManager.PlayerPosition);
-
-                Log($"{TextColor.Yellow}The torch flares, revealing the surroundings!{TextColor.Reset}");
-
-                #region TUTORIAL CONTENT
-                if (_tutorial.IsActive && _tutorial.CurrentState == TutorialState.InventoryOpened)
+                if (_tutorial.CurrentState == TutorialState.InventoryOpened)
                 {
                     _tutorial.SetState(TutorialState.TorchUsed);
                     Log("TUTORIAL: Excellent. Now that the path is clear, go 'Back' to the map.", true);
                 }
-                #endregion
-
-                // 2. Render with all 7 required arguments
-                if (_state != GameState.Combat)
-                {
-                    ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, _showInventory, false, null);
-                }
             }
+            #endregion
 
             if (_state == GameState.Combat)
             {
@@ -749,6 +713,11 @@ namespace T4Dungeon.Game.Core
             }
             else
             {
+                // Use result.NeedsMapRedraw to decide if we re-render
+                if (result.NeedsMapRedraw)
+                {
+                    ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, _showInventory, false, null);
+                }
                 SetInventoryMenu();
             }
         }
@@ -759,6 +728,7 @@ namespace T4Dungeon.Game.Core
         {
             _currentShop = new ShopInstance();
 
+            #region TUTORIAL CONTENT
             if (_tutorial.IsActive)
             {
                 var tutorialItems = new List<ItemId> 
@@ -778,6 +748,7 @@ namespace T4Dungeon.Game.Core
                     _currentShop.Inventory.Add(slot);
                 }
             }
+            #endregion
             else
             {
                 _currentShop.GenerateInventory();
