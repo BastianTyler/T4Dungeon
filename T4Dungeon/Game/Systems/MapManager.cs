@@ -140,7 +140,7 @@ namespace T4Dungeon.Game.Systems
 
         }
 
-        private void RevealAdjacent(Vector2Int pos)
+        public void RevealAdjacent(Vector2Int pos)
         {
             for (int dx = -1; dx <= 1; dx++)
                 for (int dy = -1; dy <= 1; dy++)

@@ -22,13 +22,6 @@
 		</GameSteps>
 	</Skill>
 
-	<Skill Id="3011" Name="Heavy Cleave" Type="Damage" Value="35" Cost="12" StunDuration="2" Description="A brutal two-stage overhead strike.">
-		<GameSteps>
-			<Step Type="Mash" Key="H" Goal="20" Time="2500" FailMsg="The weight of the blade was too much!" />
-			<Step Type="Timed" Key="X" Time="600" FailMsg="You swung wide and hit the dirt!" />
-		</GameSteps>
-	</Skill>
-
 	<Skill Id="3005" Name="Shield Bash" Type="Damage" Value="8" Cost="3" Description="Hits with shield edge." />
 
 	<Skill Id="3006" Name="Quick Shot" Type="Damage" Value="10" Cost="2" Description="Fast but weak shot.">
@@ -44,4 +37,12 @@
 	<Skill Id="3009" Name="Bloodlust" Type="Damage" Value="25" Cost="5" Description="Powerful blow, hurts self." />
 
 	<Skill Id="3010" Name="Holy Light" Type="Healing" Value="50" Cost="20" Description="Massive restoration." />
+	
+	<Skill Id="3011" Name="Heavy Cleave" Type="Damage" Value="35" Cost="12" StunDuration="2" Description="A brutal two-stage overhead strike.">
+		<GameSteps>
+			<Step Type="Mash" Key="H" Goal="20" Time="2500" FailMsg="The weight of the blade was too much!" />
+			<Step Type="Timed" Key="X" Time="600" FailMsg="You swung wide and hit the dirt!" />
+		</GameSteps>
+	</Skill>
+	<Skill Id="3012" Name="Illuminate" Type="Utility" Description="Reveals the surrounding area." />
 </Skills>

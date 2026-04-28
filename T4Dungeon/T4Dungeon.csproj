@@ -82,6 +82,9 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SkillsDatabase.cs</LastGenOutput>
     </None>
+    <None Update="Data\Maps\tutorial_map.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

@@ -31,5 +31,6 @@ namespace T4Dungeon.Generated
         ManaPotion = 2002,
         FireScroll = 2003,
         IronSkinElixir = 2004,
+        Torch = 2005,
     }
 }

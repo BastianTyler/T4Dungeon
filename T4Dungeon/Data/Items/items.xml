@@ -89,5 +89,8 @@
 			<Stats AttackBonus="0" DefenseBonus="0" />
 			<Skill Name="Shield Bash" />
 		</Item>
+		<Item Id="2005" Name="Torch" Slot="None" IsStackable="true" IsConsumable="true" Category="Utility">
+			<Skill Name="Illuminate" />
+		</Item>
 	</Consumables>
 </Items>

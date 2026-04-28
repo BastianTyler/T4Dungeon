@@ -431,6 +431,23 @@ public static class ItemDatabase
                 Category = "Buff",
                 GrantedSkills = new List<SkillId> { SkillId.ShieldBash }
             }
+        },
+        {
+            ItemId.Torch,
+            new ItemDef
+            {
+                Id = ItemId.Torch,
+                Name = "Torch",
+                Slot = EquiptSlot.None,
+                Description = "No description.",
+                AttackBonus = 0,
+                DefenseBonus = 0,
+                IsStackable = true,
+                IsConsumable = true,
+                BasePrice = 0,
+                Category = "Utility",
+                GrantedSkills = new List<SkillId> { SkillId.Illuminate }
+            }
         }
     };
 }

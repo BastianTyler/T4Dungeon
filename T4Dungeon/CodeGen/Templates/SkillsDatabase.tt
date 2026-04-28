@@ -48,12 +48,14 @@ public static class SkillDatabase
     for (int i = 0; i < nodes.Count; i++)
     {
         var node = nodes[i];
-        var name = node.Attributes["Name"].Value;
+        var name = node.Attributes["Name"]?.Value ?? "Unknown";
         var cleanName = name.Replace(" ", "");
-        var type = node.Attributes["Type"].Value;
-        var val = node.Attributes["Value"].Value;
+        var type = node.Attributes["Type"]?.Value ?? "General";
+        
+        var val = node.Attributes["Value"]?.Value ?? "0"; 
+        
         var legacyCost = node.Attributes["Cost"]?.Value ?? "0";
-        var desc = node.Attributes["Description"].Value;
+        var desc = node.Attributes["Description"]?.Value ?? "No description.";
         
         var costNodes = node.SelectNodes("Costs/Cost");
         var stepNodes = node.SelectNodes("GameSteps/Step");

@@ -5,7 +5,7 @@
 			<Move Name="Slime Ram" Type="Timed" Key="D" TimeLimit="2500" />
 		</Moves>
 		<LootTable>
-			<Item Id="3001" Chance="0.2" />
+			<Item Id="2001" Chance="0.2" />
 		</LootTable>
 	</Enemy>
 
