@@ -8,6 +8,7 @@ namespace T4Dungeon.Game.Core
     {
         StartScreen,
         NewGame,
+        Adventure,
         Running,
         Combat,
         Shop,

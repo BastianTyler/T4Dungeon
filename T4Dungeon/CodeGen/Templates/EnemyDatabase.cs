@@ -38,11 +38,11 @@ public static class EnemyDatabase
     public static readonly Dictionary<EnemyId, EnemyDef> Enemies = new()
     {
         {
-            EnemyId.Slime,
+            EnemyId.GreenSlime,
             new EnemyDef
             {
-                Id = EnemyId.Slime,
-                Name = "Slime",
+                Id = EnemyId.GreenSlime,
+                Name = "Green Slime",
                 HP = 20,
                 MaxHp = 20,
                 Attack = 5,
@@ -166,6 +166,112 @@ public static class EnemyDatabase
                         Id = (ItemId)2001, 
                         Chance = 0.15 
                     }
+                } // End of LootTable List
+            }
+        },
+        {
+            EnemyId.BlueSlime,
+            new EnemyDef
+            {
+                Id = EnemyId.BlueSlime,
+                Name = "Blue Slime",
+                HP = 30,
+                MaxHp = 30,
+                Attack = 8,
+                MinGold = 5,
+                MaxGold = 10,
+                Moves = new List<MoveDef> 
+                {
+                    new MoveDef 
+                    { 
+                        Name = "Quick Leap",
+                        Type = "Timed",
+                        Key = 'W',
+                        TimeLimit = 1500,
+                        Goal = 0,
+                        Count = 0,
+                        Target = 0.5,
+                        Threshold = 0.1
+                    }
+                }, // End of Moves List
+                LootTable = new List<LootItemDef>
+                {
+                    new LootItemDef 
+                    { 
+                        Id = (ItemId)2001, 
+                        Chance = 0.3 
+                    }
+                } // End of LootTable List
+            }
+        },
+        {
+            EnemyId.AmberSlime,
+            new EnemyDef
+            {
+                Id = EnemyId.AmberSlime,
+                Name = "Amber Slime",
+                HP = 50,
+                MaxHp = 50,
+                Attack = 12,
+                MinGold = 12,
+                MaxGold = 18,
+                Moves = new List<MoveDef> 
+                {
+                    new MoveDef 
+                    { 
+                        Name = "Amber Crush",
+                        Type = "Sequence",
+                        Key = 'S',
+                        TimeLimit = 1000,
+                        Goal = 0,
+                        Count = 3,
+                        Target = 0.5,
+                        Threshold = 0.1
+                    }
+                }, // End of Moves List
+                LootTable = new List<LootItemDef>
+                {
+                } // End of LootTable List
+            }
+        },
+        {
+            EnemyId.RedSlime,
+            new EnemyDef
+            {
+                Id = EnemyId.RedSlime,
+                Name = "Red Slime",
+                HP = 65,
+                MaxHp = 65,
+                Attack = 18,
+                MinGold = 20,
+                MaxGold = 35,
+                Moves = new List<MoveDef> 
+                {
+                    new MoveDef 
+                    { 
+                        Name = "Heavy Bash",
+                        Type = "Sequence",
+                        Key = 'B',
+                        TimeLimit = 800,
+                        Goal = 0,
+                        Count = 2,
+                        Target = 0.5,
+                        Threshold = 0.1
+                    },
+                    new MoveDef 
+                    { 
+                        Name = "Core Burst",
+                        Type = "SweetSpot",
+                        Key = 'X',
+                        TimeLimit = 2000,
+                        Goal = 0,
+                        Count = 0,
+                        Target = 0.5,
+                        Threshold = 0.05
+                    }
+                }, // End of Moves List
+                LootTable = new List<LootItemDef>
+                {
                 } // End of LootTable List
             }
         }

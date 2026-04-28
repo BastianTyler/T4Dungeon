@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Enemies>
-	<Enemy Id="2001" Name="Slime" HP="20" MaxHp="20" Attack="5" MinGold="2" MaxGold="6">
+	<Enemy Id="2001" Name="Green Slime" HP="20" MaxHp="20" Attack="5" MinGold="2" MaxGold="6">
 		<Moves>
 			<Move Name="Slime Ram" Type="Timed" Key="D" TimeLimit="2500" />
 		</Moves>
@@ -29,4 +29,28 @@
 			<Item Id="2001" Chance="0.15" />
 		</LootTable>
 	</Enemy>
+
+	<Enemy Id="2004" Name="Blue Slime" HP="30" MaxHp="30" Attack="8" MinGold="5" MaxGold="10">
+		<Moves>
+			<Move Name="Quick Leap" Type="Timed" Key="W" TimeLimit="1500" />
+		</Moves>
+		<LootTable>
+			<Item Id="2001" Chance="0.3" />
+		</LootTable>
+	</Enemy>
+
+	<Enemy Id="2005" Name="Amber Slime" HP="50" MaxHp="50" Attack="12" MinGold="12" MaxGold="18">
+		<Moves>
+			<Move Name="Amber Crush" Type="Sequence" Key="S" Count="3" TimeLimit="1000" />
+		</Moves>
+	</Enemy>
+
+	<Enemy Id="2006" Name="Red Slime" HP="65" MaxHp="65" Attack="18" MinGold="20" MaxGold="35">
+		<Moves>
+			<Move Name="Heavy Bash" Type="Sequence" Key="B" Count="2" TimeLimit="800" />
+			<Move Name="Core Burst" Type="SweetSpot" Key="X" Target="0.5" Threshold="0.05" />
+		</Moves>
+	</Enemy>
+	
+	
 </Enemies>

@@ -49,7 +49,7 @@ public static class SkillDatabase
                 },
                 Steps = new List<SkillStep> 
                 {
-                    new SkillStep { Type = "Timed", Key = 'F', Goal = 1, Time = 1200, FailMsg = "The flames sputtered out!", ChainedHitBarPositions = "" },
+                    new SkillStep { Type = "SweetSpot", Key = 'F', Goal = 1, Time = 1200, FailMsg = "The flames sputtered out!", ChainedHitBarPositions = "" },
                 }
             }
         },
@@ -123,6 +123,7 @@ public static class SkillDatabase
                 },
                 Steps = new List<SkillStep> 
                 {
+                    new SkillStep { Type = "Mash", Key = 'B', Goal = 12, Time = 2000, FailMsg = "You couldn't get enough force!", ChainedHitBarPositions = "" },
                 }
             }
         },
@@ -134,14 +135,14 @@ public static class SkillDatabase
                 Name = "Quick Shot",
                 SkillType = "Damage",
                 Value = 10,
-                Description = "Fast but weak shot.",
+                Description = "Two rapid shots.",
                 ResourceCosts = new List<SkillCost>
                 {
                     new SkillCost { ResourceType = "Mana", Amount = 2 },
                 },
                 Steps = new List<SkillStep> 
                 {
-                    new SkillStep { Type = "Timed", Key = 'Q', Goal = 1, Time = 500, FailMsg = "Slow on the draw!", ChainedHitBarPositions = "" },
+                    new SkillStep { Type = "Sequence", Key = 'Q', Goal = 1, Time = 600, FailMsg = "Slow on the draw!", ChainedHitBarPositions = "" },
                 }
             }
         },
@@ -160,6 +161,8 @@ public static class SkillDatabase
                 },
                 Steps = new List<SkillStep> 
                 {
+                    new SkillStep { Type = "Mash", Key = 'L', Goal = 10, Time = 4000, FailMsg = "The spark fizzled out!", ChainedHitBarPositions = "" },
+                    new SkillStep { Type = "ChainedHitBar", Key = ' ', Goal = 1, Time = 2500, FailMsg = "The bolt missed the target!", ChainedHitBarPositions = "0.4, 0.6, 0.8" },
                 }
             }
         },
@@ -178,6 +181,7 @@ public static class SkillDatabase
                 },
                 Steps = new List<SkillStep> 
                 {
+                    new SkillStep { Type = "ChainedHitBar", Key = ' ', Goal = 1, Time = 2000, FailMsg = "Your concentration broke!", ChainedHitBarPositions = "0.5" },
                 }
             }
         },
@@ -196,6 +200,7 @@ public static class SkillDatabase
                 },
                 Steps = new List<SkillStep> 
                 {
+                    new SkillStep { Type = "Mash", Key = 'B', Goal = 7, Time = 3000, FailMsg = "You couldn't find the rage!", ChainedHitBarPositions = "" },
                 }
             }
         },
@@ -214,6 +219,10 @@ public static class SkillDatabase
                 },
                 Steps = new List<SkillStep> 
                 {
+                    new SkillStep { Type = "Timed", Key = 'Q', Goal = 1, Time = 1200, FailMsg = "The prayer was interrupted!", ChainedHitBarPositions = "" },
+                    new SkillStep { Type = "Timed", Key = 'W', Goal = 1, Time = 1200, FailMsg = "The prayer was interrupted!", ChainedHitBarPositions = "" },
+                    new SkillStep { Type = "Timed", Key = 'E', Goal = 1, Time = 1200, FailMsg = "The prayer was interrupted!", ChainedHitBarPositions = "" },
+                    new SkillStep { Type = "ChainedHitBar", Key = ' ', Goal = 1, Time = 2500, FailMsg = "The light faded too soon!", ChainedHitBarPositions = "0.1, 0.5" },
                 }
             }
         },

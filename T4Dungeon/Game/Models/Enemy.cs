@@ -20,6 +20,6 @@
             Moves = def.Moves;
         }
 
-        public Enemy() : this(EnemyId.Slime) { }
+        public Enemy() : this(EnemyId.GreenSlime) { }
     }
 }

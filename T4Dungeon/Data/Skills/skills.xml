@@ -2,7 +2,7 @@
 <Skills>
 	<Skill Id="3001" Name="Fireball" Type="Damage" Value="20" Cost="8" Description="A blast of fire.">
 		<GameSteps>
-			<Step Type="Timed" Key="F" Time="1200" FailMsg="The flames sputtered out!" />
+			<Step Type="SweetSpot" Key="F" Target="0.5" Threshold="0.1" Time="1200" FailMsg="The flames sputtered out!" />
 		</GameSteps>
 	</Skill>
 
@@ -22,21 +22,45 @@
 		</GameSteps>
 	</Skill>
 
-	<Skill Id="3005" Name="Shield Bash" Type="Damage" Value="8" Cost="3" Description="Hits with shield edge." />
-
-	<Skill Id="3006" Name="Quick Shot" Type="Damage" Value="10" Cost="2" Description="Fast but weak shot.">
+	<Skill Id="3005" Name="Shield Bash" Type="Damage" Value="8" Cost="3" Description="Hits with shield edge.">
 		<GameSteps>
-			<Step Type="Timed" Key="Q" Time="500" FailMsg="Slow on the draw!" />
+			<Step Type="Mash" Key="B" Goal="12" Time="2000" FailMsg="You couldn't get enough force!" />
 		</GameSteps>
 	</Skill>
 
-	<Skill Id="3007" Name="Lightning Bolt" Type="Damage" Value="35" Cost="15" Description="High energy strike." />
+	<Skill Id="3006" Name="Quick Shot" Type="Damage" Value="10" Cost="2" Description="Two rapid shots.">
+		<GameSteps>
+			<Step Type="Sequence" Key="Q" Count="2" Time="600" FailMsg="Slow on the draw!" />
+		</GameSteps>
+	</Skill>
 
-	<Skill Id="3008" Name="Meditate" Type="Mana" Value="15" Cost="0" Description="Restores mana." />
+	<Skill Id="3007" Name="Lightning Bolt" Type="Damage" Value="35" Cost="15" Description="High energy strike.">
+		<GameSteps>
+			<Step Type="Mash" Key="L" Goal="10" Time="4000" FailMsg="The spark fizzled out!" />
+			<Step Type="ChainedHitBar" ChainedHitBarPositions="0.4, 0.6, 0.8" Time="2500" FailMsg="The bolt missed the target!" />
+		</GameSteps>
+	</Skill>
 
-	<Skill Id="3009" Name="Bloodlust" Type="Damage" Value="25" Cost="5" Description="Powerful blow, hurts self." />
+	<Skill Id="3008" Name="Meditate" Type="Mana" Value="15" Cost="0" Description="Restores mana.">
+		<GameSteps>
+			<Step Type="ChainedHitBar" ChainedHitBarPositions="0.5" Time="2000" FailMsg="Your concentration broke!" />
+		</GameSteps>
+	</Skill>
 
-	<Skill Id="3010" Name="Holy Light" Type="Healing" Value="50" Cost="20" Description="Massive restoration." />
+	<Skill Id="3009" Name="Bloodlust" Type="Damage" Value="25" Cost="5" Description="Powerful blow, hurts self.">
+		<GameSteps>
+			<Step Type="Mash" Key="B" Goal="7" Time="3000" FailMsg="You couldn't find the rage!" />
+		</GameSteps>
+	</Skill>
+
+	<Skill Id="3010" Name="Holy Light" Type="Healing" Value="50" Cost="20" Description="Massive restoration.">
+		<GameSteps>
+			<Step Type="Timed" Key="Q" Time="1200" FailMsg="The prayer was interrupted!" />
+			<Step Type="Timed" Key="W" Time="1200" FailMsg="The prayer was interrupted!" />
+			<Step Type="Timed" Key="E" Time="1200" FailMsg="The prayer was interrupted!" />
+			<Step Type="ChainedHitBar" ChainedHitBarPositions="0.1, 0.5" Time="2500" FailMsg="The light faded too soon!" />
+		</GameSteps>
+	</Skill>
 	
 	<Skill Id="3011" Name="Heavy Cleave" Type="Damage" Value="35" Cost="12" StunDuration="2" Description="A brutal two-stage overhead strike.">
 		<GameSteps>

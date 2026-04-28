@@ -95,6 +95,12 @@ namespace T4Dungeon.Game.Core
                         HandleInput();
                         break;
 
+                    case GameState.Adventure:
+                        Log("Adventure mode is coming soon!", true);
+                        _state = GameState.StartScreen;
+                        SetStartScreen();
+                        break;
+
                     case GameState.Tutorial:
                         RunTutorialLoop();
                         break;
@@ -152,7 +158,7 @@ namespace T4Dungeon.Game.Core
             //Test items
             _player.Inventory.Add(ItemId.IronSword, 1);
             _player.Inventory.Add(ItemId.HealthPotion, 1);
-            _player.Inventory.Add(ItemId.FireScroll, 1);
+            _player.Inventory.Add(ItemId.StormPendant, 1);
         }
         #endregion
 
@@ -169,9 +175,17 @@ namespace T4Dungeon.Game.Core
                 // You could also add this to MenuFactory if you prefer
                 Options = new List<MenuOption>
         {
+           new MenuOption
+            {
+                // New Adventure State
+                Text = "Adventure",
+                Action = () => { _state = GameState.Adventure; },
+                IsImplemented = false // Per your request
+            },
             new MenuOption
             {
-                Text = "Start Game",
+                // Mapping "Classic" to your existing NewGame logic
+                Text = "Classic",
                 Action = () => { _state = GameState.NewGame; }
             },
             new MenuOption
@@ -509,9 +523,12 @@ namespace T4Dungeon.Game.Core
 
         private static readonly List<(EnemyId id, int weight)> _spawnTable = new()
         {
-            (EnemyId.Slime,  0),
-            (EnemyId.Goblin, 100),
-            (EnemyId.Orc,    0),
+            (EnemyId.GreenSlime, 100), 
+            (EnemyId.BlueSlime,   60),
+            (EnemyId.AmberSlime,  30), 
+            (EnemyId.RedSlime,    10), 
+            (EnemyId.Goblin,      20),  
+            (EnemyId.Orc,         10),  
         };
 
         private EnemyId GetRandomEnemy()
@@ -536,7 +553,7 @@ namespace T4Dungeon.Game.Core
         private void StartCombatTransition()
         {
             // Logic: If in tutorial, always spawn a Slime. Otherwise, get a random enemy.
-            EnemyId targetId = _tutorial.IsActive ? EnemyId.Slime : GetRandomEnemy();
+            EnemyId targetId = _tutorial.IsActive ? EnemyId.GreenSlime : GetRandomEnemy();
             Enemy encounteredEnemy = new Enemy(targetId);
             #region TUTORIAL CONTENT
             if (_tutorial.IsActive)
@@ -808,7 +825,7 @@ namespace T4Dungeon.Game.Core
             }
 
             var key = Console.ReadKey(true);
-            ClearLine(promptLine);
+            ConsoleHelper.ClearLine(promptLine);
 
             int index = key.KeyChar - '1';
 
@@ -847,15 +864,6 @@ namespace T4Dungeon.Game.Core
             option.Action?.Invoke();
         }
 
-        /// <summary>
-        /// Clears a line in the console for clean output.
-        /// </summary>
-        private void ClearLine(int row)
-        {
-            Console.SetCursorPosition(0, row);
-            Console.Write(new string(' ', Console.WindowWidth));
-            Console.SetCursorPosition(0, row);
-        }
 
         /// <summary>
         /// Logs a message and refreshes the console render.
