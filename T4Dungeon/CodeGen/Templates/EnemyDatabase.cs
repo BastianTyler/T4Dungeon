@@ -66,7 +66,7 @@ public static class EnemyDatabase
                 {
                     new LootItemDef 
                     { 
-                        Id = (ItemId)3001, 
+                        Id = (ItemId)2001, 
                         Chance = 0.2 
                     }
                 } // End of LootTable List

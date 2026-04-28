@@ -13,9 +13,16 @@
     TutSuccessfullyUsedSkill, TutFailedToUseSkill,
 
     // POST-COMBAT / INVENTORY
-    CombatOver, InventoryOpened, ExplainedInventory, UsedItem,
+    CombatOver, InventoryOpened, ExplainedInventory, TorchUsed,
+
+    //TREASURE
+    BackToMap, TreasureReached, NoticeToOpenEquipment,
 
     // EQUIPMENT
-    SelectedEquipment, ExplainEquipment, ExplainedEquipment,
-    SelectedArmorTab, ShieldEquipped
+    SelectedEquipment, ExplainedEquipment,
+
+    //SHOP
+    ShopReached,
+    //Done
+    TutorialComplete
 }

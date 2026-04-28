@@ -44,5 +44,5 @@
 			<Step Type="Timed" Key="X" Time="600" FailMsg="You swung wide and hit the dirt!" />
 		</GameSteps>
 	</Skill>
-	<Skill Id="3012" Name="Basic Torch" Type="Utility" Value="0" Cost="0" Description="A small flame to light your way" />
+	<Skill Id="3012" Name="Illuminate" Type="Utility" Description="Reveals the surrounding area." />
 </Skills>

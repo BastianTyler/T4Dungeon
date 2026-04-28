@@ -72,7 +72,6 @@ namespace T4Dungeon.Game.Core
                 TutorialState.TutForceAttack => "Attack",
                 TutorialState.TutForceSkills => "Skills",
                 TutorialState.SelectedEquipment => "Equipment",
-                TutorialState.SelectedArmorTab => "Armor",
                 _ => null
             };
         }
@@ -246,8 +245,13 @@ namespace T4Dungeon.Game.Core
                 else if (_tutorial.CurrentState == TutorialState.CombatOver)
                 {
                     _ui.Options = _ui.Options.Where(o => o.Text == "Open Inventory").ToList();
-                    var invOpt = _ui.Options.FirstOrDefault();
-                    if (invOpt != null) invOpt.Text = "Open Inventory (Check your loot!)";
+                }
+                else if (_tutorial.CurrentState == TutorialState.TorchUsed)
+                {
+                    _tutorial.SetState(TutorialState.BackToMap);
+                    Log("Welcome back to the main menu! You can Move, Check out your Equiptment, Open your Inventory, and more!", true);
+                    Log("That T looks interesting, but you can explore how you want now!", true);
+                    Log("Your goal is to find the exit, Good luck Player!", true);
                 }
             }
             #endregion
@@ -269,7 +273,6 @@ namespace T4Dungeon.Game.Core
             #region TUTORIAL CONTENT
             if (_tutorial.IsActive && _tutorial.CurrentState == TutorialState.TutOpenMoveMenu)
             {
-                // Advance the state so the "Yell" message changes to "Go Down!"
                 _tutorial.SetState(TutorialState.TutSelectDown);
             }
 
@@ -294,6 +297,19 @@ namespace T4Dungeon.Game.Core
         /// </summary>
         private void SetInventoryMenu()
         {
+            #region TUTORIAL CONTENT
+            if (_tutorial.IsActive && _tutorial.CurrentState == TutorialState.CombatOver)
+            {
+                _tutorial.SetState(TutorialState.InventoryOpened);
+
+                // Log the educational flavor text
+                Log("TUTORIAL: You can use items from your inventory. You can spend time examining them to get a better idea of what they do, or you can just try them out!", true);
+                Log("TUTORIAL: Try out the Torch to see what's hidden in the dark!", true);
+            }
+
+
+            #endregion
+
             _showInventory = true;
             _ui = MenuFactory.CreateInventoryMenu(
                 _player,
@@ -304,6 +320,13 @@ namespace T4Dungeon.Game.Core
                     else SetMainMenu();
                 }
             );
+
+            #region TUTORIAL CONTENT
+            if (_tutorial.IsActive && _tutorial.CurrentState == TutorialState.InventoryOpened)
+            {
+                _ui.Options = _ui.Options.Where(o => o.Text.Contains("Torch")).ToList();
+            }
+            #endregion
         }
 
         /// <summary>
@@ -350,11 +373,26 @@ namespace T4Dungeon.Game.Core
         /// </summary>
         private void SetEquiptMenu()
         {
+
             _ui = MenuFactory.CreateEquipmentMenu(
                 _player,
                 onSelectSlot: SetItemSelectMenu,
                 onBack: SetMainMenu
             );
+
+            #region TUTORIAL CONTENT
+            if (_tutorial.IsActive && _tutorial.CurrentState == TutorialState.NoticeToOpenEquipment)
+            {
+                _tutorial.SetState(TutorialState.SelectedEquipment);
+
+                Log("TUTORIAL: You have three equipment slots: Weapon, Armor, and Shield.", true);
+                Log("TUTORIAL: Items you can equip will show up automatically here.", true);
+                Log("TUTORIAL: Equipment increases your stats and can grant unique skills for combat.", true);
+                Log("TUTORIAL: Select 'Armor' to equip the shield you just found!", true);
+
+                _tutorial.SetState(TutorialState.ExplainedEquipment);
+            }
+            #endregion
         }
 
         /// <summary>
@@ -574,18 +612,6 @@ namespace T4Dungeon.Game.Core
             cell.Explored = true;
 
             InteractWithCell(cell);
-
-            #region TUTORIAL CONTENT
-            // The manager handles the state check instead of manual ints
-            if (_tutorial.IsActive && _tutorial.CurrentState == TutorialState.TutSelectDown)
-            {
-                if (cell.Type == CellType.Combat)
-                {
-                    // Transition is handled inside InteractWithCell -> StartCombatTransition
-                    // which will advance the tutorial state automatically.
-                }
-            }
-            #endregion
         }
 
         /// <summary>
@@ -606,15 +632,44 @@ namespace T4Dungeon.Game.Core
                 case CellType.Combat:
                     Log(eventMsg, true);
                     StartCombatTransition();
+                    ClearCell(cell);
                     break;
 
                 case CellType.Treasure:
+                    #region TUTORIAL CONTENT
+                    if (_tutorial.IsActive)
+                    {
+                        ItemId forcedId = ItemId.WoodenShield; 
+                        _player.Inventory.Add(forcedId);
+
+                        var itemDef = ItemDatabase.Items[forcedId];
+                        Log($"{TextColor.Cyan}TUTORIAL LOOT: You found a {itemDef.Name}!{TextColor.Reset}", true);
+
+
+                        _tutorial.SetState(TutorialState.TreasureReached);
+                        Log("TUTORIAL: You just found a new piece of gear!", true);
+
+                        _tutorial.SetState(TutorialState.NoticeToOpenEquipment);
+                        Log("TUTORIAL: Open the 'Equipment' menu to put it on and increase your Defense.", true);
+
+                        ClearCell(cell);
+                        break; 
+                    }
+                    #endregion
                     Log(eventMsg, true);
                     ClearCell(cell);
                     break;
 
                 case CellType.Shop:
                     Log(eventMsg, true);
+                    #region TUTORIAL CONTENT
+                    if (_tutorial.IsActive)
+                    {
+                        Log("TUTORIAL: Welcome to the Shop! Here you can spend your Gold on gear and consumables.", true);
+                        Log("TUTORIAL: For your training, the Merchant has set special clearance prices!", true);
+                        _tutorial.SetState(TutorialState.ShopReached); // Ensure this state exists in your Manager
+                    }
+                    #endregion
                     GenerateShop();
                     _state = GameState.Shop;
                     break;
@@ -654,11 +709,35 @@ namespace T4Dungeon.Game.Core
         #region Item Usage
         private void UseItem(ItemId id)
         {
+            var itemDef = ItemDatabase.Items[id];
             string logResult = InventorySystem.UseItem(_player, id);
 
             if (!string.IsNullOrEmpty(logResult))
             {
                 Log(logResult);
+            }
+
+            // Trigger Torch effect if the skill is "Illuminate"
+            if (itemDef.GrantedSkills.Any(sid => SkillDatabase.Skills[sid].Name == "Illuminate"))
+            {
+                // 1. Reveal using the property found in your MapManager
+                _mapManager.RevealAdjacent(_mapManager.PlayerPosition);
+
+                Log($"{TextColor.Yellow}The torch flares, revealing the surroundings!{TextColor.Reset}");
+
+                #region TUTORIAL CONTENT
+                if (_tutorial.IsActive && _tutorial.CurrentState == TutorialState.InventoryOpened)
+                {
+                    _tutorial.SetState(TutorialState.TorchUsed);
+                    Log("TUTORIAL: Excellent. Now that the path is clear, go 'Back' to the map.", true);
+                }
+                #endregion
+
+                // 2. Render with all 7 required arguments
+                if (_state != GameState.Combat)
+                {
+                    ConsoleRenderer.Render(_mapManager, _ui, _messages, _player, _showInventory, false, null);
+                }
             }
 
             if (_state == GameState.Combat)
@@ -677,7 +756,31 @@ namespace T4Dungeon.Game.Core
         private void GenerateShop()
         {
             _currentShop = new ShopInstance();
-            _currentShop.GenerateInventory();
+
+            if (_tutorial.IsActive)
+            {
+                var tutorialItems = new List<ItemId> 
+                {
+                    ItemId.HealthPotion,
+                    ItemId.LeatherArmor,
+                    ItemId.ManaPotion
+                };
+
+                foreach (var id in tutorialItems)
+                {
+                    var itemDef = ItemDatabase.Items[id];
+                    var slot = new ShopSlot(itemDef)
+                    {
+                        Price = 1 
+                    };
+                    _currentShop.Inventory.Add(slot);
+                }
+            }
+            else
+            {
+                _currentShop.GenerateInventory();
+            }
+
             SetShopWelcomeMenu();
         }
 

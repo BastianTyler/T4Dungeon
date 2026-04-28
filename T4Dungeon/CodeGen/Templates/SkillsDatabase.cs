@@ -109,26 +109,6 @@ public static class SkillDatabase
             }
         },
         {
-            SkillId.HeavyCleave,
-            new SkillDef
-            {
-                Id = SkillId.HeavyCleave,
-                Name = "Heavy Cleave",
-                SkillType = "Damage",
-                Value = 35,
-                Description = "A brutal two-stage overhead strike.",
-                ResourceCosts = new List<SkillCost>
-                {
-                    new SkillCost { ResourceType = "Mana", Amount = 12 },
-                },
-                Steps = new List<SkillStep> 
-                {
-                    new SkillStep { Type = "Mash", Key = 'H', Goal = 20, Time = 2500, FailMsg = "The weight of the blade was too much!", ChainedHitBarPositions = "" },
-                    new SkillStep { Type = "Timed", Key = 'X', Goal = 1, Time = 600, FailMsg = "You swung wide and hit the dirt!", ChainedHitBarPositions = "" },
-                }
-            }
-        },
-        {
             SkillId.ShieldBash,
             new SkillDef
             {
@@ -231,6 +211,44 @@ public static class SkillDatabase
                 ResourceCosts = new List<SkillCost>
                 {
                     new SkillCost { ResourceType = "Mana", Amount = 20 },
+                },
+                Steps = new List<SkillStep> 
+                {
+                }
+            }
+        },
+        {
+            SkillId.HeavyCleave,
+            new SkillDef
+            {
+                Id = SkillId.HeavyCleave,
+                Name = "Heavy Cleave",
+                SkillType = "Damage",
+                Value = 35,
+                Description = "A brutal two-stage overhead strike.",
+                ResourceCosts = new List<SkillCost>
+                {
+                    new SkillCost { ResourceType = "Mana", Amount = 12 },
+                },
+                Steps = new List<SkillStep> 
+                {
+                    new SkillStep { Type = "Mash", Key = 'H', Goal = 20, Time = 2500, FailMsg = "The weight of the blade was too much!", ChainedHitBarPositions = "" },
+                    new SkillStep { Type = "Timed", Key = 'X', Goal = 1, Time = 600, FailMsg = "You swung wide and hit the dirt!", ChainedHitBarPositions = "" },
+                }
+            }
+        },
+        {
+            SkillId.Illuminate,
+            new SkillDef
+            {
+                Id = SkillId.Illuminate,
+                Name = "Illuminate",
+                SkillType = "Utility",
+                Value = 0,
+                Description = "Reveals the surrounding area.",
+                ResourceCosts = new List<SkillCost>
+                {
+                    new SkillCost { ResourceType = "Mana", Amount = 0 },
                 },
                 Steps = new List<SkillStep> 
                 {

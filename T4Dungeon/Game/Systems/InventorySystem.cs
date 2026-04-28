@@ -28,6 +28,11 @@ namespace T4Dungeon.Game.Systems
 
                     logMessage = $"Used {itemDef.Name}. Restored {actualHeal} HP!";
                 }
+                if (skillDef.Name == "Illuminate" || skillDef.SkillType == "Utility")
+                {
+                    logMessage = $"Used {itemDef.Name}. The light pushes back the shadows!";
+                }
+
             }
 
             player.Inventory.Remove(id, 1);

@@ -434,6 +434,16 @@ namespace T4Dungeon.Game.Systems
             _player.Gold += goldDropped;
             _log($"{TextColor.Yellow}The {_enemy.Name} dropped {goldDropped} gold!{TextColor.Reset}", true);
 
+            #region TUTORIAL CONTENT
+            if (_tutorial.IsActive && _enemy.Name == "Slime")
+            {
+                // Force the Torch drop instead of rolling the table
+                _player.Inventory.Add(ItemId.Torch, 1);
+                _log($"{TextColor.Cyan}Slime Dropped A Torch!{TextColor.Reset}", true);
+                return;
+            }
+            #endregion
+
             foreach (var loot in def.LootTable)
             {
                 if (rng.NextDouble() <= loot.Chance)

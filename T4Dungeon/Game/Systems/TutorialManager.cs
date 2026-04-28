@@ -7,7 +7,7 @@
         public TutorialState CurrentState { get; private set; } = TutorialState.None;
 
         // Fixed: Replaced 'Complete' with 'ShieldEquipped'
-        public bool IsActive => CurrentState != TutorialState.None && CurrentState != TutorialState.ShieldEquipped;
+        public bool IsActive => CurrentState != TutorialState.None && CurrentState != TutorialState.TutorialComplete;
 
         // Fixed: Replaced 'StartExploration' with 'TutOpenMoveMenu'
         public void Start() => CurrentState = TutorialState.TutOpenMoveMenu;
@@ -15,7 +15,7 @@
         public void Advance()
         {
             // Fixed: Replaced 'Complete' with 'ShieldEquipped'
-            if (CurrentState < TutorialState.ShieldEquipped)
+            if (CurrentState < TutorialState.TutorialComplete)
             {
                 CurrentState++;
             }
