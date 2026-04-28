@@ -38,14 +38,14 @@ namespace T4Dungeon.Game.Core
                 // This will print the actual folder the program is looking in
                 Console.WriteLine($"Error: Map not found at {mapPath}");
             }
-            Log(mapPath);
+            //Log(mapPath);
 
             _player ??= new Player();
             _player.Inventory.Add(ItemId.IronSword, 1);
-            EquipItem(EquiptSlot.Weapon, ItemId.IronSword);
             _mapManager ??= new MapManager(10, 10);
             
             _tutorial.Start(); // Set state to StartExploration
+            EquipItem(EquiptSlot.Weapon, ItemId.IronSword);
 
             if (File.Exists(mapPath))
             {
@@ -455,7 +455,10 @@ namespace T4Dungeon.Game.Core
             _player.Equipment[slot] = newItemId;
 
             var newDef = ItemDatabase.Items[newItemId];
-            Log($"Equipped {newDef.Name}!");
+            if (!_tutorial.IsActive)
+            {
+                Log($"Equipped {newDef.Name}!");
+            }
         }
 
         /// <summary>
@@ -511,7 +514,6 @@ namespace T4Dungeon.Game.Core
                     _tutorial.SetState(TutorialState.TutForceSkills); // Moves to SkillsUnlocked
                     SetCombatMenu();     // Rebuilds menu to include Skills
 
-                    Log("Great hit! Now watch out, the Slime is counter-attacking!", true);
                     Log("You've got the basics down. I've unlocked 'Skills' for you.", true);
 
                 }
