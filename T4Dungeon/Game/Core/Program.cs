@@ -8,6 +8,7 @@ namespace T4Dungeon.Game.Core
     {
         private static void Main(string[] args)
         {
+
             var engine = new GameEngine();
             engine.Run();
 

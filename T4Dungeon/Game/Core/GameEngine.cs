@@ -172,19 +172,16 @@ namespace T4Dungeon.Game.Core
         {
             _ui = new UIContext
             {
-                // You could also add this to MenuFactory if you prefer
                 Options = new List<MenuOption>
         {
            new MenuOption
             {
-                // New Adventure State
                 Text = "Adventure",
                 Action = () => { _state = GameState.Adventure; },
-                IsImplemented = false // Per your request
+                IsImplemented = false 
             },
             new MenuOption
             {
-                // Mapping "Classic" to your existing NewGame logic
                 Text = "Classic",
                 Action = () => { _state = GameState.NewGame; }
             },
