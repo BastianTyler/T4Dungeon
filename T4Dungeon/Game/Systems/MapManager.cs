@@ -126,36 +126,68 @@ namespace T4Dungeon.Game.Systems
         {
             int roll = _rng.Next(100);
 
-            //if (roll < 80) return CellType.Shop;       // 80% Shop
-            //if (roll < 90) return CellType.Treasure;   // 10% Treasure
+            if (roll < 80) return CellType.Shop;       // 80% Shop
+            if (roll < 90) return CellType.Treasure;   // 10% Treasure
 
-            //return CellType.Empty;
+            return CellType.Empty;
 
-            if (roll < 40) return CellType.Combat;     // 40%
-            if (roll < 60) return CellType.Empty;      // 20%
-            if (roll < 80) return CellType.Treasure;   // 20%
-            if (roll < 95) return CellType.Shop;       // 15%
+            //if (roll < 40) return CellType.Combat;     // 40%
+            //if (roll < 60) return CellType.Empty;      // 20%
+            //if (roll < 80) return CellType.Treasure;   // 20%
+            //if (roll < 95) return CellType.Shop;       // 15%
 
-            return CellType.Empty; // fallback
+            //return CellType.Empty; // fallback
 
         }
+
+        // =========================
+        // MOVEMENT (USED BY STATE)
+        // =========================
+
+        public bool TryMove(int dx, int dy)
+        {
+            int newX = PlayerPosition.X + dx;
+            int newY = PlayerPosition.Y + dy;
+
+            if (newX < 0 || newX >= _width || newY < 0 || newY >= _height)
+                return false;
+
+            PlayerPosition = new Vector2Int(newX, newY);
+            Grid[newX, newY].Explored = true;
+
+            return true;
+        }
+
+        public Cell GetCurrentCell()
+        {
+            return Grid[PlayerPosition.X, PlayerPosition.Y];
+        }
+
+        public void ClearCell(Cell cell)
+        {
+            cell.Type = CellType.Empty;
+        }
+
+        // =========================
+        // REVEAL SYSTEM
+        // =========================
 
         public void RevealAdjacent(Vector2Int pos)
         {
             for (int dx = -1; dx <= 1; dx++)
+            {
                 for (int dy = -1; dy <= 1; dy++)
                 {
                     int nx = pos.X + dx;
                     int ny = pos.Y + dy;
 
-                    if (nx >= 0 && nx < _width && ny >= 0 && ny < _height)
+                    if (nx >= 0 && nx < _width &&
+                        ny >= 0 && ny < _height)
+                    {
                         Grid[nx, ny].Explored = true;
+                    }
                 }
-        }
-
-        private Cell GetCell(Vector2Int pos)
-        {
-            return Grid[pos.X, pos.Y];
+            }
         }
     }
 }

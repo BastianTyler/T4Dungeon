@@ -9,7 +9,7 @@ namespace T4Dungeon.Game.Events
     {
         public string Execute(Player player, Cell cell)
         {
-            return "Combat starts!";
+            return "Combat";
         }
     }
 }

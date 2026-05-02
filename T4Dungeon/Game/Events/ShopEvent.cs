@@ -10,7 +10,7 @@ namespace T4Dungeon.Game.Events
         public bool HasBeenGenerated { get; set; } = false;
         public string Execute(Player player, Cell cell)
         {
-            return "Welcome to the shop!";
+            return "Shop";
         }   
     }
 }
