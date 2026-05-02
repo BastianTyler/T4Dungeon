@@ -11,8 +11,8 @@ public class Player
     public int HP { get; set; } = 100;
     public int BaseAttack { get; set; } = 10;
     public int BaseDefense { get; set; } = 5;
-    public int MaxMana { get; set; } = 20;
-    public int BaseMana { get; set; } = 0;
+    public int MaxMana { get; set; } = 50;
+    public int BaseMana { get; set; } = 50;
     public int MaxStamina { get; set; } = 50;
     public int Stamina { get; set; } = 50;
     public int Gold { get; set; } = 0;

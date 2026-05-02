@@ -1,0 +1,86 @@
+﻿<#@ template language="C#" debug="true" hostspecific="true" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Xml" #>
+<#@ import namespace="System.Xml" #>
+<#@ import namespace="System.IO" #>
+using System;
+using System.Collections.Generic;
+
+namespace T4Dungeon.Generated;
+
+/// <summary>
+/// Auto-generated Enum based on loottables.xml IDs
+/// </summary>
+public enum LootTableId
+{
+<#
+    var templateDir = Path.GetDirectoryName(Host.TemplateFile);
+    // Adjust path to your loottables.xml location
+    var path = Path.GetFullPath(Path.Combine(templateDir, @"..\..\Data\Loot\loottables.xml"));
+    var doc = new XmlDocument();
+    doc.Load(path);
+
+    var tables = doc.SelectNodes("//LootTable");
+    for (int i = 0; i < tables.Count; i++)
+    {
+        var node = tables[i];
+        var name = node.Attributes["Name"].Value.Replace(" ", "");
+        var id = node.Attributes["Id"].Value;
+#>
+    <#= name #> = <#= id #><#= i < tables.Count - 1 ? "," : "" #>
+<# 
+    } 
+#>
+}
+
+public class LootEntry
+{
+    public ItemId ItemId { get; set; }
+    public int Weight { get; set; }
+}
+
+public class LootTableDef
+{
+    public LootTableId Id { get; set; }
+    public string Name { get; set; }
+    public List<LootEntry> Entries { get; set; } = new();
+}
+
+public static class LootDatabase
+{
+    public static readonly Dictionary<LootTableId, LootTableDef> Tables = new()
+    {
+<#
+    for (int i = 0; i < tables.Count; i++)
+    {
+        var tableNode = tables[i];
+        var tableName = tableNode.Attributes["Name"].Value;
+        var cleanTableName = tableName.Replace(" ", "");
+        var tableEntries = tableNode.SelectNodes("Entry");
+#>
+        {
+            LootTableId.<#= cleanTableName #>,
+            new LootTableDef
+            {
+                Id = LootTableId.<#= cleanTableName #>,
+                Name = "<#= tableName #>",
+                Entries = new List<LootEntry> 
+                {
+<# 
+                    for(int j=0; j < tableEntries.Count; j++) { 
+                        var entry = tableEntries[j];
+                        var itemId = entry.Attributes["ItemId"].Value;
+                        var weight = entry.Attributes["Weight"].Value;
+#>
+                    new LootEntry { ItemId = (ItemId)<#= itemId #>, Weight = <#= weight #> }<#= j < tableEntries.Count - 1 ? "," : "" #>
+<# 
+                    } 
+#>
+                }
+            }
+        }<#= i < tables.Count - 1 ? "," : "" #>
+<#
+    }
+#>
+    };
+}

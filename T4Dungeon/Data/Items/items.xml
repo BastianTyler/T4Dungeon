@@ -1,22 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Items>
 	<Equipment>
-		<Item Id="1001" Name="Rusty Dagger" Slot="Weapon" IsStackable="false" IsConsumable="false" BasePrice="40" Category="Weapon" Description="Better than nothing.">
+		<Item Id="1001" Name="Rusty Dagger" Slot="Weapon" IsStackable="false" IsConsumable="false" BasePrice="40" Category="Weapon" Description="Better than nothing. Standard quick strikes.">
 			<Stats AttackBonus="2" />
 		</Item>
-		<Item Id="1002" Name="Iron Sword" Slot="Weapon" IsStackable="false" IsConsumable="false" BasePrice="120" Category="Weapon" Description="Reliable steel.">
+		<Item Id="1002" Name="Iron Sword" Slot="Weapon" IsStackable="false" IsConsumable="false" BasePrice="120" Category="Weapon" Description="Reliable steel. Uses the Cleave rhythm (ChainedHitBar).">
 			<Stats AttackBonus="5" />
 			<Skill Name="Cleave" />
 		</Item>
-		<Item Id="1003" Name="Warhammer" Slot="Weapon" IsStackable="false" IsConsumable="false" BasePrice="250" Category="Weapon" Description="Heavy and brutal.">
+		<Item Id="1003" Name="Warhammer" Slot="Weapon" IsStackable="false" IsConsumable="false" BasePrice="250" Category="Weapon" Description="Heavy and brutal. Uses heavy Cleave rhythm (ChainedHitBar).">
 			<Stats AttackBonus="9" />
 			<Skill Name="Cleave" />
 		</Item>
-		<Item Id="1004" Name="Wizard Staff" Slot="Weapon" IsStackable="false" IsConsumable="false" BasePrice="180" Category="Weapon" Description="Channels arcane energy.">
+		<Item Id="1004" Name="Wizard Staff" Slot="Weapon" IsStackable="false" IsConsumable="false" BasePrice="180" Category="Weapon" Description="Channels arcane energy for Fireballs (Timed).">
 			<Stats AttackBonus="3" />
 			<Skill Name="Fireball" />
 		</Item>
-		<Item Id="1005" Name="Longbow" Slot="Weapon" IsStackable="false" IsConsumable="false" BasePrice="160" Category="Weapon" Description="Shoot from afar.">
+		<Item Id="1005" Name="Longbow" Slot="Weapon" IsStackable="false" IsConsumable="false" BasePrice="160" Category="Weapon" Description="Shoot from afar with Quick Shots (Timed).">
 			<Stats AttackBonus="6" />
 			<Skill Name="Quick Shot" />
 		</Item>
@@ -36,7 +36,7 @@
 		<Item Id="1104" Name="Plate Armor" Slot="Armor" IsStackable="false" IsConsumable="false" BasePrice="750" Category="Armor" Description="A walking fortress.">
 			<Stats DefenseBonus="15" />
 		</Item>
-		<Item Id="1105" Name="Wooden Shield" Slot="Armor" IsStackable="false" IsConsumable="false" BasePrice="80" Category="Armor" Description="A sturdy plank.">
+		<Item Id="1105" Name="Wooden Shield" Slot="Armor" IsStackable="false" IsConsumable="false" BasePrice="80" Category="Armor" Description="A sturdy plank. Grants Shield Bash.">
 			<Stats DefenseBonus="3" />
 			<Skill Name="Shield Bash" />
 		</Item>
@@ -46,22 +46,22 @@
 		<Item Id="1201" Name="Old Penny" Slot="Accessory" IsStackable="false" IsConsumable="false" BasePrice="10" Category="Accessory" Description="Might be lucky.">
 			<Stats DefenseBonus="1" />
 		</Item>
-		<Item Id="1202" Name="Apprentice Ring" Slot="Accessory" IsStackable="false" IsConsumable="false" BasePrice="90" Category="Accessory" Description="A student's trinket.">
+		<Item Id="1202" Name="Apprentice Ring" Slot="Accessory" IsStackable="false" IsConsumable="false" BasePrice="90" Category="Accessory" Description="A student's trinket. Grants Meditate for Mana.">
 			<Stats AttackBonus="1" />
 			<Skill Name="Meditate" />
 		</Item>
 		<Item Id="1203" Name="Iron Band" Slot="Accessory" IsStackable="false" IsConsumable="false" BasePrice="110" Category="Accessory" Description="Increases grip strength.">
 			<Stats AttackBonus="2" />
 		</Item>
-		<Item Id="1204" Name="Amulet of Life" Slot="Accessory" IsStackable="false" IsConsumable="false" BasePrice="220" Category="Accessory" Description="Faintly glowing.">
+		<Item Id="1204" Name="Amulet of Life" Slot="Accessory" IsStackable="false" IsConsumable="false" BasePrice="220" Category="Accessory" Description="Faintly glowing. Grants Heal.">
 			<Stats DefenseBonus="2" />
 			<Skill Name="Heal" />
 		</Item>
-		<Item Id="1205" Name="Chaos Orb" Slot="Accessory" IsStackable="false" IsConsumable="false" BasePrice="1200" Category="Accessory" Description="It whispers to you.">
+		<Item Id="1205" Name="Chaos Orb" Slot="Accessory" IsStackable="false" IsConsumable="false" BasePrice="1200" Category="Accessory" Description="It whispers to you. Grants Bloodlust.">
 			<Stats AttackBonus="10" />
 			<Skill Name="Bloodlust" />
 		</Item>
-		<Item Id="1206" Name="Storm Pendant" Slot="Accessory" IsStackable="false" IsConsumable="false" BasePrice="600" Category="Accessory" Description="Crackles with static.">
+		<Item Id="1206" Name="Storm Pendant" Slot="Accessory" IsStackable="false" IsConsumable="false" BasePrice="600" Category="Accessory" Description="Crackles with static. Grants Lightning Bolt.">
 			<Stats AttackBonus="5" />
 			<Skill Name="Lightning Bolt" />
 		</Item>
@@ -81,15 +81,15 @@
 			<Stats AttackBonus="0" DefenseBonus="0" />
 			<Skill Name="Meditate" />
 		</Item>
-		<Item Id="2003" Name="Fire Scroll" Slot="None" IsStackable="true" IsConsumable="true" BasePrice="60" Category="Consumable" Description="Single-use pyrotechnics.">
+		<Item Id="2003" Name="Fire Scroll" Slot="None" IsStackable="true" IsConsumable="true" BasePrice="60" Category="Consumable" Description="Single-use Fireball (Timed).">
 			<Stats AttackBonus="0" DefenseBonus="0" />
 			<Skill Name="Fireball" />
 		</Item>
-		<Item Id="2004" Name="Iron Skin Elixir" Slot="None" IsStackable="true" IsConsumable="true" BasePrice="45" Category="Buff" Description="Hardens the skin temporarily.">
+		<Item Id="2004" Name="Iron Skin Elixir" Slot="None" IsStackable="true" IsConsumable="true" BasePrice="45" Category="Buff" Description="Hardens the skin. Grants Shield Bash.">
 			<Stats AttackBonus="0" DefenseBonus="0" />
 			<Skill Name="Shield Bash" />
 		</Item>
-		<Item Id="2005" Name="Torch" Slot="None" IsStackable="true" IsConsumable="true" Category="Utility">
+		<Item Id="2005" Name="Torch" Slot="None" IsStackable="true" IsConsumable="true" Category="Utility" Description="Grants Illuminate.">
 			<Skill Name="Illuminate" />
 		</Item>
 	</Consumables>
