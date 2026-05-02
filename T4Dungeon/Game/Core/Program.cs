@@ -11,11 +11,16 @@ namespace T4Dungeon.Game.Core
         private static void Main(string[] args)
         {
 
+<<<<<<< HEAD
             //======================================
             //BEFORE REFACTOR FOR CLASSIC
             //var engine = new GameEngine();
             //engine.Run();
             //======================================
+=======
+            var engine = new GameEngine();
+            engine.Run();
+>>>>>>> 622de292a7e0db28d6924b1fc39c2dc36a76e52e
 
             //var map = new MapManager(10, 8);
 

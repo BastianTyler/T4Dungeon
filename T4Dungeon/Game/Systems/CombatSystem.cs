@@ -436,7 +436,7 @@ namespace T4Dungeon.Game.Systems
             _log($"{TextColor.Yellow}The {_enemy.Name} dropped {goldDropped} gold!{TextColor.Reset}", true);
 
             #region TUTORIAL CONTENT
-            if (_tutorial.IsActive && _enemy.Name == "Slime")
+            if (_tutorial.IsActive && _enemy.Name == "Green Slime")
             {
                 // Force the Torch drop instead of rolling the table
                 _player.Inventory.Add(ItemId.Torch, 1);
