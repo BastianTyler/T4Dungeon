@@ -13,9 +13,8 @@ namespace T4Dungeon.Game.Core
         Tutorial,
         Exploration,
         Combat,
-        Inventory,
-        Equipment,
         Shop,
+        Cutscene,
         Exit
     }
 }

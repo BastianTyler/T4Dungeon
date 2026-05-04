@@ -8,6 +8,7 @@ namespace T4Dungeon.Generated
 	public enum CellType
 	{
 		Empty,
+		Wall,
 		Combat,
 		Shop,
 		Treasure,

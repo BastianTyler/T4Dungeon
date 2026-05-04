@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using T4Dungeon.Game.Models;
 
 namespace T4Dungeon.Game.Events
 {
-    public class EmptyEvent : ICellEvent
+    internal class ExitEvent : ICellEvent
     {
         public string Execute(Player player, Cell cell)
         {
-            return "Empty";
+            return "Exit";
         }
     }
 }

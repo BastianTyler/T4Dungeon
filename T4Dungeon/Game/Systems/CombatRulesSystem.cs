@@ -9,10 +9,15 @@ namespace T4Dungeon.Game.Systems
             return player.Attack;
         }
 
-        public void ApplyDefense(Player player)
+        public void ApplyDefense(Player player, int defenceBonus)
         {
             player.IsDefending = true;
-            player.BaseDefense += 5;
+            player.BaseDefense += defenceBonus;
+        }
+        public void RemoveDefence(Player player, int defenceBonus)
+        {
+            player.IsDefending = true;
+            player.BaseDefense -= defenceBonus;
         }
 
         public bool RollFlee(Player player, Enemy enemy)

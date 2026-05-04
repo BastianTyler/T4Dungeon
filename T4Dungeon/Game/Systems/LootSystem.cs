@@ -14,13 +14,22 @@ namespace T4Dungeon.Game.Systems
             _log = log;
         }
 
-        public void ProcessLoot(Player player, Enemy enemy)
+        public void ProcessLoot(Player player, Enemy enemy, NarrativeDirector narrative)
         {
             var def = EnemyDatabase.Enemies.Values.First(e => e.Name == enemy.Name);
 
             int goldDropped = _rng.Next(def.MinGold, def.MaxGold + 1);
             player.Gold += goldDropped;
             _log.Add($"{TextColor.Yellow}The {enemy.Name} dropped {goldDropped} gold!{TextColor.Reset}");
+
+            #region TUTORIAL CONTENT
+            if (narrative.IsTutorial)
+            {
+                player.Inventory.Add(ItemId.Torch, 1);
+                _log.Add($"{TextColor.Cyan}The Slime dropped a Torch!{TextColor.Reset}");
+                return; // skip normal loot table
+            }
+            #endregion
 
             foreach (var loot in def.LootTable)
             {

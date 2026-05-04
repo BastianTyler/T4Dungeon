@@ -1,4 +1,5 @@
-﻿using T4Dungeon.Game.Models;
+﻿using T4Dungeon.Game.Core;
+using T4Dungeon.Game.Models;
 using T4Dungeon.Game.Systems;
 using T4Dungeon.Generated;
 
@@ -33,6 +34,52 @@ public static class ConsoleRenderer
             DrawMap(map);
         else
             DrawStartScreenArt();
+
+        DrawBottomText(messages);
+    }
+
+    //
+    // The new Overload using GameStateType
+    public static void Render(
+        GameStateType currentState,
+        UIContext ui,
+        List<string> messages,
+        Player player,
+        bool showInventory,
+        MapManager? map = null,
+        Enemy? enemy = null)
+    {
+        Console.Clear();
+        DrawTopBar();
+
+        // Use GameStateType to prevent Logo/Stats overlap
+        if (currentState == GameStateType.StartScreen)
+        {
+            DrawTitleLogo();
+        }
+        else if (player != null)
+        {
+            DrawPlayerStats(player);
+            DrawInventory(player, showInventory);
+        }
+
+        DrawLeftMenu(ui, map, currentState == GameStateType.Combat, enemy);
+
+        switch (currentState)
+        {
+            case GameStateType.Combat:
+                DrawCombatArena();
+                break;
+            case GameStateType.Shop:
+                DrawShopHeader();
+                break;
+            case GameStateType.Exploration:
+                if (map != null) DrawMap(map);
+                break;
+            case GameStateType.StartScreen:
+                DrawStartScreenArt();
+                break;
+        }
 
         DrawBottomText(messages);
     }

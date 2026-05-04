@@ -1,4 +1,5 @@
 ﻿using T4Dungeon.Game.Core;
+using T4Dungeon.Game.Events;
 using T4Dungeon.Game.Models;
 using T4Dungeon.Game.States;
 using T4Dungeon.Game.Systems;
@@ -13,19 +14,14 @@ public class ExplorationState : IGameState
     private readonly Player _player;
     private readonly GameLogSystem _log;
     private readonly CombatManager _combatManager;
+    private readonly NarrativeDirector _narrativeDirector;
 
     private bool _transitioning;
     private bool _initialized = false;
 
     private UIContext _ui;
 
-    public ExplorationState(
-        StateMachine fsm,
-        InputSystem input,
-        MapManager map,
-        Player player,
-        GameLogSystem log,
-        CombatManager combatManager)
+    public ExplorationState(StateMachine fsm, InputSystem input, MapManager map, Player player, GameLogSystem log, CombatManager combatManager, NarrativeDirector narrativeDirector)
     {
         _fsm = fsm;
         _input = input;
@@ -33,6 +29,12 @@ public class ExplorationState : IGameState
         _player = player;
         _log = log;
         _combatManager = combatManager;
+        _narrativeDirector = narrativeDirector;
+
+        _narrativeDirector.OnMapLoadRequested += HandleMapLoad;
+        _narrativeDirector.OnNarrativeMessage += HandleNarrativeMessage;
+        _narrativeDirector.OnStartingItemsRequested += HandleStartingItems;
+        _narrativeDirector.OnStartingEquipmentRequested += HandleStartingEquipment;
     }
 
     // =========================
@@ -42,26 +44,37 @@ public class ExplorationState : IGameState
     public void Enter()
     {
         _transitioning = false;
+        _narrativeDirector.OnEvent("returned_to_exploration");
+
         if (!_initialized)
         {
-            _map.GenerateMap();
-            _player.Inventory.Add(ItemId.HealthPotion, 1);
-            _player.Inventory.Add(ItemId.IronSword, 1);
+            if (!_narrativeDirector.IsActive)
+            {
+                _map.GenerateMap();
+                _player.Inventory.Add(ItemId.HealthPotion, 1);
+                _player.Inventory.Add(ItemId.IronSword, 1);
+                _player.Inventory.Add(ItemId.FireScroll, 1);
+                _player.Inventory.Add(ItemId.StormPendant, 1);
+            }
             _initialized = true;
         }
+
         BuildMenu();
     }
 
     public void Update()
     {
-        ConsoleRenderer.Render(_map, _ui, _log.Active.ToList(), _player, false, false);
+        //ConsoleRenderer.Render(_map, _ui, _log.Active.ToList(), _player, false, false);
+        ConsoleRenderer.Render(GameStateType.Exploration, _ui, _log.Active.ToList(), _player, false, _map);
 
         int choice = _input.GetSelection(_ui.Options.Count);
 
         HandleChoice(choice);
     }
 
-    public void Exit() { }
+    public void Exit()
+    {
+    }
 
     // =========================
     // INPUT
@@ -69,7 +82,19 @@ public class ExplorationState : IGameState
 
     private void HandleChoice(int choice)
     {
-        _ui.Options[choice].Action?.Invoke();
+        var option = _ui.Options[choice];
+
+        if (_narrativeDirector.IsActive)
+        {
+            string yell = _narrativeDirector.ValidateChoice(option.Text);
+            if (yell != null)
+            {
+                _log.Add(yell, waitForKey: true);
+                return; // block the action, stay where they are
+            }
+        }
+
+        option.Action?.Invoke();
     }
 
     // =========================
@@ -104,6 +129,7 @@ public class ExplorationState : IGameState
 
     private void MoveMode()
     {
+        _narrativeDirector.OnEvent("move_menu_opened");
         _ui = MenuFactory.CreateMoveMenu(
                  up: () => MovePlayer(0, -1),
                  down: () => MovePlayer(0, 1),
@@ -112,6 +138,8 @@ public class ExplorationState : IGameState
                  back: ReturnToMainMenu
              );
     }
+
+
 
     // =========================
     // CELL INTERACTION
@@ -133,14 +161,30 @@ public class ExplorationState : IGameState
             //_log.Add(result, !isCombat); // ❗ no pause if entering combat
         }
 
-        if (result == "Combat")
+        if(cellEvent is EmptyEvent)
+        {
+            _log.Add($"{TextColor.White}Nothing here...{TextColor.Reset}");
+        }
+
+        if (cellEvent is TreasureEvent)
+        {
+            _log.Add(result);
+            _map.ClearCell(cell);
+            return;
+        }
+
+        if (cellEvent is CombatEvent)
         {
             _transitioning = true;
-            var enemy = _combatManager.CreateRandomEnemy();
+            var enemyOverride = _narrativeDirector.ConsumeEnemyOverride();
+            var enemy = enemyOverride.HasValue
+                ? _combatManager.CreateEnemy(enemyOverride.Value)
+                : _combatManager.CreateRandomEnemy(_map.CurrentTier);
 
             _log.Add($"{TextColor.Yellow}A {enemy.Name} appears!{TextColor.Reset}");
             Console.Clear();
-            ConsoleRenderer.Render(_map, _ui, _log.Active.ToList(), null, false, false, enemy);
+            //ConsoleRenderer.Render(_map, _ui, _log.Active.ToList(), null, false, false, enemy); // Old renderer logic
+            ConsoleRenderer.Render(GameStateType.Exploration, _ui, _log.Active.ToList(), _player, false, _map, enemy);
             Console.WriteLine("\n -- Press any key -- ");
             Console.ReadKey(true);
             while (Console.KeyAvailable) Console.ReadKey(true);
@@ -152,7 +196,8 @@ public class ExplorationState : IGameState
                 enemyAI: new EnemyActionSystem(),
                 minigames: new MinigameSystem(),
                 loot: new LootSystem(_log),
-                log: _log
+                log: _log,
+                narrativeDirector : _narrativeDirector
             );
 
             var combatState = (CombatState)_fsm.GetState(GameStateType.Combat);
@@ -170,33 +215,59 @@ public class ExplorationState : IGameState
             return;
         }
 
-        if (result == "Shop")
+        if (cellEvent is ShopEvent)
         {
             _transitioning = true;
             _log.Add($"{TextColor.Cyan}A traveling merchant awaits...{TextColor.Reset}");
 
-            // 1. Get the state from the FSM
             var shopState = (ShopState)_fsm.GetState(GameStateType.Shop);
 
-            // 2. Setup the shop logic and inventory[cite: 7]
             shopState.StartShop();
 
-            // 3. Define what happens when the player leaves
+
             shopState.OnExit = () =>
             {
-                _map.ClearCell(cell); // Clear the shop tile
-                _fsm.ChangeState(GameStateType.Exploration); // Return to moving[cite: 5]
+                _map.ClearCell(cell); 
+                _fsm.ChangeState(GameStateType.Exploration); 
             };
 
-            // 4. Switch to the ShopState loop[cite: 5]
             _fsm.ChangeState(GameStateType.Shop);
+            return;
+        }
+
+        if(cellEvent is ExitEvent)
+        {
+            _transitioning = true;
+            _log.Add($"{TextColor.Green}You find a staircase leading deeper...{TextColor.Reset}", waitForKey: true);
+
+            // 1. Tell MapManager to move to the next floor
+            _map.AdvanceTier(); // Increments CurrentTier and calls GenerateMap()
+
+            _log.Add($"--- Entering Tier {_map.CurrentTier} ---");
+
+
+            _transitioning = false;
             return;
         }
 
         _map.ClearCell(cell);
     }
 
+    // =========================
+    // NARRATIVE
+    // =========================
 
+    private void HandleMapLoad(string path) => _map.LoadMapFromFile(path);
+    private void HandleNarrativeMessage(string msg, bool waitForKey) => _log.Add(msg, waitForKey);
+    private void HandleStartingItems(ItemId[] items)
+    {
+        foreach (var id in items)
+            _player.Inventory.Add(id, 1);
+    }
+    private void HandleStartingEquipment(EquiptSlot slot, ItemId id)
+    {
+        _player.Equipment[slot] = id;
+    }
     // =========================
     // EQUIPTMENT
     // =========================
@@ -242,6 +313,7 @@ public class ExplorationState : IGameState
     private void OpenInventory()
     {
         SetInventoryMenu();
+        _narrativeDirector.OnEvent("inventory_opened");
     }
 
     private void SetInventoryMenu()
@@ -255,6 +327,9 @@ public class ExplorationState : IGameState
 
     private void UseItem(ItemId id)
     {
+        if (id == ItemId.Torch)
+            _narrativeDirector.OnEvent("torch_used");
+
         Enemy enemy = null; // exploration has no enemy context
 
         var result = InventorySystem.UseItem(
@@ -270,7 +345,8 @@ public class ExplorationState : IGameState
         if (result.NeedsMapRedraw)
         {
             // map changed (e.g. Illuminate)
-            ConsoleRenderer.Render(_map, _ui, _log.Active.ToList(), _player, false, false);
+            //ConsoleRenderer.Render(_map, _ui, _log.Active.ToList(), _player, false, false);
+            ConsoleRenderer.Render(GameStateType.Exploration,_ui,_log.Active.ToList(),_player,false,_map);
         }
 
         SetInventoryMenu();

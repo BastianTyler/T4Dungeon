@@ -18,13 +18,8 @@ namespace T4Dungeon.Game.States
 
         public Action? OnExit;
 
-        public ShopState(
-            StateMachine fsm,
-            InputSystem input,
-            GameLogSystem log,
-            MapManager mapMan,
-            Player player)
-        {
+        public ShopState(StateMachine fsm, InputSystem input, GameLogSystem log, MapManager mapMan, Player player, NarrativeDirector narrativeDirector) 
+        { 
             _fsm = fsm;
             _input = input;
             _log = log;
@@ -84,15 +79,8 @@ namespace T4Dungeon.Game.States
 
         private void ForceRender()
         {
-            ConsoleRenderer.Render(
-                _mapMan,
-                _ui,
-                _log.Active.ToList(),
-                null,
-                false,
-                false, 
-                null   
-            ); 
+            //ConsoleRenderer.Render(_mapMan, _ui, _log.Active.ToList(), null, false, false, null);
+            ConsoleRenderer.Render(GameStateType.Shop, _ui, _log.Active.ToList(), _player, false, _mapMan, null);
         }
     }
 }

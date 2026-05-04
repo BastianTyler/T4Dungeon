@@ -16,7 +16,7 @@ namespace T4Dungeon.Game.Utils
             {
                 Options = new List<MenuOption>
         {
-            new MenuOption {Text = "Adventure",Action = onAdventure,IsImplemented = false},
+            new MenuOption {Text = "Adventure",Action = onAdventure},
             new MenuOption { Text = "Classic", Action = onClassic },
             new MenuOption { Text = "Tutorial", Action = onTutorial },
             new MenuOption { Text = "Dev Options", Action = null, IsImplemented = false },

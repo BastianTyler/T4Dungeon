@@ -2,6 +2,7 @@
 <Enums>
 	<Enum Name="CellType">
 		<Value Name="Empty"/>
+		<Value Name="Wall"/>
 		<Value Name="Combat"/>
 		<Value Name="Shop"/>
 		<Value Name="Treasure"/>

@@ -15,6 +15,9 @@ namespace T4Dungeon.Game.Systems
                 "SweetSpot" => new SweetSpotInput(),
                 "Sequence" => new SequenceInput(),
                 "ChaineHitBar" => new ChainedHitBarInput(),
+                "Charge" => new ChargeInput(),
+                "Balance" => new BalanceInput(),
+                "TugOfWar" => new TugOfWarInput(),
                 _ => null
             };
 
@@ -32,6 +35,9 @@ namespace T4Dungeon.Game.Systems
                     "SweetSpot" => new SweetSpotInput(),
                     "Sequence" => new SequenceInput(),
                     "ChainedHitBar" => new ChainedHitBarInput(),
+                    "Charge" => new ChargeInput(),
+                    "Balance" => new BalanceInput(),
+                    "TugOfWar" => new TugOfWarInput(),
                     _ => null
                 };
 

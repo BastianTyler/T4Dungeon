@@ -65,6 +65,7 @@ namespace T4Dungeon.Game.Systems
                     // Handle Special Characters
                     switch (c)
                     {
+                        //case '#': Grid[x, y].Type = CellType.Wall; break;
                         case 'P':
                             PlayerPosition = new Vector2Int(x, y);
                             Grid[x, y].Type = CellType.Empty;
@@ -126,17 +127,17 @@ namespace T4Dungeon.Game.Systems
         {
             int roll = _rng.Next(100);
 
-            if (roll < 80) return CellType.Shop;       // 80% Shop
-            if (roll < 90) return CellType.Treasure;   // 10% Treasure
+            //if (roll < 80) return CellType.Shop;       // 80% Shop
+            //if (roll < 90) return CellType.Treasure;   // 10% Treasure
 
-            return CellType.Empty;
+            //return CellType.Empty;
 
-            //if (roll < 40) return CellType.Combat;     // 40%
-            //if (roll < 60) return CellType.Empty;      // 20%
-            //if (roll < 80) return CellType.Treasure;   // 20%
-            //if (roll < 95) return CellType.Shop;       // 15%
+            if (roll < 40) return CellType.Combat;     // 40%
+            if (roll < 60) return CellType.Empty;      // 20%
+            if (roll < 80) return CellType.Treasure;   // 20%
+            if (roll < 95) return CellType.Shop;       // 15%
 
-            //return CellType.Empty; // fallback
+            return CellType.Empty; // fallback
 
         }
 
@@ -151,6 +152,9 @@ namespace T4Dungeon.Game.Systems
 
             if (newX < 0 || newX >= _width || newY < 0 || newY >= _height)
                 return false;
+
+            //if (Grid[newX, newY].Type == CellType.Wall)
+            //    return false;
 
             PlayerPosition = new Vector2Int(newX, newY);
             Grid[newX, newY].Explored = true;
@@ -188,6 +192,12 @@ namespace T4Dungeon.Game.Systems
                     }
                 }
             }
+        }
+
+        public void AdvanceTier()
+        {
+            CurrentTier++;
+            GenerateMap();
         }
     }
 }

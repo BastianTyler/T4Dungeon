@@ -11,16 +11,11 @@ namespace T4Dungeon.Game.Core
         private static void Main(string[] args)
         {
 
-<<<<<<< HEAD
             //======================================
             //BEFORE REFACTOR FOR CLASSIC
             //var engine = new GameEngine();
             //engine.Run();
             //======================================
-=======
-            var engine = new GameEngine();
-            engine.Run();
->>>>>>> 622de292a7e0db28d6924b1fc39c2dc36a76e52e
 
             //var map = new MapManager(10, 8);
 
@@ -34,6 +29,7 @@ namespace T4Dungeon.Game.Core
             var states = new Dictionary<GameStateType, IGameState>();
 
             var stateMachine = new StateMachine(states);
+            var narrativeDirector = new NarrativeDirector();
 
             var inputSystem = new InputSystem();
             var player = new Player();
@@ -47,7 +43,7 @@ namespace T4Dungeon.Game.Core
             // CREATE STATES
             // =========================
 
-            var startScreen = new StartScreenState(stateMachine, inputSystem);
+            var startScreen = new StartScreenState(stateMachine, inputSystem, narrativeDirector);
 
 
             var combatState = new CombatState(
@@ -55,7 +51,8 @@ namespace T4Dungeon.Game.Core
                 inputSystem,
                 log,
                 mapManager,
-                player
+                player,
+                narrativeDirector
             );
 
             //=============================
@@ -68,7 +65,8 @@ namespace T4Dungeon.Game.Core
                 mapManager,
                 player,
                 log,
-                combatManager
+                combatManager,
+                narrativeDirector
             );
 
             var shopState = new ShopState(
@@ -76,8 +74,10 @@ namespace T4Dungeon.Game.Core
                 inputSystem,
                 log,
                 mapManager,
-                player
+                player,
+                narrativeDirector
             );
+            var cutsceneState = new CutsceneState(stateMachine);
 
 
 
@@ -96,6 +96,7 @@ namespace T4Dungeon.Game.Core
             states[GameStateType.Exploration] = explorationState;
             states[GameStateType.Combat] = combatState;
             states[GameStateType.Shop] = shopState;
+            states[GameStateType.Cutscene] = cutsceneState;
             //states[GameStateType.Combat] = combatState;
             //states[GameStateType.Shop] = shopState;
             //states[GameStateType.Inventory] = inventoryState;

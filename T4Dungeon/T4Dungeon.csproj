@@ -8,11 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Art\Ascii Art\" />
     <Folder Include="CodeGen\Includes\" />
     <Folder Include="CodeGen\Settings\" />
     <Folder Include="Data\Events\" />
     <Folder Include="Data\Floors\" />
-    <Folder Include="Data\Maps\" />
     <Folder Include="Data\Schemas\" />
     <Folder Include="Generated\Enemies\" />
     <Folder Include="Generated\Events\" />
