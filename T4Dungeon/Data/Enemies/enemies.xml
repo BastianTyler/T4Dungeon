@@ -8,7 +8,6 @@
 			<Item Id="2001" Chance="0.2" />
 		</LootTable>
 	</Enemy>
-
 	<Enemy Id="2002" Name="Goblin" HP="45" MaxHp="45" Attack="12" MinGold="10" MaxGold="20">
 		<Moves>
 			<Move Name="Quick Stab" Type="Timed" Key="D" TimeLimit="1200" />
@@ -18,7 +17,6 @@
 			<Item Id="1005" Chance="0.05" />
 		</LootTable>
 	</Enemy>
-
 	<Enemy Id="2003" Name="Orc" HP="100" MaxHp="100" Attack="25" MinGold="35" MaxGold="60">
 		<Moves>
 			<Move Name="Crushing Club" Type="Mash" Key="B" Goal="15" TimeLimit="3000" />
@@ -29,7 +27,6 @@
 			<Item Id="2001" Chance="0.15" />
 		</LootTable>
 	</Enemy>
-
 	<Enemy Id="2004" Name="Blue Slime" HP="30" MaxHp="30" Attack="8" MinGold="5" MaxGold="10">
 		<Moves>
 			<Move Name="Quick Leap" Type="Timed" Key="W" TimeLimit="1500" />
@@ -38,19 +35,157 @@
 			<Item Id="2001" Chance="0.3" />
 		</LootTable>
 	</Enemy>
-
 	<Enemy Id="2005" Name="Amber Slime" HP="50" MaxHp="50" Attack="12" MinGold="12" MaxGold="18">
 		<Moves>
 			<Move Name="Amber Crush" Type="Sequence" Key="S" Count="3" TimeLimit="1000" />
 		</Moves>
 	</Enemy>
-
 	<Enemy Id="2006" Name="Red Slime" HP="65" MaxHp="65" Attack="18" MinGold="20" MaxGold="35">
 		<Moves>
 			<Move Name="Heavy Bash" Type="Sequence" Key="B" Count="2" TimeLimit="800" />
 			<Move Name="Core Burst" Type="SweetSpot" Key="X" Target="0.5" Threshold="0.05" />
 		</Moves>
 	</Enemy>
-	
-	
+	<Enemy Id="2007" Name="Stone Golem" HP="150" MaxHp="150" Attack="30" MinGold="50" MaxGold="100">
+		<Moves>
+			<Move Name="Earthquake" Type="Balance" TimeLimit="4000" PullStrength="22" />
+		</Moves>
+		<LootTable>
+			<Item Id="1001" Chance="0.2" />
+		</LootTable>
+	</Enemy>
+	<Enemy Id="2008" Name="Shadow Stalker" HP="80" MaxHp="80" Attack="20" MinGold="30" MaxGold="50">
+		<Moves>
+			<Move Name="Shadow Bind" Type="TugOfWar" Key="R" PullStrength="18" TimeLimit="5000" />
+		</Moves>
+		<LootTable>
+			<Item Id="2001" Chance="0.25" />
+		</LootTable>
+	</Enemy>
+	<Enemy Id="2009" Name="Iron Knight" HP="120" MaxHp="120" Attack="35" MinGold="40" MaxGold="80">
+		<Moves>
+			<Move Name="Grand Overdrive" Type="Charge" TimeLimit="3000" />
+			<Move Name="Hilt Bump" Type="Timed" Key="W" TimeLimit="800" />
+		</Moves>
+		<LootTable>
+			<Item Id="1003" Chance="0.15" />
+		</LootTable>
+	</Enemy>
+	<Enemy Id="2010" Name="Skeleton Guard" HP="85" MaxHp="85" Attack="22" MinGold="25" MaxGold="45">
+		<Moves>
+			<Move Name="Bone Rattle" Type="Sequence" Key="W" Count="4" TimeLimit="1200" />
+			<Move Name="Shield Bash" Type="Timed" Key="S" TimeLimit="900" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2011" Name="Cursed Specter" HP="70" MaxHp="70" Attack="28" MinGold="60" MaxGold="90">
+		<Moves>
+			<Move Name="Soul Drain" Type="TugOfWar" Key="F" PullStrength="25" TimeLimit="4000" />
+			<Move Name="Ethereal Strike" Type="SweetSpot" Key="Z" Target="0.8" Threshold="0.04" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2012" Name="Wasp Swarm" HP="35" MaxHp="35" Attack="10" MinGold="8" MaxGold="14">
+		<Moves>
+			<Move Name="Stinger Barrage" Type="Sequence" Key="W" Count="3" TimeLimit="900" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2013" Name="Stone Crab" HP="110" MaxHp="110" Attack="15" MinGold="20" MaxGold="40">
+		<Moves>
+			<Move Name="Bubble Trap" Type="TugOfWar" Key="A" PullStrength="14" TimeLimit="4500" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2014" Name="Kobold Miner" HP="55" MaxHp="55" Attack="14" MinGold="25" MaxGold="50">
+		<Moves>
+			<Move Name="Pickaxe Throw" Type="SweetSpot" Key="S" Target="0.3" Threshold="0.08" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2015" Name="Mimic" HP="90" MaxHp="90" Attack="25" MinGold="100" MaxGold="200">
+		<Moves>
+			<Move Name="Chomp" Type="Mash" Key="C" Goal="20" TimeLimit="2500" />
+			<Move Name="Sticky Tongue" Type="TugOfWar" Key="T" PullStrength="20" TimeLimit="4000" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2016" Name="Earth Elemental" HP="140" MaxHp="140" Attack="28" MinGold="45" MaxGold="75">
+		<Moves>
+			<Move Name="Fissure" Type="Balance" TimeLimit="5000" PullStrength="19" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2017" Name="Harpy" HP="75" MaxHp="75" Attack="20" MinGold="30" MaxGold="55">
+		<Moves>
+			<Move Name="Screech" Type="Sequence" Key="Q" Count="5" TimeLimit="1500" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2018" Name="Dark Priest" HP="60" MaxHp="60" Attack="30" MinGold="40" MaxGold="70">
+		<Moves>
+			<Move Name="Void Pulse" Type="Charge" TimeLimit="2500" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2019" Name="Cave Troll" HP="180" MaxHp="180" Attack="35" MinGold="60" MaxGold="110">
+		<Moves>
+			<Move Name="Great Bash" Type="Mash" Key="M" Goal="25" TimeLimit="4000" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2020" Name="Living Armor" HP="130" MaxHp="130" Attack="32" MinGold="50" MaxGold="90">
+		<Moves>
+			<Move Name="Static Guard" Type="Charge" TimeLimit="3500" />
+			<Move Name="Shield Slam" Type="Timed" Key="S" TimeLimit="750" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2021" Name="Bone Naga" HP="200" MaxHp="200" Attack="40" MinGold="120" MaxGold="180">
+		<Moves>
+			<Move Name="Constrict" Type="TugOfWar" Key="X" PullStrength="24" TimeLimit="6000" />
+			<Move Name="Tail Whip" Type="Timed" Key="A" TimeLimit="600" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2022" Name="Frost Giant" HP="350" MaxHp="350" Attack="50" MinGold="200" MaxGold="400">
+		<Moves>
+			<Move Name="Glacial Crash" Type="Balance" TimeLimit="6000" PullStrength="30" />
+			<Move Name="Ice Boulder" Type="SweetSpot" Key="B" Target="0.5" Threshold="0.03" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2023" Name="Shadow Assassin" HP="100" MaxHp="100" Attack="45" MinGold="80" MaxGold="130">
+		<Moves>
+			<Move Name="Death in Five" Type="Sequence" Key="F" Count="5" TimeLimit="800" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2024" Name="Wyvern" HP="220" MaxHp="220" Attack="38" MinGold="150" MaxGold="250">
+		<Moves>
+			<Move Name="Dive Bomb" Type="Charge" TimeLimit="2000" />
+			<Move Name="Poison Claw" Type="Timed" Key="W" TimeLimit="500" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2025" Name="Beholder Spawn" HP="160" MaxHp="160" Attack="42" MinGold="110" MaxGold="200">
+		<Moves>
+			<Move Name="Disintegration Ray" Type="SweetSpot" Key="E" Target="0.9" Threshold="0.02" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2026" Name="Iron Golem" HP="400" MaxHp="400" Attack="55" MinGold="300" MaxGold="500">
+		<Moves>
+			<Move Name="Piston Punch" Type="Mash" Key="P" Goal="40" TimeLimit="5000" />
+			<Move Name="Steam Blast" Type="Balance" TimeLimit="3500" PullStrength="35" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2027" Name="Lich Apprentice" HP="140" MaxHp="140" Attack="48" MinGold="180" MaxGold="300">
+		<Moves>
+			<Move Name="Life Tap" Type="TugOfWar" Key="L" PullStrength="28" TimeLimit="4500" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2028" Name="Chimera" HP="280" MaxHp="280" Attack="45" MinGold="250" MaxGold="450">
+		<Moves>
+			<Move Name="Triple Strike" Type="Sequence" Key="Z" Count="3" TimeLimit="600" />
+			<Move Name="Lion Roar" Type="Mash" Key="R" Goal="30" TimeLimit="3000" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2029" Name="Ancient Construct" HP="500" MaxHp="500" Attack="60" MinGold="500" MaxGold="1000">
+		<Moves>
+			<Move Name="Reality Warp" Type="Balance" TimeLimit="8000" PullStrength="40" />
+			<Move Name="Energy Core" Type="SweetSpot" Key="C" Target="0.5" Threshold="0.01" />
+		</Moves>
+	</Enemy>
+	<Enemy Id="2030" Name="The Nameless Knight" HP="600" MaxHp="600" Attack="75" MinGold="2000" MaxGold="5000">
+		<Moves>
+			<Move Name="Endless Blade" Type="Sequence" Key="K" Count="8" TimeLimit="2000" />
+			<Move Name="Final Stand" Type="TugOfWar" Key="S" PullStrength="35" TimeLimit="8000" />
+			<Move Name="Heavenly Parry" Type="Charge" TimeLimit="1500" />
+		</Moves>
+	</Enemy>
 </Enemies>

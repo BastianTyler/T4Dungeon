@@ -13,7 +13,7 @@ namespace T4Dungeon.Game.Systems
                 CellType.Combat => new CombatEvent(),
                 CellType.Treasure => new TreasureEvent(),
                 CellType.Shop => new ShopEvent(),
-                CellType.Exit => new EmptyEvent(),
+                CellType.Exit => new ExitEvent(),
                 _ => new EmptyEvent()
             };
         }

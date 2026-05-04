@@ -65,6 +65,7 @@ namespace T4Dungeon.Game.Systems
                     // Handle Special Characters
                     switch (c)
                     {
+                        //case '#': Grid[x, y].Type = CellType.Wall; break;
                         case 'P':
                             PlayerPosition = new Vector2Int(x, y);
                             Grid[x, y].Type = CellType.Empty;
@@ -140,22 +141,63 @@ namespace T4Dungeon.Game.Systems
 
         }
 
+        // =========================
+        // MOVEMENT (USED BY STATE)
+        // =========================
+
+        public bool TryMove(int dx, int dy)
+        {
+            int newX = PlayerPosition.X + dx;
+            int newY = PlayerPosition.Y + dy;
+
+            if (newX < 0 || newX >= _width || newY < 0 || newY >= _height)
+                return false;
+
+            //if (Grid[newX, newY].Type == CellType.Wall)
+            //    return false;
+
+            PlayerPosition = new Vector2Int(newX, newY);
+            Grid[newX, newY].Explored = true;
+
+            return true;
+        }
+
+        public Cell GetCurrentCell()
+        {
+            return Grid[PlayerPosition.X, PlayerPosition.Y];
+        }
+
+        public void ClearCell(Cell cell)
+        {
+            cell.Type = CellType.Empty;
+        }
+
+        // =========================
+        // REVEAL SYSTEM
+        // =========================
+
         public void RevealAdjacent(Vector2Int pos)
         {
             for (int dx = -1; dx <= 1; dx++)
+            {
                 for (int dy = -1; dy <= 1; dy++)
                 {
                     int nx = pos.X + dx;
                     int ny = pos.Y + dy;
 
-                    if (nx >= 0 && nx < _width && ny >= 0 && ny < _height)
+                    if (nx >= 0 && nx < _width &&
+                        ny >= 0 && ny < _height)
+                    {
                         Grid[nx, ny].Explored = true;
+                    }
                 }
+            }
         }
 
-        private Cell GetCell(Vector2Int pos)
+        public void AdvanceTier()
         {
-            return Grid[pos.X, pos.Y];
+            CurrentTier++;
+            GenerateMap();
         }
     }
 }

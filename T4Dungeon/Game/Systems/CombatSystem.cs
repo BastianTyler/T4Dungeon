@@ -34,6 +34,7 @@ namespace T4Dungeon.Game.Systems
             _log($"You encountered a {_enemy.Name}!", false);
         }
 
+
         public void RunTurn(Action playerAction)
         {
             if (_combatOver) return;
@@ -467,6 +468,7 @@ namespace T4Dungeon.Game.Systems
             _log($"You attacked {TextColor.Red}{_enemy.Name}{TextColor.Reset} for {TextColor.Yellow}{_player.Attack}{TextColor.Reset} damage!");
 
             #region TUTORIAL CONTENT
+
             if (_tutorial.IsActive && _tutorial.CurrentState == TutorialState.TutForceAttack)
             {
                 _log("Great hit! Now watch out, the Slime is counter-attacking!", true);

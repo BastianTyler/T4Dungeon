@@ -9,6 +9,22 @@ namespace T4Dungeon.Game.Utils
 {
     public static class MenuFactory
     {
+
+        public static UIContext CreateStartMenu(Action onAdventure, Action onClassic, Action onTutorial, Action onExit)
+        {
+            return new UIContext
+            {
+                Options = new List<MenuOption>
+        {
+            new MenuOption {Text = "Adventure",Action = onAdventure},
+            new MenuOption { Text = "Classic", Action = onClassic },
+            new MenuOption { Text = "Tutorial", Action = onTutorial },
+            new MenuOption { Text = "Dev Options", Action = null, IsImplemented = false },
+            new MenuOption { Text = "Exit", Action = onExit }
+        }
+            };
+        }
+
         public static UIContext CreateMainMenu(Action onMove, Action onEquip, Action onInv, Action onExit)
         {
             return new UIContext

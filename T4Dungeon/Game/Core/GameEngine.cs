@@ -170,38 +170,12 @@ namespace T4Dungeon.Game.Core
         /// </summary>
         private void SetStartScreen()
         {
-            _ui = new UIContext
-            {
-                Options = new List<MenuOption>
-        {
-           new MenuOption
-            {
-                Text = "Adventure",
-                Action = () => { _state = GameState.Adventure; },
-                IsImplemented = false 
-            },
-            new MenuOption
-            {
-                Text = "Classic",
-                Action = () => { _state = GameState.NewGame; }
-            },
-            new MenuOption
-            {
-                Text = "Tutorial",
-                Action = () => { _state = GameState.Tutorial; }
-            },
-            new MenuOption
-            {
-                Text = "Dev Options",
-                IsImplemented = false
-            },
-            new MenuOption
-            {
-                Text = "Exit",
-                Action = () => _state = GameState.Exit
-            }
-        }
-            };
+            _ui = MenuFactory.CreateStartMenu(
+                onAdventure: () => _state = GameState.Adventure,
+                onClassic: () => _state = GameState.NewGame,
+                onTutorial: () => _state = GameState.Tutorial,
+                onExit: () => _state = GameState.Exit
+            );
         }
 
         #endregion

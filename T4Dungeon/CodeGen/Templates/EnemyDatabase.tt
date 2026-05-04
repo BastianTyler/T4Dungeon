@@ -18,6 +18,7 @@ public class MoveDef
     public double Target { get; set; }
     public double Threshold { get; set; }
     public string ChainedHitBarPositions { get; set; }
+    public double PullStrength { get; set; }
 }
 
 public class LootItemDef {
@@ -89,7 +90,8 @@ public static class EnemyDatabase
                         Goal = <#= m.Attributes["Goal"]?.Value ?? "0" #>,
                         Count = <#= m.Attributes["Count"]?.Value ?? "0" #>,
                         Target = <#= m.Attributes["Target"]?.Value ?? "0.5" #>,
-                        Threshold = <#= m.Attributes["Threshold"]?.Value ?? "0.1" #>
+                        Threshold = <#= m.Attributes["Threshold"]?.Value ?? "0.1" #>,
+                        PullStrength = <#= m.Attributes["PullStrength"]?.Value ?? "0.001" #>
                     }<#= j < moveNodes.Count - 1 ? "," : "" #>
 <# 
                 } // End of Move loop
