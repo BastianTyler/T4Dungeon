@@ -183,9 +183,13 @@
 	</Enemy>
 	<Enemy Id="2030" Name="The Nameless Knight" HP="600" MaxHp="600" Attack="75" MinGold="2000" MaxGold="5000">
 		<Moves>
-			<Move Name="Endless Blade" Type="Sequence" Key="K" Count="8" TimeLimit="2000" />
-			<Move Name="Final Stand" Type="TugOfWar" Key="S" PullStrength="35" TimeLimit="8000" />
-			<Move Name="Heavenly Parry" Type="Charge" TimeLimit="1500" />
-		</Moves>
+			<Move Name="Endless Blade" Type="MultiStep">
+				<Steps>
+					<Step Type="Sequence" Key="K" Count="8" TimeLimit="2000" />
+					<Step Type="Timed" Key="X" TimeLimit="600" />
+					<Step Type="TugOfWar" Key="S" PullStrength="35" TimeLimit="5000" />
+				</Steps>
+			</Move>
+	</Moves>
 	</Enemy>
 </Enemies>

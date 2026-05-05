@@ -167,7 +167,7 @@ public class CombatOrchestrator
 
         _log.Add($"{TextColor.Yellow}{Enemy.Name}{TextColor.Reset} winds up {TextColor.Red}{move.Name}!{TextColor.Reset}", sleepMs: 2000);
 
-        bool success = _minigames.Execute(move);
+        bool success = _minigames.Execute(move, _log);
 
         if (success)
         {

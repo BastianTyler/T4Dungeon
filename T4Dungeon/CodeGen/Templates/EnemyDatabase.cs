@@ -1,6 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace T4Dungeon.Generated;
+
+public class MoveStep
+{
+    public string Type { get; set; }
+    public char Key { get; set; }
+    public int Goal { get; set; }
+    public int TimeLimit { get; set; }
+    public string FailMsg { get; set; }
+    public string ChainedHitBarPositions { get; set; }
+    public double PullStrength { get; set; }
+    public int Count { get; set; }
+}
 
 public class MoveDef
 {
@@ -14,9 +27,11 @@ public class MoveDef
     public double Threshold { get; set; }
     public string ChainedHitBarPositions { get; set; }
     public double PullStrength { get; set; }
+    public List<MoveStep> Steps { get; set; } = new();
 }
 
-public class LootItemDef {
+public class LootItemDef
+{
     public ItemId Id { get; set; }
     public double Chance { get; set; }
 }
@@ -26,7 +41,7 @@ public class EnemyDef
     public EnemyId Id { get; set; }
     public string Name { get; set; }
     public int HP { get; set; }
-    public int MaxHp {get; set; }
+    public int MaxHp { get; set; }
     public int Attack { get; set; }
     public List<MoveDef> Moves { get; set; } = new();
     public int MinGold { get; set; }
@@ -49,10 +64,10 @@ public static class EnemyDatabase
                 Attack = 5,
                 MinGold = 2,
                 MaxGold = 6,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Slime Ram",
                         Type = "Timed",
                         Key = 'D',
@@ -61,15 +76,19 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
                 {
-                    new LootItemDef 
-                    { 
-                        Id = (ItemId)2001, 
-                        Chance = 0.2 
+                    new LootItemDef
+                    {
+                        Id = (ItemId)2001,
+                        Chance = 0.2
                     }
                 } // End of LootTable List
             }
@@ -85,10 +104,10 @@ public static class EnemyDatabase
                 Attack = 12,
                 MinGold = 10,
                 MaxGold = 20,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Quick Stab",
                         Type = "Timed",
                         Key = 'D',
@@ -97,10 +116,14 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     },
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Dagger Throw",
                         Type = "SweetSpot",
                         Key = 'R',
@@ -109,15 +132,19 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
                 {
-                    new LootItemDef 
-                    { 
-                        Id = (ItemId)1005, 
-                        Chance = 0.05 
+                    new LootItemDef
+                    {
+                        Id = (ItemId)1005,
+                        Chance = 0.05
                     }
                 } // End of LootTable List
             }
@@ -133,10 +160,10 @@ public static class EnemyDatabase
                 Attack = 25,
                 MinGold = 35,
                 MaxGold = 60,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Crushing Club",
                         Type = "Mash",
                         Key = 'B',
@@ -145,10 +172,14 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     },
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Double Swing",
                         Type = "Sequence",
                         Key = 'B',
@@ -157,20 +188,24 @@ public static class EnemyDatabase
                         Count = 2,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
                 {
-                    new LootItemDef 
-                    { 
-                        Id = (ItemId)1001, 
-                        Chance = 0.1 
+                    new LootItemDef
+                    {
+                        Id = (ItemId)1001,
+                        Chance = 0.1
                     },
-                    new LootItemDef 
-                    { 
-                        Id = (ItemId)2001, 
-                        Chance = 0.15 
+                    new LootItemDef
+                    {
+                        Id = (ItemId)2001,
+                        Chance = 0.15
                     }
                 } // End of LootTable List
             }
@@ -186,10 +221,10 @@ public static class EnemyDatabase
                 Attack = 8,
                 MinGold = 5,
                 MaxGold = 10,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Quick Leap",
                         Type = "Timed",
                         Key = 'W',
@@ -198,15 +233,19 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
                 {
-                    new LootItemDef 
-                    { 
-                        Id = (ItemId)2001, 
-                        Chance = 0.3 
+                    new LootItemDef
+                    {
+                        Id = (ItemId)2001,
+                        Chance = 0.3
                     }
                 } // End of LootTable List
             }
@@ -222,10 +261,10 @@ public static class EnemyDatabase
                 Attack = 12,
                 MinGold = 12,
                 MaxGold = 18,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Amber Crush",
                         Type = "Sequence",
                         Key = 'S',
@@ -234,7 +273,11 @@ public static class EnemyDatabase
                         Count = 3,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -253,10 +296,10 @@ public static class EnemyDatabase
                 Attack = 18,
                 MinGold = 20,
                 MaxGold = 35,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Heavy Bash",
                         Type = "Sequence",
                         Key = 'B',
@@ -265,10 +308,14 @@ public static class EnemyDatabase
                         Count = 2,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     },
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Core Burst",
                         Type = "SweetSpot",
                         Key = 'X',
@@ -277,7 +324,11 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.05,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -296,10 +347,10 @@ public static class EnemyDatabase
                 Attack = 30,
                 MinGold = 50,
                 MaxGold = 100,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Earthquake",
                         Type = "Balance",
                         Key = 'D',
@@ -308,15 +359,19 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 22
+                        ChainedHitBarPositions = "",
+                        PullStrength = 22,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
                 {
-                    new LootItemDef 
-                    { 
-                        Id = (ItemId)1001, 
-                        Chance = 0.2 
+                    new LootItemDef
+                    {
+                        Id = (ItemId)1001,
+                        Chance = 0.2
                     }
                 } // End of LootTable List
             }
@@ -332,10 +387,10 @@ public static class EnemyDatabase
                 Attack = 20,
                 MinGold = 30,
                 MaxGold = 50,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Shadow Bind",
                         Type = "TugOfWar",
                         Key = 'R',
@@ -344,15 +399,19 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 18
+                        ChainedHitBarPositions = "",
+                        PullStrength = 18,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
                 {
-                    new LootItemDef 
-                    { 
-                        Id = (ItemId)2001, 
-                        Chance = 0.25 
+                    new LootItemDef
+                    {
+                        Id = (ItemId)2001,
+                        Chance = 0.25
                     }
                 } // End of LootTable List
             }
@@ -368,10 +427,10 @@ public static class EnemyDatabase
                 Attack = 35,
                 MinGold = 40,
                 MaxGold = 80,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Grand Overdrive",
                         Type = "Charge",
                         Key = 'D',
@@ -380,10 +439,14 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     },
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Hilt Bump",
                         Type = "Timed",
                         Key = 'W',
@@ -392,15 +455,19 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
                 {
-                    new LootItemDef 
-                    { 
-                        Id = (ItemId)1003, 
-                        Chance = 0.15 
+                    new LootItemDef
+                    {
+                        Id = (ItemId)1003,
+                        Chance = 0.15
                     }
                 } // End of LootTable List
             }
@@ -416,10 +483,10 @@ public static class EnemyDatabase
                 Attack = 22,
                 MinGold = 25,
                 MaxGold = 45,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Bone Rattle",
                         Type = "Sequence",
                         Key = 'W',
@@ -428,10 +495,14 @@ public static class EnemyDatabase
                         Count = 4,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     },
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Shield Bash",
                         Type = "Timed",
                         Key = 'S',
@@ -440,7 +511,11 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -459,10 +534,10 @@ public static class EnemyDatabase
                 Attack = 28,
                 MinGold = 60,
                 MaxGold = 90,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Soul Drain",
                         Type = "TugOfWar",
                         Key = 'F',
@@ -471,10 +546,14 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 25
+                        ChainedHitBarPositions = "",
+                        PullStrength = 25,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     },
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Ethereal Strike",
                         Type = "SweetSpot",
                         Key = 'Z',
@@ -483,7 +562,11 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.8,
                         Threshold = 0.04,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -502,10 +585,10 @@ public static class EnemyDatabase
                 Attack = 10,
                 MinGold = 8,
                 MaxGold = 14,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Stinger Barrage",
                         Type = "Sequence",
                         Key = 'W',
@@ -514,7 +597,11 @@ public static class EnemyDatabase
                         Count = 3,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -533,10 +620,10 @@ public static class EnemyDatabase
                 Attack = 15,
                 MinGold = 20,
                 MaxGold = 40,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Bubble Trap",
                         Type = "TugOfWar",
                         Key = 'A',
@@ -545,7 +632,11 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 14
+                        ChainedHitBarPositions = "",
+                        PullStrength = 14,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -564,10 +655,10 @@ public static class EnemyDatabase
                 Attack = 14,
                 MinGold = 25,
                 MaxGold = 50,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Pickaxe Throw",
                         Type = "SweetSpot",
                         Key = 'S',
@@ -576,7 +667,11 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.3,
                         Threshold = 0.08,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -595,10 +690,10 @@ public static class EnemyDatabase
                 Attack = 25,
                 MinGold = 100,
                 MaxGold = 200,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Chomp",
                         Type = "Mash",
                         Key = 'C',
@@ -607,10 +702,14 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     },
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Sticky Tongue",
                         Type = "TugOfWar",
                         Key = 'T',
@@ -619,7 +718,11 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 20
+                        ChainedHitBarPositions = "",
+                        PullStrength = 20,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -638,10 +741,10 @@ public static class EnemyDatabase
                 Attack = 28,
                 MinGold = 45,
                 MaxGold = 75,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Fissure",
                         Type = "Balance",
                         Key = 'D',
@@ -650,7 +753,11 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 19
+                        ChainedHitBarPositions = "",
+                        PullStrength = 19,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -669,10 +776,10 @@ public static class EnemyDatabase
                 Attack = 20,
                 MinGold = 30,
                 MaxGold = 55,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Screech",
                         Type = "Sequence",
                         Key = 'Q',
@@ -681,7 +788,11 @@ public static class EnemyDatabase
                         Count = 5,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -700,10 +811,10 @@ public static class EnemyDatabase
                 Attack = 30,
                 MinGold = 40,
                 MaxGold = 70,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Void Pulse",
                         Type = "Charge",
                         Key = 'D',
@@ -712,7 +823,11 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -731,10 +846,10 @@ public static class EnemyDatabase
                 Attack = 35,
                 MinGold = 60,
                 MaxGold = 110,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Great Bash",
                         Type = "Mash",
                         Key = 'M',
@@ -743,7 +858,11 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -762,10 +881,10 @@ public static class EnemyDatabase
                 Attack = 32,
                 MinGold = 50,
                 MaxGold = 90,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Static Guard",
                         Type = "Charge",
                         Key = 'D',
@@ -774,10 +893,14 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     },
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Shield Slam",
                         Type = "Timed",
                         Key = 'S',
@@ -786,7 +909,11 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -805,10 +932,10 @@ public static class EnemyDatabase
                 Attack = 40,
                 MinGold = 120,
                 MaxGold = 180,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Constrict",
                         Type = "TugOfWar",
                         Key = 'X',
@@ -817,10 +944,14 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 24
+                        ChainedHitBarPositions = "",
+                        PullStrength = 24,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     },
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Tail Whip",
                         Type = "Timed",
                         Key = 'A',
@@ -829,7 +960,11 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -848,10 +983,10 @@ public static class EnemyDatabase
                 Attack = 50,
                 MinGold = 200,
                 MaxGold = 400,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Glacial Crash",
                         Type = "Balance",
                         Key = 'D',
@@ -860,10 +995,14 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 30
+                        ChainedHitBarPositions = "",
+                        PullStrength = 30,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     },
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Ice Boulder",
                         Type = "SweetSpot",
                         Key = 'B',
@@ -872,7 +1011,11 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.03,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -891,10 +1034,10 @@ public static class EnemyDatabase
                 Attack = 45,
                 MinGold = 80,
                 MaxGold = 130,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Death in Five",
                         Type = "Sequence",
                         Key = 'F',
@@ -903,7 +1046,11 @@ public static class EnemyDatabase
                         Count = 5,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -922,10 +1069,10 @@ public static class EnemyDatabase
                 Attack = 38,
                 MinGold = 150,
                 MaxGold = 250,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Dive Bomb",
                         Type = "Charge",
                         Key = 'D',
@@ -934,10 +1081,14 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     },
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Poison Claw",
                         Type = "Timed",
                         Key = 'W',
@@ -946,7 +1097,11 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -965,10 +1120,10 @@ public static class EnemyDatabase
                 Attack = 42,
                 MinGold = 110,
                 MaxGold = 200,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Disintegration Ray",
                         Type = "SweetSpot",
                         Key = 'E',
@@ -977,7 +1132,11 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.9,
                         Threshold = 0.02,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -996,10 +1155,10 @@ public static class EnemyDatabase
                 Attack = 55,
                 MinGold = 300,
                 MaxGold = 500,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Piston Punch",
                         Type = "Mash",
                         Key = 'P',
@@ -1008,10 +1167,14 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     },
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Steam Blast",
                         Type = "Balance",
                         Key = 'D',
@@ -1020,7 +1183,11 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 35
+                        ChainedHitBarPositions = "",
+                        PullStrength = 35,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -1039,10 +1206,10 @@ public static class EnemyDatabase
                 Attack = 48,
                 MinGold = 180,
                 MaxGold = 300,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Life Tap",
                         Type = "TugOfWar",
                         Key = 'L',
@@ -1051,7 +1218,11 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 28
+                        ChainedHitBarPositions = "",
+                        PullStrength = 28,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -1070,10 +1241,10 @@ public static class EnemyDatabase
                 Attack = 45,
                 MinGold = 250,
                 MaxGold = 450,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Triple Strike",
                         Type = "Sequence",
                         Key = 'Z',
@@ -1082,10 +1253,14 @@ public static class EnemyDatabase
                         Count = 3,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     },
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Lion Roar",
                         Type = "Mash",
                         Key = 'R',
@@ -1094,7 +1269,11 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -1113,10 +1292,10 @@ public static class EnemyDatabase
                 Attack = 60,
                 MinGold = 500,
                 MaxGold = 1000,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Reality Warp",
                         Type = "Balance",
                         Key = 'D',
@@ -1125,10 +1304,14 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 40
+                        ChainedHitBarPositions = "",
+                        PullStrength = 40,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     },
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Energy Core",
                         Type = "SweetSpot",
                         Key = 'C',
@@ -1137,7 +1320,11 @@ public static class EnemyDatabase
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.01,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>
@@ -1156,43 +1343,56 @@ public static class EnemyDatabase
                 Attack = 75,
                 MinGold = 2000,
                 MaxGold = 5000,
-                Moves = new List<MoveDef> 
+                Moves = new List<MoveDef>
                 {
-                    new MoveDef 
-                    { 
+                    new MoveDef
+                    {
                         Name = "Endless Blade",
-                        Type = "Sequence",
-                        Key = 'K',
+                        Type = "MultiStep",
+                        Key = 'D',
                         TimeLimit = 2000,
                         Goal = 0,
-                        Count = 8,
-                        Target = 0.5,
-                        Threshold = 0.1,
-                        PullStrength = 0.001
-                    },
-                    new MoveDef 
-                    { 
-                        Name = "Final Stand",
-                        Type = "TugOfWar",
-                        Key = 'S',
-                        TimeLimit = 8000,
-                        Goal = 0,
                         Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
-                        PullStrength = 35
-                    },
-                    new MoveDef 
-                    { 
-                        Name = "Heavenly Parry",
-                        Type = "Charge",
-                        Key = 'D',
-                        TimeLimit = 1500,
-                        Goal = 0,
-                        Count = 0,
-                        Target = 0.5,
-                        Threshold = 0.1,
-                        PullStrength = 0.001
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                            new MoveStep
+                            {
+                                Type = "Sequence",
+                                Key = 'K',
+                                Goal = 0,
+                                Count = 8,
+                                TimeLimit = 2000,
+                                FailMsg = "Missed!",
+                                ChainedHitBarPositions = "",
+                                PullStrength = 0.001
+                            },
+                            new MoveStep
+                            {
+                                Type = "Timed",
+                                Key = 'X',
+                                Goal = 0,
+                                Count = 0,
+                                TimeLimit = 600,
+                                FailMsg = "Missed!",
+                                ChainedHitBarPositions = "",
+                                PullStrength = 0.001
+                            },
+                            new MoveStep
+                            {
+                                Type = "TugOfWar",
+                                Key = 'S',
+                                Goal = 0,
+                                Count = 0,
+                                TimeLimit = 5000,
+                                FailMsg = "Missed!",
+                                ChainedHitBarPositions = "",
+                                PullStrength = 35
+                            },
+                        }
                     }
                 }, // End of Moves List
                 LootTable = new List<LootItemDef>

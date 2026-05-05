@@ -235,18 +235,46 @@ public class ExplorationState : IGameState
             return;
         }
 
-        if(cellEvent is ExitEvent)
+        if (cellEvent is ExitEvent)
         {
             _transitioning = true;
-            _log.Add($"{TextColor.Green}You find a staircase leading deeper...{TextColor.Reset}", waitForKey: true);
 
-            // 1. Tell MapManager to move to the next floor
-            _map.AdvanceTier(); // Increments CurrentTier and calls GenerateMap()
+            // Spawn boss for this tier
+            var bossId = GetBossForTier(_map.CurrentTier);
+            var boss = _combatManager.CreateEnemy(bossId);
 
-            _log.Add($"--- Entering Tier {_map.CurrentTier} ---");
+            _log.Add($"{TextColor.Red}A powerful presence blocks the way... {boss.Name} appears!{TextColor.Reset}");
+            Console.Clear();
+            ConsoleRenderer.Render(GameStateType.Exploration, _ui, _log.Active.ToList(), _player, false, _map, boss);
+            Console.WriteLine("\n -- Press any key -- ");
+            Console.ReadKey(true);
+            while (Console.KeyAvailable) Console.ReadKey(true);
 
+            var combat = new CombatOrchestrator(
+                player: _player,
+                enemy: boss,
+                rules: new CombatRulesSystem(),
+                enemyAI: new EnemyActionSystem(),
+                minigames: new MinigameSystem(),
+                loot: new LootSystem(_log),
+                log: _log,
+                narrativeDirector: _narrativeDirector
+            );
 
-            _transitioning = false;
+            var combatState = (CombatState)_fsm.GetState(GameStateType.Combat);
+            combatState.StartCombat(combat);
+
+            combat.OnVictory = () =>
+            {
+                _log.Add($"{TextColor.Green}You find a staircase leading deeper...{TextColor.Reset}", waitForKey: true);
+                _map.AdvanceTier();
+                _log.Add($"--- Entering Tier {_map.CurrentTier} ---");
+                _fsm.ChangeState(GameStateType.Exploration);
+            };
+
+            combat.OnDefeat = () => _fsm.ChangeState(GameStateType.Exploration);
+
+            _fsm.ChangeState(GameStateType.Combat);
             return;
         }
 
@@ -351,6 +379,15 @@ public class ExplorationState : IGameState
 
         SetInventoryMenu();
     }
+
+    private EnemyId GetBossForTier(int tier) => tier switch
+    {
+        1 => EnemyId.Goblin,           // placeholder, swap for real boss
+        2 => EnemyId.Orc,              // placeholder
+        3 => EnemyId.Orc,              // placeholder
+        4 => EnemyId.TheNamelessKnight,
+        _ => EnemyId.Orc
+    };
 
     //==========================================================
     private void ReturnToMainMenu()
