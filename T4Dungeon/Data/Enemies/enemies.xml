@@ -11,7 +11,7 @@
 	<Enemy Id="2002" Name="Goblin" HP="45" MaxHp="45" Attack="12" MinGold="10" MaxGold="20">
 		<Moves>
 			<Move Name="Quick Stab" Type="Timed" Key="D" TimeLimit="1200" />
-			<Move Name="Dagger Throw" Type="SweetSpot" Key="R" Target="0.5" Threshold="0.1" />
+			<Move Name="Dagger Throw" Type="SweetSpot" Key="W" Target="0.5" Threshold="0.1" />
 		</Moves>
 		<LootTable>
 			<Item Id="1005" Chance="0.05" />
@@ -19,8 +19,8 @@
 	</Enemy>
 	<Enemy Id="2003" Name="Orc" HP="100" MaxHp="100" Attack="25" MinGold="35" MaxGold="60">
 		<Moves>
-			<Move Name="Crushing Club" Type="Mash" Key="B" Goal="15" TimeLimit="3000" />
-			<Move Name="Double Swing" Type="Sequence" Key="B" Count="2" />
+			<Move Name="Crushing Club" Type="Mash" Key="D" Goal="15" TimeLimit="3000" />
+			<Move Name="Double Swing" Type="Sequence" Key="Q" Count="2" />
 		</Moves>
 		<LootTable>
 			<Item Id="1001" Chance="0.1" />
@@ -29,7 +29,7 @@
 	</Enemy>
 	<Enemy Id="2004" Name="Blue Slime" HP="30" MaxHp="30" Attack="8" MinGold="5" MaxGold="10">
 		<Moves>
-			<Move Name="Quick Leap" Type="Timed" Key="W" TimeLimit="1500" />
+			<Move Name="Slime Ram" Type="Timed" Key="D" TimeLimit="1000" />
 		</Moves>
 		<LootTable>
 			<Item Id="2001" Chance="0.3" />
@@ -37,15 +37,40 @@
 	</Enemy>
 	<Enemy Id="2005" Name="Amber Slime" HP="50" MaxHp="50" Attack="12" MinGold="12" MaxGold="18">
 		<Moves>
-			<Move Name="Amber Crush" Type="Sequence" Key="S" Count="3" TimeLimit="1000" />
+			<Move Name="Amber Slam" Type="Sequence" Key="S" Count="3" TimeLimit="1000" />
+			<Move Name="Slime Wave" Type="ChainedHitBar" ChainedHitBarPositions="0.3, 0.6" TimeLimit="2000" />
 		</Moves>
 	</Enemy>
 	<Enemy Id="2006" Name="Red Slime" HP="65" MaxHp="65" Attack="18" MinGold="20" MaxGold="35">
 		<Moves>
-			<Move Name="Heavy Bash" Type="Sequence" Key="B" Count="2" TimeLimit="800" />
-			<Move Name="Core Burst" Type="SweetSpot" Key="X" Target="0.5" Threshold="0.05" />
+			<Move Name="Red Ram" Type="MultiStep">
+				<Steps>
+					<Step Type="Timed" Key="D" TimeLimit="1000" />
+					<Step Type="Mash" Key="S" Goal="7" TimeLimit="2000" />
+				</Steps>
+			</Move>
+			<Move Name="Red Wave" Type="MultiStep">
+				<Steps>
+					<Step Type="ChainedHitBar" ChainedHitBarPositions="0.5" TimeLimit="1500" />
+					<Step Type="ChainedHitBar" ChainedHitBarPositions="0.5" TimeLimit="1500" />
+				</Steps>
+			</Move>
 		</Moves>
+		<LootTable>
+			<Item Id="2001" Chance="0.3" />
+		</LootTable>
 	</Enemy>
+	
+	<Enemy Id="2032" Name="Royal Slime" HP="100" MaxHp="100" Attack="15" MinGold="50" MaxGold="100">
+		<Moves>
+			<Move Name="Royal Slime Slam" Type="Charge" TimeLimit="3000" />
+			<Move Name="Royal Slime Wave" Type="ChainedHitBar" ChainedHitBarPositions="0.5, 0.75" TimeLimit="2500" />
+		</Moves>
+		<LootTable>
+			<Item Id="2001" Chance="0.3" />
+		</LootTable>
+	</Enemy>
+	
 	<Enemy Id="2007" Name="Stone Golem" HP="150" MaxHp="150" Attack="30" MinGold="50" MaxGold="100">
 		<Moves>
 			<Move Name="Earthquake" Type="Balance" TimeLimit="4000" PullStrength="22" />
@@ -54,6 +79,7 @@
 			<Item Id="1001" Chance="0.2" />
 		</LootTable>
 	</Enemy>
+	
 	<Enemy Id="2008" Name="Shadow Stalker" HP="80" MaxHp="80" Attack="20" MinGold="30" MaxGold="50">
 		<Moves>
 			<Move Name="Shadow Bind" Type="TugOfWar" Key="R" PullStrength="18" TimeLimit="5000" />

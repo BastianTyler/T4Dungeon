@@ -4,17 +4,17 @@ using T4Dungeon.Generated;
 
 public class CombatManager
 {
+    //TIER 1: Slime Garden
     private static readonly List<(EnemyId id, int weight)> _spawnTableTierOne = new()
     {
-        (EnemyId.GreenSlime, 100),
+        (EnemyId.GreenSlime, 80),
         (EnemyId.BlueSlime, 70),
-        (EnemyId.WaspSwarm, 50),
-        (EnemyId.Goblin, 40),
-        (EnemyId.KoboldMiner, 30),
-        (EnemyId.RedSlime, 10),
+        (EnemyId.AmberSlime, 40),
+        (EnemyId.RedSlime, 20),
+        (EnemyId.RoyalSlime, 10),
     };
 
-    // TIER 2: Dungeon Denizens (IDs 2003, 2005-2006, 2010, 2013, 2015-2017)
+    // TIER 2: Undead Halls
     private static readonly List<(EnemyId id, int weight)> _tierTwo = new()
     {
         (EnemyId.AmberSlime, 80),
@@ -26,7 +26,7 @@ public class CombatManager
         (EnemyId.Mimic, 10), // Rare encounter
     };
 
-    // TIER 3: Elite Challengers (IDs 2007-2009, 2011, 2018-2021, 2023-2025)
+    // TIER 3: Elite Challengers 
     private static readonly List<(EnemyId id, int weight)> _tierThree = new()
     {
         (EnemyId.StoneGolem, 60),
@@ -39,7 +39,7 @@ public class CombatManager
         (EnemyId.BeholderSpawn, 15),
     };
 
-    // TIER 4: Boss-Class & Ancient Evils (IDs 2022, 2026-2030)
+    // TIER 4: 
     private static readonly List<(EnemyId id, int weight)> _tierFour = new()
     {
         (EnemyId.FrostGiant, 50),

@@ -47,4 +47,33 @@ public class Player
         int final = Math.Max(1, dmg - Defense);
         HP -= final;
     }
+
+    public void Reset()
+    {
+        // Reset Vitals
+        HP = 100;
+        MaxHP = 100;
+        Stamina = 50;
+        MaxStamina = 50;
+        BaseMana = 50;
+        MaxMana = 50;
+
+        // Reset Economy & State
+        Gold = 0;
+        IsDefending = false;
+
+        // Reset Combat Stats
+        BaseAttack = 10;
+        BaseDefense = 0;
+
+        // Wipe Inventory
+        Inventory.ResetInventory(); 
+
+        // Unequip everything
+        var slots = Equipment.Keys.ToList();
+        foreach (var slot in slots)
+        {
+            Equipment[slot] = null;
+        }
+    }
 }

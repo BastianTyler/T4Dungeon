@@ -16,5 +16,6 @@ namespace T4Dungeon.Generated
         HolyLight = 3010,
         HeavyCleave = 3011,
         Illuminate = 3012,
+        QuickStab = 3013,
     }
 }

@@ -206,9 +206,14 @@ public class ExplorationState : IGameState
             combat.OnVictory = () =>
             {
                 _map.ClearCell(cell);
+                _player.Stamina = _player.MaxStamina; 
                 _fsm.ChangeState(GameStateType.Exploration);
             };
-            combat.OnDefeat = () => _fsm.ChangeState(GameStateType.Exploration);
+            combat.OnDefeat = () =>
+            {
+                Reset();
+                _fsm.ChangeState(GameStateType.StartScreen);
+            };
 
 
             _fsm.ChangeState(GameStateType.Combat);
@@ -266,13 +271,18 @@ public class ExplorationState : IGameState
 
             combat.OnVictory = () =>
             {
+                _player.Stamina = _player.MaxStamina;
                 _log.Add($"{TextColor.Green}You find a staircase leading deeper...{TextColor.Reset}", waitForKey: true);
                 _map.AdvanceTier();
                 _log.Add($"--- Entering Tier {_map.CurrentTier} ---");
                 _fsm.ChangeState(GameStateType.Exploration);
             };
 
-            combat.OnDefeat = () => _fsm.ChangeState(GameStateType.Exploration);
+            combat.OnDefeat = () =>
+            {
+                Reset();
+                _fsm.ChangeState(GameStateType.StartScreen);
+            };
 
             _fsm.ChangeState(GameStateType.Combat);
             return;
@@ -397,5 +407,13 @@ public class ExplorationState : IGameState
     private void ExitGame()
     {
         _fsm.ChangeState(GameStateType.StartScreen);
+    }
+
+    public void Reset()
+    {
+        _initialized = false;
+        _transitioning = false;
+        _player.Reset();
+        _log.Clear();
     }
 }

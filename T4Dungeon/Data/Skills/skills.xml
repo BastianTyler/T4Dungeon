@@ -1,8 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Skills>
-	<Skill Id="3001" Name="Fireball" Type="Damage" Value="20" Cost="8" Description="A blast of fire.">
+	<Skill Id="3001" Name="Fireball" Type="Damage" Value="20" Cost="15" Description="A blast of fire.">
+		<Costs>
+			<Cost Type="Mana" Value="15" />
+		</Costs>
 		<GameSteps>
-			<Step Type="SweetSpot" Key="F" Target="0.5" Threshold="0.1" Time="1200" FailMsg="The flames sputtered out!" />
+			<Step Type="SweetSpot" Key="F" Target="0.5" Threshold="0.2" Time="2000" FailMsg="The flames sputtered out!" />
 		</GameSteps>
 	</Skill>
 
@@ -10,9 +13,9 @@
 
 	<Skill Id="3003" Name="Sunder" Type="Damage" Value="12" Cost="4" Description="Reduces target defense." />
 
-	<Skill Id="3004" Name="Cleave" Type="Damage" Value="15" Cost="5" Description="A wide swinging strike.">
+	<Skill Id="3004" Name="Cleave" Type="Damage" Value="10" Cost="5" Description="A wide swinging strike.">
 		<Costs>
-			<Cost Type="Stamina" Value="25" />
+			<Cost Type="Stamina" Value="20" />
 		</Costs>
 		<GameSteps>
 			<Step Type="ChainedHitBar"
@@ -22,15 +25,21 @@
 		</GameSteps>
 	</Skill>
 
-	<Skill Id="3005" Name="Shield Bash" Type="Damage" Value="8" Cost="3" Description="Hits with shield edge.">
+	<Skill Id="3005" Name="Shield Bash" Type="Damage" Value="7" Cost="3" Description="Hits with shield edge.">
+		<Costs>
+			<Cost Type="Stamina" Value="15" />
+		</Costs>
 		<GameSteps>
-			<Step Type="Mash" Key="B" Goal="12" Time="2000" FailMsg="You couldn't get enough force!" />
+			<Step Type="Mash" Key="B" Goal="6" Time="2000" FailMsg="You couldn't get enough force!" />
 		</GameSteps>
 	</Skill>
 
-	<Skill Id="3006" Name="Quick Shot" Type="Damage" Value="10" Cost="2" Description="Two rapid shots.">
+	<Skill Id="3006" Name="Quick Shot" Type="Damage" Value="5" Cost="2" Description="Two rapid shots.">
+		<Costs>
+			<Cost Type="Stamina" Value="10" />
+		</Costs>
 		<GameSteps>
-			<Step Type="Sequence" Key="Q" Count="2" Time="600" FailMsg="Slow on the draw!" />
+			<Step Type="Sequence" Key="Q" Count="2" Time="1200" FailMsg="Slow on the draw!" />
 		</GameSteps>
 	</Skill>
 
@@ -69,4 +78,12 @@
 		</GameSteps>
 	</Skill>
 	<Skill Id="3012" Name="Illuminate" Type="Utility" Description="Reveals the surrounding area." />
+	<Skill Id="3013" Name="Quick Stab" Type="Damage" Value="5" Cost="2" Description="A rapid stab">
+		<Costs>
+			<Cost Type="Stamina" Value="10" />
+		</Costs>
+		<GameSteps>
+			<Step Type="Sequence" Key="Q" Count="1" Time="1200" FailMsg="Slow!" />
+		</GameSteps>
+	</Skill>
 </Skills>

@@ -45,11 +45,11 @@ public static class SkillDatabase
                 Description = "A blast of fire.",
                 ResourceCosts = new List<SkillCost>
                 {
-                    new SkillCost { ResourceType = "Mana", Amount = 8 },
+                    new SkillCost { ResourceType = "Mana", Amount = 15 },
                 },
                 Steps = new List<SkillStep> 
                 {
-                    new SkillStep { Type = "SweetSpot", Key = 'F', Goal = 1, Time = 1200, FailMsg = "The flames sputtered out!", ChainedHitBarPositions = "" },
+                    new SkillStep { Type = "SweetSpot", Key = 'F', Goal = 1, Time = 2000, FailMsg = "The flames sputtered out!", ChainedHitBarPositions = "" },
                 }
             }
         },
@@ -96,11 +96,11 @@ public static class SkillDatabase
                 Id = SkillId.Cleave,
                 Name = "Cleave",
                 SkillType = "Damage",
-                Value = 15,
+                Value = 10,
                 Description = "A wide swinging strike.",
                 ResourceCosts = new List<SkillCost>
                 {
-                    new SkillCost { ResourceType = "Stamina", Amount = 25 },
+                    new SkillCost { ResourceType = "Stamina", Amount = 20 },
                 },
                 Steps = new List<SkillStep> 
                 {
@@ -115,15 +115,15 @@ public static class SkillDatabase
                 Id = SkillId.ShieldBash,
                 Name = "Shield Bash",
                 SkillType = "Damage",
-                Value = 8,
+                Value = 7,
                 Description = "Hits with shield edge.",
                 ResourceCosts = new List<SkillCost>
                 {
-                    new SkillCost { ResourceType = "Mana", Amount = 3 },
+                    new SkillCost { ResourceType = "Stamina", Amount = 15 },
                 },
                 Steps = new List<SkillStep> 
                 {
-                    new SkillStep { Type = "Mash", Key = 'B', Goal = 12, Time = 2000, FailMsg = "You couldn't get enough force!", ChainedHitBarPositions = "" },
+                    new SkillStep { Type = "Mash", Key = 'B', Goal = 6, Time = 2000, FailMsg = "You couldn't get enough force!", ChainedHitBarPositions = "" },
                 }
             }
         },
@@ -134,15 +134,15 @@ public static class SkillDatabase
                 Id = SkillId.QuickShot,
                 Name = "Quick Shot",
                 SkillType = "Damage",
-                Value = 10,
+                Value = 5,
                 Description = "Two rapid shots.",
                 ResourceCosts = new List<SkillCost>
                 {
-                    new SkillCost { ResourceType = "Mana", Amount = 2 },
+                    new SkillCost { ResourceType = "Stamina", Amount = 10 },
                 },
                 Steps = new List<SkillStep> 
                 {
-                    new SkillStep { Type = "Sequence", Key = 'Q', Goal = 1, Time = 600, FailMsg = "Slow on the draw!", ChainedHitBarPositions = "" },
+                    new SkillStep { Type = "Sequence", Key = 'Q', Goal = 1, Time = 1200, FailMsg = "Slow on the draw!", ChainedHitBarPositions = "" },
                 }
             }
         },
@@ -261,6 +261,25 @@ public static class SkillDatabase
                 },
                 Steps = new List<SkillStep> 
                 {
+                }
+            }
+        },
+        {
+            SkillId.QuickStab,
+            new SkillDef
+            {
+                Id = SkillId.QuickStab,
+                Name = "Quick Stab",
+                SkillType = "Damage",
+                Value = 5,
+                Description = "A rapid stab",
+                ResourceCosts = new List<SkillCost>
+                {
+                    new SkillCost { ResourceType = "Stamina", Amount = 10 },
+                },
+                Steps = new List<SkillStep> 
+                {
+                    new SkillStep { Type = "Sequence", Key = 'Q', Goal = 1, Time = 1200, FailMsg = "Slow!", ChainedHitBarPositions = "" },
                 }
             }
         }

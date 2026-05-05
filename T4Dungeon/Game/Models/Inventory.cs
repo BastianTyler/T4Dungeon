@@ -37,5 +37,9 @@ namespace T4Dungeon.Game.Models
                 }
             }
         }
+        public void ResetInventory()
+        {
+            _items.Clear();
+        }
     }
 }

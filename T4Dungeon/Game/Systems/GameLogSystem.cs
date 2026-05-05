@@ -40,4 +40,10 @@
         Console.ReadKey(true);
         while (Console.KeyAvailable) Console.ReadKey(true);
     }
+
+    public void Clear()
+    {
+        _main.Clear();
+        _debug.Add("[SYSTEM] Log cleared.");
+    }
 }

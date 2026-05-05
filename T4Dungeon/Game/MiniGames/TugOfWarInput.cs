@@ -6,17 +6,14 @@ internal class TugOfWarInput : IMiniGame
 {
     public bool Run(MoveDef move) => Execute(move.Key, move.TimeLimit, move.PullStrength);
 
-    // SkillStep usually doesn't have Strength, so we provide a default
     public bool RunStep(SkillStep step) => Execute(step.Key, step.Time, 12);
 
     private bool Execute(char key, int timeLimitMs, double xmlStrength)
     {
         double balance = 0.5;
 
-        // Scaling: XML Value (e.g. 12) becomes the internal strength (e.g. 0.012)
         double enemyStrength = xmlStrength / 1000.0;
 
-        // Player pull stays consistent, or you could scale this too
         double playerPull = 0.045;
 
         var start = DateTime.Now;

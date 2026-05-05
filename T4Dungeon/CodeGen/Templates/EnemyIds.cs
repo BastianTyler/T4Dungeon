@@ -9,6 +9,7 @@ namespace T4Dungeon.Generated
         BlueSlime = 2004,
         AmberSlime = 2005,
         RedSlime = 2006,
+        RoyalSlime = 2032,
         StoneGolem = 2007,
         ShadowStalker = 2008,
         IronKnight = 2009,

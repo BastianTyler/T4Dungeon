@@ -145,7 +145,7 @@ public static class EnemyDatabase
                     {
                         Name = "Dagger Throw",
                         Type = "SweetSpot",
-                        Key = 'R',
+                        Key = 'W',
                         TimeLimit = 2000,
                         Goal = 0,
                         Count = 0,
@@ -188,7 +188,7 @@ public static class EnemyDatabase
                     {
                         Name = "Crushing Club",
                         Type = "Mash",
-                        Key = 'B',
+                        Key = 'D',
                         TimeLimit = 3000,
                         Goal = 15,
                         Count = 0,
@@ -204,7 +204,7 @@ public static class EnemyDatabase
                     {
                         Name = "Double Swing",
                         Type = "Sequence",
-                        Key = 'B',
+                        Key = 'Q',
                         TimeLimit = 2000,
                         Goal = 0,
                         Count = 2,
@@ -250,10 +250,10 @@ public static class EnemyDatabase
                 {
                     new MoveDef
                     {
-                        Name = "Quick Leap",
+                        Name = "Slime Ram",
                         Type = "Timed",
-                        Key = 'W',
-                        TimeLimit = 1500,
+                        Key = 'D',
+                        TimeLimit = 1000,
                         Goal = 0,
                         Count = 0,
                         Target = 0.5,
@@ -293,7 +293,7 @@ public static class EnemyDatabase
                 {
                     new MoveDef
                     {
-                        Name = "Amber Crush",
+                        Name = "Amber Slam",
                         Type = "Sequence",
                         Key = 'S',
                         TimeLimit = 1000,
@@ -302,6 +302,22 @@ public static class EnemyDatabase
                         Target = 0.5,
                         Threshold = 0.1,
                         ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                        }
+                    },
+                    new MoveDef
+                    {
+                        Name = "Slime Wave",
+                        Type = "ChainedHitBar",
+                        Key = 'D',
+                        TimeLimit = 2000,
+                        Goal = 0,
+                        Count = 0,
+                        Target = 0.5,
+                        Threshold = 0.1,
+                        ChainedHitBarPositions = "0.3, 0.6",
                         PullStrength = 0.001,
                         Steps = new List<MoveStep>
                         {
@@ -331,12 +347,115 @@ public static class EnemyDatabase
                 {
                     new MoveDef
                     {
-                        Name = "Heavy Bash",
-                        Type = "Sequence",
-                        Key = 'B',
-                        TimeLimit = 800,
+                        Name = "Red Ram",
+                        Type = "MultiStep",
+                        Key = 'D',
+                        TimeLimit = 2000,
                         Goal = 0,
-                        Count = 2,
+                        Count = 0,
+                        Target = 0.5,
+                        Threshold = 0.1,
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                            new MoveStep
+                            {
+                                Type = "Timed",
+                                Key = 'D',
+                                Goal = 0,
+                                Count = 0,
+                                TimeLimit = 1000,
+                                FailMsg = "Missed!",
+                                ChainedHitBarPositions = "",
+                                PullStrength = 0.001
+                            },
+                            new MoveStep
+                            {
+                                Type = "Mash",
+                                Key = 'S',
+                                Goal = 7,
+                                Count = 0,
+                                TimeLimit = 2000,
+                                FailMsg = "Missed!",
+                                ChainedHitBarPositions = "",
+                                PullStrength = 0.001
+                            },
+                        }
+                    },
+                    new MoveDef
+                    {
+                        Name = "Red Wave",
+                        Type = "MultiStep",
+                        Key = 'D',
+                        TimeLimit = 2000,
+                        Goal = 0,
+                        Count = 0,
+                        Target = 0.5,
+                        Threshold = 0.1,
+                        ChainedHitBarPositions = "",
+                        PullStrength = 0.001,
+                        Steps = new List<MoveStep>
+                        {
+                            new MoveStep
+                            {
+                                Type = "ChainedHitBar",
+                                Key = 'D',
+                                Goal = 0,
+                                Count = 0,
+                                TimeLimit = 1500,
+                                FailMsg = "Missed!",
+                                ChainedHitBarPositions = "0.5",
+                                PullStrength = 0.001
+                            },
+                            new MoveStep
+                            {
+                                Type = "ChainedHitBar",
+                                Key = 'D',
+                                Goal = 0,
+                                Count = 0,
+                                TimeLimit = 1500,
+                                FailMsg = "Missed!",
+                                ChainedHitBarPositions = "0.5",
+                                PullStrength = 0.001
+                            },
+                        }
+                    }
+                }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
+                LootTable = new List<LootItemDef>
+                {
+                    new LootItemDef
+                    {
+                        Id = (ItemId)2001,
+                        Chance = 0.3
+                    }
+                } // End of LootTable List
+            }
+        },
+        {
+            EnemyId.RoyalSlime,
+            new EnemyDef
+            {
+                Id = EnemyId.RoyalSlime,
+                Name = "Royal Slime",
+                HP = 100,
+                MaxHp = 100,
+                Attack = 15,
+                MinGold = 50,
+                MaxGold = 100,
+                Moves = new List<MoveDef>
+                {
+                    new MoveDef
+                    {
+                        Name = "Royal Slime Slam",
+                        Type = "Charge",
+                        Key = 'D',
+                        TimeLimit = 3000,
+                        Goal = 0,
+                        Count = 0,
                         Target = 0.5,
                         Threshold = 0.1,
                         ChainedHitBarPositions = "",
@@ -347,15 +466,15 @@ public static class EnemyDatabase
                     },
                     new MoveDef
                     {
-                        Name = "Core Burst",
-                        Type = "SweetSpot",
-                        Key = 'X',
-                        TimeLimit = 2000,
+                        Name = "Royal Slime Wave",
+                        Type = "ChainedHitBar",
+                        Key = 'D',
+                        TimeLimit = 2500,
                         Goal = 0,
                         Count = 0,
                         Target = 0.5,
-                        Threshold = 0.05,
-                        ChainedHitBarPositions = "",
+                        Threshold = 0.1,
+                        ChainedHitBarPositions = "0.5, 0.75",
                         PullStrength = 0.001,
                         Steps = new List<MoveStep>
                         {
@@ -367,6 +486,11 @@ public static class EnemyDatabase
                 }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
+                    new LootItemDef
+                    {
+                        Id = (ItemId)2001,
+                        Chance = 0.3
+                    }
                 } // End of LootTable List
             }
         },

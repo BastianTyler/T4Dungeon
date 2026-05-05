@@ -32,8 +32,8 @@ public class StartScreenState : IGameState
                cutscene.Play(
                    new List<CutsceneBeat>
                    {
-                        new CutsceneBeat { AsciiArt = CutsceneState.LoadArt(artPath), Text = "The world is dark...", WaitForKey = true },
-                        new CutsceneBeat { AsciiArt = CutsceneState.LoadArt(artPath), Text = "Your journey begins.", WaitForKey = true },
+                        new CutsceneBeat { AsciiArt = CutsceneState.LoadArt(artPath), Text = "The dungeon awaits...", WaitForKey = true },
+                        new CutsceneBeat { AsciiArt = CutsceneState.LoadArt(artPath), Text = "Your journey begins soon.", WaitForKey = true },
                    },
                    onComplete: () => _fsm.ChangeState(GameStateType.Exploration)
                );
