@@ -8,11 +8,11 @@ public class MoveStep
     public string Type { get; set; }
     public char Key { get; set; }
     public int Goal { get; set; }
+    public int Count { get; set; }
     public int TimeLimit { get; set; }
     public string FailMsg { get; set; }
     public string ChainedHitBarPositions { get; set; }
     public double PullStrength { get; set; }
-    public int Count { get; set; }
 }
 
 public class MoveDef
@@ -30,6 +30,21 @@ public class MoveDef
     public List<MoveStep> Steps { get; set; } = new();
 }
 
+public class StageStatChange
+{
+    public int Attack { get; set; }
+    public int Defense { get; set; }
+}
+
+public class EnemyStage
+{
+    public int Id { get; set; }
+    public int HPThreshold { get; set; }
+    public string Label { get; set; }
+    public StageStatChange OnEnter { get; set; }
+    public List<MoveDef> Moves { get; set; } = new();
+}
+
 public class LootItemDef
 {
     public ItemId Id { get; set; }
@@ -44,6 +59,7 @@ public class EnemyDef
     public int MaxHp { get; set; }
     public int Attack { get; set; }
     public List<MoveDef> Moves { get; set; } = new();
+    public List<EnemyStage> Stages { get; set; } = new();
     public int MinGold { get; set; }
     public int MaxGold { get; set; }
     public List<LootItemDef> LootTable { get; set; } = new();
@@ -83,6 +99,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                     new LootItemDef
@@ -139,6 +158,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                     new LootItemDef
@@ -195,6 +217,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                     new LootItemDef
@@ -240,6 +265,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                     new LootItemDef
@@ -280,6 +308,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -331,6 +362,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -366,6 +400,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                     new LootItemDef
@@ -406,6 +443,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                     new LootItemDef
@@ -462,6 +502,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                     new LootItemDef
@@ -518,6 +561,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -569,6 +615,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -604,6 +653,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -639,6 +691,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -674,6 +729,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -725,6 +783,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -760,6 +821,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -795,6 +859,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -830,6 +897,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -865,6 +935,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -916,6 +989,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -967,6 +1043,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -1018,6 +1097,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -1053,6 +1135,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -1104,6 +1189,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -1139,6 +1227,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -1190,6 +1281,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -1225,6 +1319,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -1276,6 +1373,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -1327,6 +1427,9 @@ public static class EnemyDatabase
                         }
                     }
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List
@@ -1345,56 +1448,416 @@ public static class EnemyDatabase
                 MaxGold = 5000,
                 Moves = new List<MoveDef>
                 {
-                    new MoveDef
+                }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                    new EnemyStage
                     {
-                        Name = "Endless Blade",
-                        Type = "MultiStep",
-                        Key = 'D',
-                        TimeLimit = 2000,
-                        Goal = 0,
-                        Count = 0,
-                        Target = 0.5,
-                        Threshold = 0.1,
-                        ChainedHitBarPositions = "",
-                        PullStrength = 0.001,
-                        Steps = new List<MoveStep>
+                        Id = 1,
+                        HPThreshold = 600,
+                        Label = "The Patient Blade",
+                        OnEnter = new StageStatChange
                         {
-                            new MoveStep
+                            Attack = 0,
+                            Defense = 0
+                        },
+                        Moves = new List<MoveDef>
+                        {
+                            new MoveDef
                             {
-                                Type = "Sequence",
-                                Key = 'K',
-                                Goal = 0,
-                                Count = 8,
-                                TimeLimit = 2000,
-                                FailMsg = "Missed!",
-                                ChainedHitBarPositions = "",
-                                PullStrength = 0.001
-                            },
-                            new MoveStep
-                            {
+                                Name = "Measured Strike",
                                 Type = "Timed",
-                                Key = 'X',
+                                Key = 'K',
+                                TimeLimit = 800,
                                 Goal = 0,
                                 Count = 0,
-                                TimeLimit = 600,
-                                FailMsg = "Missed!",
+                                Target = 0.5,
+                                Threshold = 0.1,
                                 ChainedHitBarPositions = "",
-                                PullStrength = 0.001
+                                PullStrength = 0.001,
+                                Steps = new List<MoveStep>
+                                {
+                                }
                             },
-                            new MoveStep
+                            new MoveDef
                             {
-                                Type = "TugOfWar",
-                                Key = 'S',
+                                Name = "Shield Press",
+                                Type = "Mash",
+                                Key = 'B',
+                                TimeLimit = 3000,
+                                Goal = 10,
+                                Count = 0,
+                                Target = 0.5,
+                                Threshold = 0.1,
+                                ChainedHitBarPositions = "",
+                                PullStrength = 0.001,
+                                Steps = new List<MoveStep>
+                                {
+                                }
+                            }
+                        }
+                    },
+                    new EnemyStage
+                    {
+                        Id = 2,
+                        HPThreshold = 300,
+                        Label = "The Unleashed Blade",
+                        OnEnter = new StageStatChange
+                        {
+                            Attack = 25,
+                            Defense = 0
+                        },
+                        Moves = new List<MoveDef>
+                        {
+                            new MoveDef
+                            {
+                                Name = "Endless Blade",
+                                Type = "MultiStep",
+                                Key = 'D',
+                                TimeLimit = 2000,
                                 Goal = 0,
                                 Count = 0,
-                                TimeLimit = 5000,
-                                FailMsg = "Missed!",
+                                Target = 0.5,
+                                Threshold = 0.1,
                                 ChainedHitBarPositions = "",
-                                PullStrength = 35
-                            },
+                                PullStrength = 0.001,
+                                Steps = new List<MoveStep>
+                                {
+                                    new MoveStep
+                                    {
+                                        Type = "Sequence",
+                                        Key = 'K',
+                                        Goal = 0,
+                                        Count = 4,
+                                        TimeLimit = 800,
+                                        FailMsg = "Missed!",
+                                        ChainedHitBarPositions = "",
+                                        PullStrength = 0.001
+                                    },
+                                    new MoveStep
+                                    {
+                                        Type = "Sequence",
+                                        Key = 'S',
+                                        Goal = 0,
+                                        Count = 4,
+                                        TimeLimit = 1000,
+                                        FailMsg = "Missed!",
+                                        ChainedHitBarPositions = "",
+                                        PullStrength = 0.001
+                                    },
+                                    new MoveStep
+                                    {
+                                        Type = "Timed",
+                                        Key = 'X',
+                                        Goal = 0,
+                                        Count = 0,
+                                        TimeLimit = 600,
+                                        FailMsg = "Missed!",
+                                        ChainedHitBarPositions = "",
+                                        PullStrength = 0.001
+                                    },
+                                }
+                            }
+                        }
+                    },
+                    new EnemyStage
+                    {
+                        Id = 3,
+                        HPThreshold = 100,
+                        Label = "The Final Form",
+                        OnEnter = new StageStatChange
+                        {
+                            Attack = 50,
+                            Defense = 20
+                        },
+                        Moves = new List<MoveDef>
+                        {
+                            new MoveDef
+                            {
+                                Name = "Death's Embrace",
+                                Type = "MultiStep",
+                                Key = 'D',
+                                TimeLimit = 2000,
+                                Goal = 0,
+                                Count = 0,
+                                Target = 0.5,
+                                Threshold = 0.1,
+                                ChainedHitBarPositions = "",
+                                PullStrength = 0.001,
+                                Steps = new List<MoveStep>
+                                {
+                                    new MoveStep
+                                    {
+                                        Type = "TugOfWar",
+                                        Key = 'S',
+                                        Goal = 0,
+                                        Count = 0,
+                                        TimeLimit = 6000,
+                                        FailMsg = "Missed!",
+                                        ChainedHitBarPositions = "",
+                                        PullStrength = 6
+                                    },
+                                    new MoveStep
+                                    {
+                                        Type = "Sequence",
+                                        Key = 'K',
+                                        Goal = 0,
+                                        Count = 5,
+                                        TimeLimit = 800,
+                                        FailMsg = "Missed!",
+                                        ChainedHitBarPositions = "",
+                                        PullStrength = 0.001
+                                    },
+                                }
+                            }
                         }
                     }
+                }, // End of Stages List
+                LootTable = new List<LootItemDef>
+                {
+                } // End of LootTable List
+            }
+        },
+        {
+            EnemyId.QueenSlimeMagenta,
+            new EnemyDef
+            {
+                Id = EnemyId.QueenSlimeMagenta,
+                Name = "Queen Slime Magenta",
+                HP = 200,
+                MaxHp = 200,
+                Attack = 20,
+                MinGold = 100,
+                MaxGold = 150,
+                Moves = new List<MoveDef>
+                {
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+                    new EnemyStage
+                    {
+                        Id = 1,
+                        HPThreshold = 200,
+                        Label = "The Slime Protector",
+                        OnEnter = new StageStatChange
+                        {
+                            Attack = 0,
+                            Defense = 0
+                        },
+                        Moves = new List<MoveDef>
+                        {
+                            new MoveDef
+                            {
+                                Name = "Royal Slime Wave",
+                                Type = "ChainedHitBar",
+                                Key = 'D',
+                                TimeLimit = 2500,
+                                Goal = 0,
+                                Count = 0,
+                                Target = 0.5,
+                                Threshold = 0.1,
+                                ChainedHitBarPositions = "0.5, 0.75",
+                                PullStrength = 0.001,
+                                Steps = new List<MoveStep>
+                                {
+                                }
+                            },
+                            new MoveDef
+                            {
+                                Name = "Royal Slime Slam",
+                                Type = "Charge",
+                                Key = 'D',
+                                TimeLimit = 3000,
+                                Goal = 0,
+                                Count = 0,
+                                Target = 0.5,
+                                Threshold = 0.1,
+                                ChainedHitBarPositions = "",
+                                PullStrength = 0.001,
+                                Steps = new List<MoveStep>
+                                {
+                                }
+                            },
+                            new MoveDef
+                            {
+                                Name = "Royal Corruption",
+                                Type = "MultiStep",
+                                Key = 'D',
+                                TimeLimit = 2000,
+                                Goal = 0,
+                                Count = 0,
+                                Target = 0.5,
+                                Threshold = 0.1,
+                                ChainedHitBarPositions = "",
+                                PullStrength = 0.001,
+                                Steps = new List<MoveStep>
+                                {
+                                    new MoveStep
+                                    {
+                                        Type = "Timed",
+                                        Key = 'Q',
+                                        Goal = 0,
+                                        Count = 0,
+                                        TimeLimit = 1600,
+                                        FailMsg = "Missed!",
+                                        ChainedHitBarPositions = "",
+                                        PullStrength = 0.001
+                                    },
+                                    new MoveStep
+                                    {
+                                        Type = "Timed",
+                                        Key = 'S',
+                                        Goal = 0,
+                                        Count = 0,
+                                        TimeLimit = 1400,
+                                        FailMsg = "Missed!",
+                                        ChainedHitBarPositions = "",
+                                        PullStrength = 0.001
+                                    },
+                                    new MoveStep
+                                    {
+                                        Type = "Timed",
+                                        Key = 'E',
+                                        Goal = 0,
+                                        Count = 0,
+                                        TimeLimit = 1000,
+                                        FailMsg = "Missed!",
+                                        ChainedHitBarPositions = "",
+                                        PullStrength = 0.001
+                                    },
+                                }
+                            }
+                        }
+                    },
+                    new EnemyStage
+                    {
+                        Id = 2,
+                        HPThreshold = 80,
+                        Label = "The Slime Avenger",
+                        OnEnter = new StageStatChange
+                        {
+                            Attack = 25,
+                            Defense = 0
+                        },
+                        Moves = new List<MoveDef>
+                        {
+                            new MoveDef
+                            {
+                                Name = "Slime Strangle",
+                                Type = "TugOfWar",
+                                Key = 'W',
+                                TimeLimit = 8000,
+                                Goal = 0,
+                                Count = 0,
+                                Target = 0.5,
+                                Threshold = 0.1,
+                                ChainedHitBarPositions = "",
+                                PullStrength = 4,
+                                Steps = new List<MoveStep>
+                                {
+                                }
+                            },
+                            new MoveDef
+                            {
+                                Name = "Royal Slime Wave",
+                                Type = "ChainedHitBar",
+                                Key = 'D',
+                                TimeLimit = 2000,
+                                Goal = 0,
+                                Count = 0,
+                                Target = 0.5,
+                                Threshold = 0.1,
+                                ChainedHitBarPositions = "0.5, 0.75",
+                                PullStrength = 0.001,
+                                Steps = new List<MoveStep>
+                                {
+                                }
+                            },
+                            new MoveDef
+                            {
+                                Name = "Royal Corruption",
+                                Type = "MultiStep",
+                                Key = 'D',
+                                TimeLimit = 2000,
+                                Goal = 0,
+                                Count = 0,
+                                Target = 0.5,
+                                Threshold = 0.1,
+                                ChainedHitBarPositions = "",
+                                PullStrength = 0.001,
+                                Steps = new List<MoveStep>
+                                {
+                                    new MoveStep
+                                    {
+                                        Type = "Timed",
+                                        Key = 'Q',
+                                        Goal = 0,
+                                        Count = 0,
+                                        TimeLimit = 1400,
+                                        FailMsg = "Missed!",
+                                        ChainedHitBarPositions = "",
+                                        PullStrength = 0.001
+                                    },
+                                    new MoveStep
+                                    {
+                                        Type = "Timed",
+                                        Key = 'S',
+                                        Goal = 0,
+                                        Count = 0,
+                                        TimeLimit = 1200,
+                                        FailMsg = "Missed!",
+                                        ChainedHitBarPositions = "",
+                                        PullStrength = 0.001
+                                    },
+                                    new MoveStep
+                                    {
+                                        Type = "Timed",
+                                        Key = 'E',
+                                        Goal = 0,
+                                        Count = 0,
+                                        TimeLimit = 1000,
+                                        FailMsg = "Missed!",
+                                        ChainedHitBarPositions = "",
+                                        PullStrength = 0.001
+                                    },
+                                    new MoveStep
+                                    {
+                                        Type = "Timed",
+                                        Key = 'E',
+                                        Goal = 0,
+                                        Count = 0,
+                                        TimeLimit = 800,
+                                        FailMsg = "Missed!",
+                                        ChainedHitBarPositions = "",
+                                        PullStrength = 0.001
+                                    },
+                                    new MoveStep
+                                    {
+                                        Type = "Timed",
+                                        Key = 'S',
+                                        Goal = 0,
+                                        Count = 0,
+                                        TimeLimit = 600,
+                                        FailMsg = "Missed!",
+                                        ChainedHitBarPositions = "",
+                                        PullStrength = 0.001
+                                    },
+                                    new MoveStep
+                                    {
+                                        Type = "Timed",
+                                        Key = 'Q',
+                                        Goal = 0,
+                                        Count = 0,
+                                        TimeLimit = 600,
+                                        FailMsg = "Missed!",
+                                        ChainedHitBarPositions = "",
+                                        PullStrength = 0.001
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
                 } // End of LootTable List

@@ -24,7 +24,7 @@ public class TutorialScript : INarrativeScript
 
         director.SetStartingItems(new[] { ItemId.IronSword });
         director.SetStartingEquipment(EquiptSlot.Weapon, ItemId.IronSword);
-        director.SetEnemyOverride(EnemyId.TheNamelessKnight);
+        director.SetEnemyOverride(EnemyId.QueenSlimeMagenta);
         director.RequestMapLoad(mapPath);
 
         SetState(TutorialState.TutOpenMoveMenu);

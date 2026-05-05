@@ -13,11 +13,11 @@ public class MoveStep
     public string Type { get; set; }
     public char Key { get; set; }
     public int Goal { get; set; }
+    public int Count { get; set; }
     public int TimeLimit { get; set; }
     public string FailMsg { get; set; }
     public string ChainedHitBarPositions { get; set; }
     public double PullStrength { get; set; }
-    public int Count { get; set; }
 }
 
 public class MoveDef
@@ -35,6 +35,21 @@ public class MoveDef
     public List<MoveStep> Steps { get; set; } = new();
 }
 
+public class StageStatChange
+{
+    public int Attack { get; set; }
+    public int Defense { get; set; }
+}
+
+public class EnemyStage
+{
+    public int Id { get; set; }
+    public int HPThreshold { get; set; }
+    public string Label { get; set; }
+    public StageStatChange OnEnter { get; set; }
+    public List<MoveDef> Moves { get; set; } = new();
+}
+
 public class LootItemDef
 {
     public ItemId Id { get; set; }
@@ -49,6 +64,7 @@ public class EnemyDef
     public int MaxHp { get; set; }
     public int Attack { get; set; }
     public List<MoveDef> Moves { get; set; } = new();
+    public List<EnemyStage> Stages { get; set; } = new();
     public int MinGold { get; set; }
     public int MaxGold { get; set; }
     public List<LootItemDef> LootTable { get; set; } = new();
@@ -77,6 +93,7 @@ public static class EnemyDatabase
 
         var moveNodes = node.SelectNodes("Moves/Move");
         var lootNodes = node.SelectNodes("LootTable/Item");
+        var stageNodes = node.SelectNodes("Stages/Stage");
 #>
         {
             EnemyId.<#= cleanName #>,
@@ -143,6 +160,89 @@ public static class EnemyDatabase
         } // End of Move loop
 #>
                 }, // End of Moves List
+                Stages = new List<EnemyStage>
+                {
+<#
+        for (int s = 0; s < stageNodes.Count; s++)
+        {
+            var stage = stageNodes[s];
+            var stageId        = stage.Attributes["Id"]?.Value ?? "0";
+            var stageThreshold = stage.Attributes["HPThreshold"]?.Value ?? "0";
+            var stageLabel     = stage.Attributes["Label"]?.Value ?? "";
+            var stageMoveNodes = stage.SelectNodes("Moves/Move");
+            var onEnterNode    = stage.SelectSingleNode("OnEnter/StatChange");
+            var enterAtk       = onEnterNode?.Attributes["Attack"]?.Value ?? "0";
+            var enterDef       = onEnterNode?.Attributes["Defense"]?.Value ?? "0";
+#>
+                    new EnemyStage
+                    {
+                        Id = <#= stageId #>,
+                        HPThreshold = <#= stageThreshold #>,
+                        Label = "<#= stageLabel #>",
+                        OnEnter = new StageStatChange
+                        {
+                            Attack = <#= enterAtk #>,
+                            Defense = <#= enterDef #>
+                        },
+                        Moves = new List<MoveDef>
+                        {
+<#
+            for (int sm = 0; sm < stageMoveNodes.Count; sm++)
+            {
+                var sm_node = stageMoveNodes[sm];
+                var smStepNodes = sm_node.SelectNodes("Steps/Step");
+#>
+                            new MoveDef
+                            {
+                                Name = "<#= sm_node.Attributes["Name"]?.Value ?? "Attack" #>",
+                                Type = "<#= sm_node.Attributes["Type"]?.Value ?? "Timed" #>",
+                                Key = '<#= sm_node.Attributes["Key"]?.Value ?? "D" #>',
+                                TimeLimit = <#= sm_node.Attributes["TimeLimit"]?.Value ?? "2000" #>,
+                                Goal = <#= sm_node.Attributes["Goal"]?.Value ?? "0" #>,
+                                Count = <#= sm_node.Attributes["Count"]?.Value ?? "0" #>,
+                                Target = <#= sm_node.Attributes["Target"]?.Value ?? "0.5" #>,
+                                Threshold = <#= sm_node.Attributes["Threshold"]?.Value ?? "0.1" #>,
+                                ChainedHitBarPositions = "<#= sm_node.Attributes["ChainedHitBarPositions"]?.Value ?? "" #>",
+                                PullStrength = <#= sm_node.Attributes["PullStrength"]?.Value ?? "0.001" #>,
+                                Steps = new List<MoveStep>
+                                {
+<#
+                foreach (XmlNode smStep in smStepNodes)
+                {
+                    var ssType  = smStep.Attributes["Type"]?.Value ?? "Timed";
+                    var ssKey   = smStep.Attributes["Key"]?.Value ?? "D";
+                    var ssGoal  = smStep.Attributes["Goal"]?.Value ?? "0";
+                    var ssCount = smStep.Attributes["Count"]?.Value ?? "0";
+                    var ssTime  = smStep.Attributes["TimeLimit"]?.Value ?? "2000";
+                    var ssFail  = smStep.Attributes["FailMsg"]?.Value ?? "Missed!";
+                    var ssPos   = smStep.Attributes["ChainedHitBarPositions"]?.Value ?? "";
+                    var ssPull  = smStep.Attributes["PullStrength"]?.Value ?? "0.001";
+#>
+                                    new MoveStep
+                                    {
+                                        Type = "<#= ssType #>",
+                                        Key = '<#= ssKey #>',
+                                        Goal = <#= ssGoal #>,
+                                        Count = <#= ssCount #>,
+                                        TimeLimit = <#= ssTime #>,
+                                        FailMsg = "<#= ssFail #>",
+                                        ChainedHitBarPositions = "<#= ssPos #>",
+                                        PullStrength = <#= ssPull #>
+                                    },
+<#
+                }
+#>
+                                }
+                            }<#= sm < stageMoveNodes.Count - 1 ? "," : "" #>
+<#
+            } // End of Stage Move loop
+#>
+                        }
+                    }<#= s < stageNodes.Count - 1 ? "," : "" #>
+<#
+        } // End of Stage loop
+#>
+                }, // End of Stages List
                 LootTable = new List<LootItemDef>
                 {
 <#

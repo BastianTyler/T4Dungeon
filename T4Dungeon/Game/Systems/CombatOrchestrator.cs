@@ -163,6 +163,7 @@ public class CombatOrchestrator
             return;
         }
 
+        _enemyAI.CheckStageTransition(Enemy, _log);
         var move = _enemyAI.SelectMove(Enemy);
 
         _log.Add($"{TextColor.Yellow}{Enemy.Name}{TextColor.Reset} winds up {TextColor.Red}{move.Name}!{TextColor.Reset}", sleepMs: 2000);

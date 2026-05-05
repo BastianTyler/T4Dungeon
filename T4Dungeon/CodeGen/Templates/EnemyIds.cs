@@ -33,5 +33,6 @@ namespace T4Dungeon.Generated
         Chimera = 2028,
         AncientConstruct = 2029,
         TheNamelessKnight = 2030,
+        QueenSlimeMagenta = 2031,
     }
 }

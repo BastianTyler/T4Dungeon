@@ -382,9 +382,9 @@ public class ExplorationState : IGameState
 
     private EnemyId GetBossForTier(int tier) => tier switch
     {
-        1 => EnemyId.Goblin,           // placeholder, swap for real boss
-        2 => EnemyId.Orc,              // placeholder
-        3 => EnemyId.Orc,              // placeholder
+        1 => EnemyId.QueenSlimeMagenta,           
+        2 => EnemyId.Orc,              
+        3 => EnemyId.Orc,              
         4 => EnemyId.TheNamelessKnight,
         _ => EnemyId.Orc
     };
