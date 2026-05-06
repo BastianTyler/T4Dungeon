@@ -176,10 +176,23 @@ public class ExplorationState : IGameState
         if (cellEvent is CombatEvent)
         {
             _transitioning = true;
+            var enemy = new Enemy();
             var enemyOverride = _narrativeDirector.ConsumeEnemyOverride();
-            var enemy = enemyOverride.HasValue
+            //Check if a cell has a CellEnemy, if it does, enemy will be assigned to it,
+            //otherwise we check for an narrative override, if neither occurs we generate random
+            //We then assign the enemy to the cell
+            if (_map.GetCurrentCell().CellEnemy != null)
+            {
+                enemy = _map.GetCurrentCell().CellEnemy;
+            }
+            else
+            {
+                enemy = enemyOverride.HasValue
                 ? _combatManager.CreateEnemy(enemyOverride.Value)
                 : _combatManager.CreateRandomEnemy(_map.CurrentTier);
+                _map.GetCurrentCell().CellEnemy = enemy;
+            }
+            
 
             _log.Add($"{TextColor.Yellow}A {enemy.Name} appears!{TextColor.Reset}");
             Console.Clear();
@@ -228,7 +241,6 @@ public class ExplorationState : IGameState
             var shopState = (ShopState)_fsm.GetState(GameStateType.Shop);
 
             shopState.StartShop();
-
 
             shopState.OnExit = () =>
             {

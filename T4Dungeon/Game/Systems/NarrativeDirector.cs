@@ -46,11 +46,9 @@ public class NarrativeDirector
     public event Action<EquiptSlot, ItemId> OnStartingEquipmentRequested;
     public void SetStartingEquipment(EquiptSlot slot, ItemId id) => OnStartingEquipmentRequested?.Invoke(slot, id);
 
-    // Item drops forced by narrative
     public event Action<ItemId> OnItemDropRequested;
     public void DropItem(ItemId id) => OnItemDropRequested?.Invoke(id);
 
-    // Treasure drops forced by narrative
     public event Action<ItemId> OnForcedTreasureDropRequested;
     public void ForceTreasureDrop(ItemId id) => OnForcedTreasureDropRequested?.Invoke(id);
 

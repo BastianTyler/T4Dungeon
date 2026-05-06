@@ -8,7 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Art\Ascii Art\" />
+    <None Remove="Art\Ascii Art\TeeForTowerEntrance.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Art\Ascii Art\TeeForTowerEntrance.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="CodeGen\Includes\" />
     <Folder Include="CodeGen\Settings\" />
     <Folder Include="Data\Events\" />

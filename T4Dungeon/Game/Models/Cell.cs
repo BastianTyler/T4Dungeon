@@ -9,6 +9,7 @@ namespace T4Dungeon.Game.Models
         public CellType Type { get; set;  }
         public bool Explored { get; set; } = false;
         public ICellEvent Event { get; set; }
+        public Enemy CellEnemy { get; set; } = null;
 
         public Cell(int x, int y)
         {

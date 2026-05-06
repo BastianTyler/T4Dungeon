@@ -59,7 +59,7 @@ namespace T4Dungeon.Game.MiniGames
         private void Render(float cursor, List<SweetspotTarget> targets, int width)
         {
             Console.SetCursorPosition(0, Console.CursorTop);
-            Console.Write($"{TextColor.Cyan}  [ SPACE ]{TextColor.Reset} to HIT!  [");
+
 
             for (int i = 0; i < width; i++)
             {
@@ -79,6 +79,7 @@ namespace T4Dungeon.Game.MiniGames
 
             int hits = targets.Count(t => t.IsHit);
             Console.Write($"]  {TextColor.Yellow}{hits}/{targets.Count}{TextColor.Reset}  ");
+            Console.Write($"{TextColor.Cyan}  [ SPACE ]{TextColor.Reset} to HIT!  [");
         }
     }
 }

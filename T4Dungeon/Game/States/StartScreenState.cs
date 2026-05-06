@@ -27,7 +27,13 @@ public class StartScreenState : IGameState
            {
                _narrativeDirector.Load(new StoryScript());
 
-               string artPath = @"E:\VisualStudio\2026Repos\T4Dungeon\T4Dungeon\Art\Ascii Art\TeeForTowerEntrance.txt";
+               string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+               string artPath = Path.Combine(baseDir, "Art", "Ascii Art", "TeeForTowerEntrance.txt");
+               if (!File.Exists(artPath))
+               {
+                   Console.WriteLine("Not Found");
+                   Console.ReadKey();
+               }
                var cutscene = (CutsceneState)_fsm.GetState(GameStateType.Cutscene);
                cutscene.Play(
                    new List<CutsceneBeat>
